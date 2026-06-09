@@ -462,7 +462,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>10.4.0</version>
+                    <version>10.0.4</version>
                     <configuration>
                         <failBuildOnCVSS>9</failBuildOnCVSS>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>

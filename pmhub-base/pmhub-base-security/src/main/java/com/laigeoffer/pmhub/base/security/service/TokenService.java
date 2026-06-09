@@ -98,7 +98,7 @@ public class TokenService {
         try {
             if (StringUtils.isNotEmpty(token)) {
                 // 将user对象从JSON反序列化为Java
-                String userkey = JwtUtils.getUserKey(token);
+                String userkey = JwtUtils.getUserKey(token, secret);
                 JSONObject jsonObject = redisService.getCacheObject(getTokenKey(userkey));
                 user = jsonObject.toJavaObject(LoginUser.class);
                 return user;
@@ -142,7 +142,7 @@ public class TokenService {
         claimsMap.put(SecurityConstants.DETAILS_USERNAME, userName);
 
         // 接口返回信息
-        return JwtUtils.createToken(claimsMap);
+        return JwtUtils.createToken(claimsMap, secret);
     }
 
     /**

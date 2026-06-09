@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.base.core.utils;
 
 import com.laigeoffer.pmhub.base.core.constant.SecurityConstants;
-import com.laigeoffer.pmhub.base.core.constant.TokenConstants;
 import com.laigeoffer.pmhub.base.core.core.text.Convert;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,15 +9,15 @@ import java.util.Map;
 
 /** Jwt工具类 */
 public class JwtUtils {
-    public static String secret = TokenConstants.SECRET;
 
     /**
      * 从数据声明生成令牌
      *
      * @param claims 数据声明
+     * @param secret 签名密钥
      * @return 令牌
      */
-    public static String createToken(Map<String, Object> claims) {
+    public static String createToken(Map<String, Object> claims, String secret) {
         String token =
                 Jwts.builder()
                         .setClaims(claims)
@@ -31,9 +30,10 @@ public class JwtUtils {
      * 从令牌中获取数据声明
      *
      * @param token 令牌
+     * @param secret 签名密钥
      * @return 数据声明
      */
-    public static Claims parseToken(String token) {
+    public static Claims parseToken(String token, String secret) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
@@ -43,8 +43,8 @@ public class JwtUtils {
      * @param token 令牌
      * @return 用户ID
      */
-    public static String getUserKey(String token) {
-        Claims claims = parseToken(token);
+    public static String getUserKey(String token, String secret) {
+        Claims claims = parseToken(token, secret);
         return getValue(claims, SecurityConstants.USER_KEY);
     }
 
@@ -64,8 +64,8 @@ public class JwtUtils {
      * @param token 令牌
      * @return 用户ID
      */
-    public static String getUserId(String token) {
-        Claims claims = parseToken(token);
+    public static String getUserId(String token, String secret) {
+        Claims claims = parseToken(token, secret);
         return getValue(claims, SecurityConstants.DETAILS_USER_ID);
     }
 
@@ -85,8 +85,8 @@ public class JwtUtils {
      * @param token 令牌
      * @return 用户名
      */
-    public static String getUserName(String token) {
-        Claims claims = parseToken(token);
+    public static String getUserName(String token, String secret) {
+        Claims claims = parseToken(token, secret);
         return getValue(claims, SecurityConstants.DETAILS_USERNAME);
     }
 

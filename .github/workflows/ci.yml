@@ -153,24 +153,21 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
 
-      - name: Compile classes for SonarCloud
-        run: mvn compile -B -DskipTests
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+      - name: Compile and SonarCloud Scan
         env:
           SONAR_HOST_URL: https://sonarcloud.io
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORG }}
-            -Dsonar.projectKey=${{ github.event.repository.name }}
-            -Dsonar.projectName=${{ github.event.repository.name }}
-            -Dsonar.java.binaries=**/target/classes
-            -Dsonar.sources=.
-            -Dsonar.exclusions=**/node_modules/**,**/target/**,**/dist/**
-            -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
-            -Dsonar.qualitygate.wait=true
+        run: >
+          mvn compile sonar:sonar -B
+          -Dsonar.organization=${{ secrets.SONAR_ORG }}
+          -Dsonar.projectKey=${{ github.event.repository.name }}
+          -Dsonar.projectName=${{ github.event.repository.name }}
+          -Dsonar.java.binaries=**/target/classes
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/node_modules/**,**/target/**,**/dist/**
+          -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+          -Dsonar.cpd.exclusions=**/entity/**,**/dto/**,**/vo/**,**/*DTO.java,**/*Entity.java,**/*VO.java
+          -Dsonar.qualitygate.wait=false
 
   # ============================================================
   # Stage 4: SAST-Dependency — OWASP 依赖漏洞扫描

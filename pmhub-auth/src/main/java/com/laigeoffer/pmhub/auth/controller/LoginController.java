@@ -18,6 +18,7 @@ import com.laigeoffer.pmhub.base.security.service.TokenService;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 /** 登录验证 */
@@ -29,6 +30,9 @@ public class LoginController {
     @Autowired private SysLoginService sysLoginService;
 
     @Autowired private RedisService redisService;
+
+    @Value("${token.secret}")
+    private String secret;
 
     /**
      * 登录接口，因为登录接口无token，所以不走网关鉴权，且安全级别极高 需要自定义Redis限流逻辑 这里配置了 30 秒内仅允许访问 10 次
@@ -52,7 +56,7 @@ public class LoginController {
     public R<?> logout(HttpServletRequest request) {
         String token = SecurityUtils.getToken(request);
         if (StringUtils.isNotEmpty(token)) {
-            String username = JwtUtils.getUserName(token);
+            String username = JwtUtils.getUserName(token, secret);
             // 删除用户缓存记录
             AuthUtil.logoutByToken(token);
             // 记录用户退出日志
