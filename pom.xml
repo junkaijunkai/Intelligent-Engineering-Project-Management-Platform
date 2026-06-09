@@ -387,6 +387,18 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+
+            <!-- OWASP Dependency Check: 依赖漏洞扫描 (SAST-Dependency) -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>10.0.4</version>
+                <configuration>
+                    <failBuildOnCVSS>11</failBuildOnCVSS>
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -456,18 +468,6 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-
-                <!-- OWASP Dependency Check: 依赖漏洞扫描 (SAST-Dependency) -->
-                <plugin>
-                    <groupId>org.owasp</groupId>
-                    <artifactId>dependency-check-maven</artifactId>
-                    <version>10.0.4</version>
-                    <configuration>
-                        <failBuildOnCVSS>11</failBuildOnCVSS>
-                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                        <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
-                    </configuration>
                 </plugin>
 
                 <!-- Surefire: 单元测试报告 -->
