@@ -196,6 +196,10 @@ jobs:
           key: owasp-nvd-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: owasp-nvd-${{ runner.os }}-
 
+      # 先编译安装本地模块，避免 dependency-check 找不到子模块依赖
+      - name: Build local modules
+        run: mvn install -DskipTests -B
+
       - name: Run OWASP Dependency Check
         env:
           OSSINDEX_USER: ${{ secrets.OSSINDEX_USER }}
