@@ -4,24 +4,18 @@ import cn.hutool.core.util.ObjectUtil;
 import com.laigeoffer.pmhub.base.core.config.PmhubConfig;
 import com.laigeoffer.pmhub.base.core.utils.DateUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-import com.laigeoffer.pmhub.base.core.utils.file.FileTypeUtils;
-import com.laigeoffer.pmhub.base.core.utils.file.MimeTypeUtils;
 import com.laigeoffer.pmhub.base.core.utils.uuid.IdUtils;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-/**
- * 文件处理工具类
- *
- */
+/** 文件处理工具类 */
 public class FileUtils {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
 
@@ -32,7 +26,8 @@ public class FileUtils {
      * @param response
      * @return
      */
-    public static void writeBytes(String filePath, HttpServletResponse response) throws IOException {
+    public static void writeBytes(String filePath, HttpServletResponse response)
+            throws IOException {
         FileInputStream fis = null;
         OutputStream os = null;
         try {
@@ -56,7 +51,6 @@ public class FileUtils {
             IOUtils.close(fis);
         }
     }
-
 
     /**
      * 输出指定文件的byte数组
@@ -93,7 +87,7 @@ public class FileUtils {
     /**
      * 写数据到文件中
      *
-     * @param data      数据
+     * @param data 数据
      * @param uploadDir 目标文件
      * @return 目标文件
      * @throws IOException IO异常
@@ -153,7 +147,8 @@ public class FileUtils {
         }
 
         // 检查允许下载的文件规则
-        if (ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource))) {
+        if (ArrayUtils.contains(
+                MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource))) {
             return true;
         }
 
@@ -164,11 +159,12 @@ public class FileUtils {
     /**
      * 下载文件名重新编码
      *
-     * @param request  请求对象
+     * @param request 请求对象
      * @param fileName 文件名
      * @return 编码后的文件名
      */
-    public static String setFileDownloadHeader(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
+    public static String setFileDownloadHeader(HttpServletRequest request, String fileName)
+            throws UnsupportedEncodingException {
         final String agent = request.getHeader("USER-AGENT");
         String filename = fileName;
         if (agent.contains("MSIE")) {
@@ -191,21 +187,24 @@ public class FileUtils {
     /**
      * 下载文件名重新编码
      *
-     * @param response     响应对象
+     * @param response 响应对象
      * @param realFileName 真实文件名
      */
-    public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
+    public static void setAttachmentResponseHeader(
+            HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
         String percentEncodedFileName = percentEncode(realFileName);
 
         StringBuilder contentDispositionValue = new StringBuilder();
-        contentDispositionValue.append("attachment; filename=")
+        contentDispositionValue
+                .append("attachment; filename=")
                 .append(percentEncodedFileName)
                 .append(";")
                 .append("filename*=")
                 .append("utf-8''")
                 .append(percentEncodedFileName);
 
-        response.addHeader("Access-Control-Expose-Headers", "Content-Disposition,download-filename");
+        response.addHeader(
+                "Access-Control-Expose-Headers", "Content-Disposition,download-filename");
         response.setHeader("Content-disposition", contentDispositionValue.toString());
         response.setHeader("download-filename", percentEncodedFileName);
     }
@@ -229,10 +228,17 @@ public class FileUtils {
      */
     public static String getFileExtendName(byte[] photoByte) {
         String strFileExtendName = "jpg";
-        if ((photoByte[0] == 71) && (photoByte[1] == 73) && (photoByte[2] == 70) && (photoByte[3] == 56)
-                && ((photoByte[4] == 55) || (photoByte[4] == 57)) && (photoByte[5] == 97)) {
+        if ((photoByte[0] == 71)
+                && (photoByte[1] == 73)
+                && (photoByte[2] == 70)
+                && (photoByte[3] == 56)
+                && ((photoByte[4] == 55) || (photoByte[4] == 57))
+                && (photoByte[5] == 97)) {
             strFileExtendName = "gif";
-        } else if ((photoByte[6] == 74) && (photoByte[7] == 70) && (photoByte[8] == 73) && (photoByte[9] == 70)) {
+        } else if ((photoByte[6] == 74)
+                && (photoByte[7] == 70)
+                && (photoByte[8] == 73)
+                && (photoByte[9] == 70)) {
             strFileExtendName = "jpg";
         } else if ((photoByte[0] == 66) && (photoByte[1] == 77)) {
             strFileExtendName = "bmp";
@@ -277,24 +283,24 @@ public class FileUtils {
      *
      * @param file 文件
      * @return 大小说明
-     * */
-    public static String getFileSizeDesc(MultipartFile file){
-         return  getFileSizeDesc(file.getSize());
-    }
-    public static String getFileSizeDesc(long size){
-        if (ObjectUtil.isEmpty(size)){
-            return "0B";
-        }else if (size<=1024L){
-            return String.format("%sB",size);
-        }else if (size<=(1024L*1024)){
-            return String.format("%.2fKb",(size/1024f));
-        }else if (size<=(1024L*1024*1024)){
-            return String.format("%.2fMb",(size/(1024f*1024f)));
-        }else if (size<=(1024L*1024*1024*1024)){
-            return String.format("%.2fGb",(size/(1024f*1024f*1024f)));
-        }else{
-            return String.format("%.2fTb",(size/(1024f*1024f*1024f*1024f)));
-        }
+     */
+    public static String getFileSizeDesc(MultipartFile file) {
+        return getFileSizeDesc(file.getSize());
     }
 
+    public static String getFileSizeDesc(long size) {
+        if (ObjectUtil.isEmpty(size)) {
+            return "0B";
+        } else if (size <= 1024L) {
+            return String.format("%sB", size);
+        } else if (size <= (1024L * 1024)) {
+            return String.format("%.2fKb", (size / 1024f));
+        } else if (size <= (1024L * 1024 * 1024)) {
+            return String.format("%.2fMb", (size / (1024f * 1024f)));
+        } else if (size <= (1024L * 1024 * 1024 * 1024)) {
+            return String.format("%.2fGb", (size / (1024f * 1024f * 1024f)));
+        } else {
+            return String.format("%.2fTb", (size / (1024f * 1024f * 1024f * 1024f)));
+        }
+    }
 }

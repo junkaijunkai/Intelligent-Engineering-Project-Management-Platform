@@ -11,6 +11,10 @@ import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.ip.IpUtils;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
+import java.util.Collection;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -21,22 +25,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.Map;
-
-/**
- * 操作日志记录处理
- *
- */
+/** 操作日志记录处理 */
 @Aspect
 @Component
 public class LogAspect {
-    /**
-     * 排除敏感属性字段
-     */
-    public static final String[] EXCLUDE_PROPERTIES = {"password", "oldPassword", "newPassword", "confirmPassword"};
+    /** 排除敏感属性字段 */
+    public static final String[] EXCLUDE_PROPERTIES = {
+        "password", "oldPassword", "newPassword", "confirmPassword"
+    };
+
     private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
 
     /**
@@ -53,14 +50,15 @@ public class LogAspect {
      * 拦截异常操作
      *
      * @param joinPoint 切点
-     * @param e         异常
+     * @param e 异常
      */
     @AfterThrowing(value = "@annotation(controllerLog)", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Log controllerLog, Exception e) {
         handleLog(joinPoint, controllerLog, e, null);
     }
 
-    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
+    protected void handleLog(
+            final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
             // 获取当前的用户
             LoginUser loginUser = SecurityUtils.getLoginUser();
@@ -71,7 +69,8 @@ public class LogAspect {
             // 请求的地址
             String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
             operLog.setOperIp(ip);
-            operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
+            operLog.setOperUrl(
+                    StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
             if (loginUser != null) {
                 operLog.setOperName(loginUser.getUsername());
             }
@@ -89,7 +88,7 @@ public class LogAspect {
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 保存数据库 todo 待优化
-//            AsyncManager.me().execute(AsyncFactory.recordOper(operLog));
+            //            AsyncManager.me().execute(AsyncFactory.recordOper(operLog));
         } catch (Exception exp) {
             // 记录本地异常日志
             log.error("异常信息:{}", exp.getMessage());
@@ -100,11 +99,12 @@ public class LogAspect {
     /**
      * 获取注解中对方法的描述信息 用于Controller层注解
      *
-     * @param log     日志
+     * @param log 日志
      * @param operLog 操作日志
      * @throws Exception
      */
-    public void getControllerMethodDescription(JoinPoint joinPoint, Log log, SysOperLog operLog, Object jsonResult) throws Exception {
+    public void getControllerMethodDescription(
+            JoinPoint joinPoint, Log log, SysOperLog operLog, Object jsonResult) throws Exception {
         // 设置action动作
         operLog.setBusinessType(log.businessType().ordinal());
         // 设置标题
@@ -130,18 +130,19 @@ public class LogAspect {
      */
     private void setRequestValue(JoinPoint joinPoint, SysOperLog operLog) throws Exception {
         String requestMethod = operLog.getRequestMethod();
-        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
+        if (HttpMethod.PUT.name().equals(requestMethod)
+                || HttpMethod.POST.name().equals(requestMethod)) {
             String params = argsArrayToString(joinPoint.getArgs());
             operLog.setOperParam(StringUtils.substring(params, 0, 2000));
         } else {
             Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
-            operLog.setOperParam(StringUtils.substring(JSON.toJSONString(paramsMap, excludePropertyPreFilter()), 0, 2000));
+            operLog.setOperParam(
+                    StringUtils.substring(
+                            JSON.toJSONString(paramsMap, excludePropertyPreFilter()), 0, 2000));
         }
     }
 
-    /**
-     * 参数拼装
-     */
+    /** 参数拼装 */
     private String argsArrayToString(Object[] paramsArray) {
         String params = "";
         if (paramsArray != null && paramsArray.length > 0) {
@@ -158,9 +159,7 @@ public class LogAspect {
         return params.trim();
     }
 
-    /**
-     * 忽略敏感属性
-     */
+    /** 忽略敏感属性 */
     public PropertyPreExcludeFilter excludePropertyPreFilter() {
         return new PropertyPreExcludeFilter().addExcludes(EXCLUDE_PROPERTIES);
     }
@@ -188,7 +187,9 @@ public class LogAspect {
                 return entry.getValue() instanceof MultipartFile;
             }
         }
-        return o instanceof MultipartFile || o instanceof HttpServletRequest || o instanceof HttpServletResponse
+        return o instanceof MultipartFile
+                || o instanceof HttpServletRequest
+                || o instanceof HttpServletResponse
                 || o instanceof BindingResult;
     }
 }

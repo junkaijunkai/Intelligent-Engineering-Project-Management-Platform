@@ -3,47 +3,32 @@ package com.laigeoffer.pmhub.base.core.core.domain;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Entity基类
- * 自动插入创建人、创建时间、更新人、更新时间、是否删除字段
- *
- */
-public class BaseCoreEntity  implements Serializable {
+/** Entity基类 自动插入创建人、创建时间、更新人、更新时间、是否删除字段 */
+public class BaseCoreEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 创建者
-     */
+    /** 创建者 */
     @TableField(fill = FieldFill.INSERT)
     private String createBy;
 
-    /**
-     * 创建时间
-     */
+    /** 创建时间 */
     @TableField(fill = FieldFill.INSERT)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
-    /**
-     * 更新者
-     */
+    /** 更新者 */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
 
-    /**
-     * 更新时间
-     */
+    /** 更新时间 */
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updateTime;
 
-    /**
-     * 是否删除（1：已删除，0：未删除）
-     */
+    /** 是否删除（1：已删除，0：未删除） */
     @TableField(fill = FieldFill.INSERT)
     private Integer deleted;
 

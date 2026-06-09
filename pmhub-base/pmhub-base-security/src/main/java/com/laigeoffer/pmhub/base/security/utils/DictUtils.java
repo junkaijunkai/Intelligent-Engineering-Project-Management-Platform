@@ -6,24 +6,18 @@ import com.laigeoffer.pmhub.base.core.constant.CacheConstants;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictData;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.spring.SpringUtils;
-
 import java.util.Collection;
 import java.util.List;
 
-/**
- * 字典工具类
- *
- */
+/** 字典工具类 */
 public class DictUtils {
-    /**
-     * 分隔符
-     */
+    /** 分隔符 */
     public static final String SEPARATOR = ",";
 
     /**
      * 设置字典缓存
      *
-     * @param key       参数键
+     * @param key 参数键
      * @param dictDatas 字典数据列表
      */
     public static void setDictCache(String key, List<SysDictData> dictDatas) {
@@ -37,7 +31,8 @@ public class DictUtils {
      * @return dictDatas 字典数据列表
      */
     public static List<SysDictData> getDictCache(String key) {
-        JSONArray arrayCache = SpringUtils.getBean(RedisService.class).getCacheObject(getCacheKey(key));
+        JSONArray arrayCache =
+                SpringUtils.getBean(RedisService.class).getCacheObject(getCacheKey(key));
         if (StringUtils.isNotNull(arrayCache)) {
             return arrayCache.toList(SysDictData.class);
         }
@@ -47,7 +42,7 @@ public class DictUtils {
     /**
      * 根据字典类型和字典值获取字典标签
      *
-     * @param dictType  字典类型
+     * @param dictType 字典类型
      * @param dictValue 字典值
      * @return 字典标签
      */
@@ -58,7 +53,7 @@ public class DictUtils {
     /**
      * 根据字典类型和字典标签获取字典值
      *
-     * @param dictType  字典类型
+     * @param dictType 字典类型
      * @param dictLabel 字典标签
      * @return 字典值
      */
@@ -69,7 +64,7 @@ public class DictUtils {
     /**
      * 根据字典类型和字典值获取字典标签
      *
-     * @param dictType  字典类型
+     * @param dictType 字典类型
      * @param dictValue 字典值
      * @param separator 分隔符
      * @return 字典标签
@@ -102,7 +97,7 @@ public class DictUtils {
     /**
      * 根据字典类型和字典标签获取字典值
      *
-     * @param dictType  字典类型
+     * @param dictType 字典类型
      * @param dictLabel 字典标签
      * @param separator 分隔符
      * @return 字典值
@@ -139,11 +134,10 @@ public class DictUtils {
         SpringUtils.getBean(RedisService.class).deleteObject(getCacheKey(key));
     }
 
-    /**
-     * 清空字典缓存
-     */
+    /** 清空字典缓存 */
     public static void clearDictCache() {
-        Collection<String> keys = SpringUtils.getBean(RedisService.class).keys(CacheConstants.SYS_DICT_KEY + "*");
+        Collection<String> keys =
+                SpringUtils.getBean(RedisService.class).keys(CacheConstants.SYS_DICT_KEY + "*");
         SpringUtils.getBean(RedisService.class).deleteObject(keys);
     }
 

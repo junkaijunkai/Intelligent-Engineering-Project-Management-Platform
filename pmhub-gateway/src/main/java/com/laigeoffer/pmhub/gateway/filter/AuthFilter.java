@@ -10,6 +10,9 @@ import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.gateway.config.properties.IgnoreWhiteProperties;
 import io.jsonwebtoken.Claims;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +24,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * 网关鉴权
- *
- */
+/** 网关鉴权 */
 @Component
 public class AuthFilter implements GlobalFilter, Ordered {
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
-    private static final String BEGIN_VISIT_TIME = "begin_visit_time";//开始访问时间
+    private static final String BEGIN_VISIT_TIME = "begin_visit_time"; // 开始访问时间
 
     // 排除过滤的 uri 地址，nacos自行添加
-    @Autowired
-    private IgnoreWhiteProperties ignoreWhite;
+    @Autowired private IgnoreWhiteProperties ignoreWhite;
 
-    @Autowired
-    private RedisService redisService;
-
+    @Autowired private RedisService redisService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -83,32 +76,40 @@ public class AuthFilter implements GlobalFilter, Ordered {
         // 内部请求来源参数清除（防止网关携带内部请求标识，造成系统安全风险）
         removeHeader(mutate, SecurityConstants.FROM_SOURCE);
 
-        //先记录下访问接口的开始时间
+        // 先记录下访问接口的开始时间
         exchange.getAttributes().put(BEGIN_VISIT_TIME, System.currentTimeMillis());
 
-//        return chain.filter(exchange.mutate().request(mutate.build()).build());
+        //        return chain.filter(exchange.mutate().request(mutate.build()).build());
 
         // Mono.fromRunnable 是非阻塞的，适合在 then 中处理后续的日志逻辑。
-        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-            try {
-                // 记录接口访问日志
-                Long beginVisitTime = exchange.getAttribute(BEGIN_VISIT_TIME);
-                if (beginVisitTime != null) {
-                    URI uri = exchange.getRequest().getURI();
-                    Map<String, Object> logData = new HashMap<>();
-                    logData.put("host", uri.getHost());
-                    logData.put("port", uri.getPort());
-                    logData.put("path", uri.getPath());
-                    logData.put("query", uri.getRawQuery());
-                    logData.put("duration", (System.currentTimeMillis() - beginVisitTime) + "ms");
+        return chain.filter(exchange)
+                .then(
+                        Mono.fromRunnable(
+                                () -> {
+                                    try {
+                                        // 记录接口访问日志
+                                        Long beginVisitTime =
+                                                exchange.getAttribute(BEGIN_VISIT_TIME);
+                                        if (beginVisitTime != null) {
+                                            URI uri = exchange.getRequest().getURI();
+                                            Map<String, Object> logData = new HashMap<>();
+                                            logData.put("host", uri.getHost());
+                                            logData.put("port", uri.getPort());
+                                            logData.put("path", uri.getPath());
+                                            logData.put("query", uri.getRawQuery());
+                                            logData.put(
+                                                    "duration",
+                                                    (System.currentTimeMillis() - beginVisitTime)
+                                                            + "ms");
 
-                    log.info("访问接口信息: {}", logData);
-                    log.info("我是美丽分割线: ###################################################");
-                }
-            } catch (Exception e) {
-                log.error("记录日志时发生异常: ", e);
-            }
-        }));
+                                            log.info("访问接口信息: {}", logData);
+                                            log.info(
+                                                    "我是美丽分割线: ###################################################");
+                                        }
+                                    } catch (Exception e) {
+                                        log.error("记录日志时发生异常: ", e);
+                                    }
+                                }));
     }
 
     private void addHeader(ServerHttpRequest.Builder mutate, String name, Object value) {
@@ -126,19 +127,16 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
     private Mono<Void> unauthorizedResponse(ServerWebExchange exchange, String msg) {
         log.error("[鉴权异常处理]请求路径:{}", exchange.getRequest().getPath());
-        return ServletUtils.webFluxResponseWriter(exchange.getResponse(), msg, HttpStatus.UNAUTHORIZED);
+        return ServletUtils.webFluxResponseWriter(
+                exchange.getResponse(), msg, HttpStatus.UNAUTHORIZED);
     }
 
-    /**
-     * 获取缓存key
-     */
+    /** 获取缓存key */
     private String getTokenKey(String token) {
         return CacheConstants.LOGIN_TOKEN_KEY + token;
     }
 
-    /**
-     * 获取请求token
-     */
+    /** 获取请求token */
     private String getToken(ServerHttpRequest request) {
         String token = request.getHeaders().getFirst(TokenConstants.AUTHENTICATION);
         // 如果前端设置了令牌前缀，则裁剪掉前缀
@@ -152,8 +150,4 @@ public class AuthFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return -200;
     }
-
-
-
-
 }

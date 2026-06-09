@@ -1,16 +1,19 @@
 package com.laigeoffer.pmhub.base.core.enums;
 
-import org.springframework.lang.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.lang.Nullable;
 
-/**
- * 请求方式
- *
- */
+/** 请求方式 */
 public enum HttpMethod {
-    GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
+    GET,
+    HEAD,
+    POST,
+    PUT,
+    PATCH,
+    DELETE,
+    OPTIONS,
+    TRACE;
 
     private static final Map<String, HttpMethod> mappings = new HashMap<>(16);
 

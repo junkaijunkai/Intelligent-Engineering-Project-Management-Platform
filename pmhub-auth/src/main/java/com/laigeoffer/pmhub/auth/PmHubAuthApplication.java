@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @create 2024-04-23-15:00
  */
 @EnablePmFeignClients
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class PmHubAuthApplication {
     public static void main(String[] args) {
         SpringApplication.run(PmHubAuthApplication.class, args);

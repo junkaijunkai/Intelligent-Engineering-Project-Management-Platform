@@ -14,10 +14,9 @@ import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskReqVO;
 import com.laigeoffer.pmhub.project.service.ProjectService;
 import com.laigeoffer.pmhub.project.service.ProjectTaskService;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * @date 2022-12-08 17:30
@@ -26,17 +25,14 @@ import java.util.Map;
 @RequestMapping("/project")
 public class ProjectController {
 
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private ProjectTaskService projectTaskService;
-    @Autowired
-    private ProcessFeignService processService;
-    @Autowired
-    private DeployFeignService wfDeployService;
+    @Autowired private ProjectService projectService;
+    @Autowired private ProjectTaskService projectTaskService;
+    @Autowired private ProcessFeignService processService;
+    @Autowired private DeployFeignService wfDeployService;
 
     /**
      * 增加项目
+     *
      * @param project
      * @return
      */
@@ -49,6 +45,7 @@ public class ProjectController {
 
     /**
      * 修改项目
+     *
      * @param project
      * @return
      */
@@ -61,6 +58,7 @@ public class ProjectController {
 
     /**
      * 项目列表
+     *
      * @param projectReqVO
      * @return
      */
@@ -72,9 +70,10 @@ public class ProjectController {
 
     /**
      * 首页统计
+     *
      * @return
      */
-//    @RequiresPermissions("project:manage:statistics")
+    //    @RequiresPermissions("project:manage:statistics")
     @GetMapping("/statistics")
     public AjaxResult statistics() {
         ProjectStatisticsResVO projectStatisticsResVO = new ProjectStatisticsResVO();
@@ -89,15 +88,17 @@ public class ProjectController {
         // 项目进度排行
         projectStatisticsResVO.setProjectRankVOList(projectService.queryProjectRankList());
         // 任务状态统计
-        projectStatisticsResVO.setTaskStatisticsVOList(projectTaskService.queryTaskStatisticsList());
+        projectStatisticsResVO.setTaskStatisticsVOList(
+                projectTaskService.queryTaskStatisticsList());
         return AjaxResult.success(projectStatisticsResVO);
     }
 
     /**
      * 查询与我有关的项目
+     *
      * @return
      */
-//    @RequiresPermissions("project:manage:select")
+    //    @RequiresPermissions("project:manage:select")
     @GetMapping("/select")
     public AjaxResult queryMyProject() {
         return AjaxResult.success(projectService.queryMyProjectList());
@@ -105,6 +106,7 @@ public class ProjectController {
 
     /**
      * 查询所有项目
+     *
      * @return
      */
     @RequiresPermissions("project:manage:queryAllProject")
@@ -115,9 +117,10 @@ public class ProjectController {
 
     /**
      * 进行中的项目
+     *
      * @return
      */
-//    @RequiresPermissions("project:manage:doing")
+    //    @RequiresPermissions("project:manage:doing")
     @GetMapping("/doing")
     public AjaxResult queryDoingProject() {
         return AjaxResult.success(projectService.queryDoingProject());
@@ -125,6 +128,7 @@ public class ProjectController {
 
     /**
      * 删除项目
+     *
      * @param projectVO
      * @return
      */
@@ -136,6 +140,7 @@ public class ProjectController {
 
     /**
      * 项目详情
+     *
      * @param projectVO
      * @return
      */
@@ -148,6 +153,7 @@ public class ProjectController {
 
     /**
      * 项目归档
+     *
      * @param projectVO
      * @return
      */
@@ -160,6 +166,7 @@ public class ProjectController {
 
     /**
      * 取消项目归档
+     *
      * @param projectVO
      * @return
      */
@@ -172,6 +179,7 @@ public class ProjectController {
 
     /**
      * 退出项目
+     *
      * @param projectVO
      * @return
      */
@@ -184,6 +192,7 @@ public class ProjectController {
 
     /**
      * 概况-任务每日新增趋势
+     *
      * @param projectVO
      * @return
      */
@@ -193,8 +202,10 @@ public class ProjectController {
 
         return AjaxResult.success(projectService.taskStatisticsByDate(projectVO.getProjectId()));
     }
+
     /**
      * 项目详情-任务列表
+     *
      * @param taskReqVO
      * @return
      */
@@ -204,8 +215,10 @@ public class ProjectController {
 
         return AjaxResult.success(projectTaskService.taskList(taskReqVO));
     }
+
     /**
      * 审批设置
+     *
      * @param approvalSetDTO
      * @return
      */
@@ -224,12 +237,14 @@ public class ProjectController {
      */
     @RequiresPermissions("project:manage:approve")
     @PostMapping("/startProjectApprove/{projectId}/{processDefId}")
-    public AjaxResult startProjectApproveDefId(@PathVariable(value = "projectId") String projectId, @PathVariable(value = "processDefId") String processDefId, @RequestParam("url") String url, @RequestBody Map<String, Object> variables) {
-        ProjectProcessDTO request = new ProjectProcessDTO(projectId,processDefId, url, variables);
+    public AjaxResult startProjectApproveDefId(
+            @PathVariable(value = "projectId") String projectId,
+            @PathVariable(value = "processDefId") String processDefId,
+            @RequestParam("url") String url,
+            @RequestBody Map<String, Object> variables) {
+        ProjectProcessDTO request = new ProjectProcessDTO(projectId, processDefId, url, variables);
         // 远程调用流程服务
-        processService.startProjectProcess(request,SecurityConstants.INNER);
+        processService.startProjectProcess(request, SecurityConstants.INNER);
         return AjaxResult.success("流程启动成功");
-
     }
-
 }

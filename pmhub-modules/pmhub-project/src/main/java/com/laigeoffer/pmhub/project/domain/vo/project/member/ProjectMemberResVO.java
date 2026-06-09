@@ -1,45 +1,34 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.member;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**
  * @date 2022-12-13 09:39
  */
-
 public class ProjectMemberResVO {
-    /**
-     * 用户id
-     */
+    /** 用户id */
     private Long userId;
-    /**
-     * 账号
-     */
+
+    /** 账号 */
     private String userName;
-    /**
-     * 昵称
-     */
+
+    /** 昵称 */
     private String nickName;
-    /**
-     * 邮箱
-     */
+
+    /** 邮箱 */
     private String email;
-    /**
-     * 是否加入
-     */
+
+    /** 是否加入 */
     private Integer joined;
-    /**
-     * 角色
-     */
+
+    /** 角色 */
     private String roleName;
-    /**
-     * 部门
-     */
+
+    /** 部门 */
     private String deptName;
-    /**
-     * 头像
-     */
+
+    /** 头像 */
     private String avatar;
 
     public String getAvatar() {
@@ -50,9 +39,7 @@ public class ProjectMemberResVO {
         this.avatar = avatar;
     }
 
-    /**
-     * 加入时间
-     */
+    /** 加入时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date joinedTime;
 

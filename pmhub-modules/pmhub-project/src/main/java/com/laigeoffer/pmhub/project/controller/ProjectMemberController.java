@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/project")
 public class ProjectMemberController {
 
-    @Autowired
-    private ProjectMemberService projectMemberService;
+    @Autowired private ProjectMemberService projectMemberService;
 
     /**
      * 添加成员
+     *
      * @param projectVO
      * @return
      */
@@ -35,6 +35,7 @@ public class ProjectMemberController {
 
     /**
      * 移除成员
+     *
      * @param projectVO
      * @return
      */
@@ -47,6 +48,7 @@ public class ProjectMemberController {
 
     /**
      * 搜索成员
+     *
      * @param projectMemberReqVO
      * @return
      */
@@ -58,22 +60,28 @@ public class ProjectMemberController {
 
     /**
      * 获取用户列表
+     *
      * @param projectMemberVO
      * @return
      */
     @RequiresPermissions("project:member:queryUserList")
     @PostMapping("/queryUserList")
     public AjaxResult queryUser(@RequestBody ProjectMemberReqVO projectMemberVO) {
-        return AjaxResult.success(projectMemberService.queryUserList(projectMemberVO.getProjectId(), projectMemberVO.getKeyword()));
+        return AjaxResult.success(
+                projectMemberService.queryUserList(
+                        projectMemberVO.getProjectId(), projectMemberVO.getKeyword()));
     }
+
     /**
      * 获取用户列表
+     *
      * @param projectMemberVO
      * @return
      */
     @RequiresPermissions("project:member:queryUserListById")
     @PostMapping("/member/queryUserListById")
     public AjaxResult queryUserListById(@RequestBody ProjectMemberReqVO projectMemberVO) {
-        return AjaxResult.success(projectMemberService.queryUserListById(projectMemberVO.getProjectId()));
+        return AjaxResult.success(
+                projectMemberService.queryUserListById(projectMemberVO.getProjectId()));
     }
 }

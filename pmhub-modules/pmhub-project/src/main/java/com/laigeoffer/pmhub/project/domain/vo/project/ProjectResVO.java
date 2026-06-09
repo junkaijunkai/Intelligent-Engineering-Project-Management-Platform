@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,89 +8,78 @@ import java.util.Date;
  * @date 2022-12-15 15:53
  */
 public class ProjectResVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 项目编码
-     */
+
+    /** 项目编码 */
     private String projectCode;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 阶段代码
-     */
+
+    /** 阶段代码 */
     private Integer stageCode;
-    /**
-     * 阶段名
-     */
+
+    /** 阶段名 */
     private String stageName;
-    /**
-     * 状态
-     */
+
+    /** 状态 */
     private Integer status;
+
     private String statusName;
-    /**
-     * 类型
-     */
+
+    /** 类型 */
     private Integer projectType;
+
     private String projectTypeName;
-    /**
-     * 发布状态
-     */
+
+    /** 发布状态 */
     private Integer published;
+
     private String publishedName;
-    /**
-     * 进度
-     */
+
+    /** 进度 */
     private BigDecimal projectProcess;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Long userId;
+
     private String nickName;
-    /**
-     * 开始时间
-     */
+
+    /** 开始时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date closeBeginTime;
-    /**
-     * 结束时间
-     */
+
+    /** 结束时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date closeEndTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updatedTime;
-    /**
-     * 描述
-     */
+
+    /** 描述 */
     private String description;
-    /**
-     * 封面
-     */
+
+    /** 封面 */
     private String cover;
+
     private Boolean collected;
-    /**
-     * 是否开启前缀
-     */
+
+    /** 是否开启前缀 */
     private Integer openPrefix;
+
     private String prefix;
-    /**
-     * 是否开启前缀
-     */
+
+    /** 是否开启前缀 */
     private Integer autoUpdateProcess;
-    /**
-     * 是否开启任务私有
-     */
+
+    /** 是否开启任务私有 */
     private Integer openTaskPrivate;
-    /**
-     * 是否开启消息提醒
-     */
+
+    /** 是否开启消息提醒 */
     private Integer msgNotify;
 
     private Integer notifyDay;

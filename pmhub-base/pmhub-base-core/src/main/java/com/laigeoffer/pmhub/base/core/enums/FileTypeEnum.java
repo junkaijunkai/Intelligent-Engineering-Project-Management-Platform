@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.base.core.enums;
  * @date 2022-12-23 15:22
  */
 public enum FileTypeEnum {
-
     P("project", "项目"),
     T("task", "任务"),
     M("materials", "物料");

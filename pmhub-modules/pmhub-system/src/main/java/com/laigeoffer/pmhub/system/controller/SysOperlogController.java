@@ -9,21 +9,16 @@ import com.laigeoffer.pmhub.base.core.enums.BusinessType;
 import com.laigeoffer.pmhub.base.core.utils.poi.ExcelUtil;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.system.service.ISysOperLogService;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-/**
- * 操作日志记录
- *
- */
+/** 操作日志记录 */
 @RestController
 @RequestMapping("/system/monitor/operlog")
 public class SysOperlogController extends BaseController {
-    @Autowired
-    private ISysOperLogService operLogService;
+    @Autowired private ISysOperLogService operLogService;
 
     @RequiresPermissions("monitor:operlog:list")
     @GetMapping("/list")

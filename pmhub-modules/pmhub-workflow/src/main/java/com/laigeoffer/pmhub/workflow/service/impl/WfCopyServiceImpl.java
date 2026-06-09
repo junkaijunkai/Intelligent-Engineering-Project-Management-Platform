@@ -6,22 +6,21 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.laigeoffer.pmhub.base.core.core.domain.PageQuery;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.core.page.Table2DataInfo;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.workflow.domain.WfCopy;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfCopyBo;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfTaskBo;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfCopyVo;
 import com.laigeoffer.pmhub.workflow.mapper.WfCopyMapper;
 import com.laigeoffer.pmhub.workflow.service.IWfCopyService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 流程抄送Service业务层处理
@@ -43,7 +42,7 @@ public class WfCopyServiceImpl implements IWfCopyService {
      * @return 流程抄送
      */
     @Override
-    public WfCopyVo queryById(Long copyId){
+    public WfCopyVo queryById(Long copyId) {
         return baseMapper.selectVoById(copyId);
     }
 
@@ -77,8 +76,14 @@ public class WfCopyServiceImpl implements IWfCopyService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<WfCopy> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getUserId() != null, WfCopy::getUserId, bo.getUserId());
-        lqw.like(StringUtils.isNotBlank(bo.getProcessName()), WfCopy::getProcessName, bo.getProcessName());
-        lqw.like(StringUtils.isNotBlank(bo.getOriginatorName()), WfCopy::getOriginatorName, bo.getOriginatorName());
+        lqw.like(
+                StringUtils.isNotBlank(bo.getProcessName()),
+                WfCopy::getProcessName,
+                bo.getProcessName());
+        lqw.like(
+                StringUtils.isNotBlank(bo.getOriginatorName()),
+                WfCopy::getOriginatorName,
+                bo.getOriginatorName());
         return lqw;
     }
 
@@ -88,14 +93,18 @@ public class WfCopyServiceImpl implements IWfCopyService {
             // 若抄送用户为空，则不需要处理，返回成功
             return true;
         }
-        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
-            .processInstanceId(taskBo.getProcInsId()).singleResult();
+        HistoricProcessInstance historicProcessInstance =
+                historyService
+                        .createHistoricProcessInstanceQuery()
+                        .processInstanceId(taskBo.getProcInsId())
+                        .singleResult();
         String[] ids = taskBo.getCopyUserIds().split(",");
         List<WfCopy> copyList = new ArrayList<>(ids.length);
         Long originatorId = SecurityUtils.getUserId();
         SysUser sysUser = baseMapper.selectUserById(originatorId);
         String originatorName = sysUser.getNickName();
-        String title = historicProcessInstance.getProcessDefinitionName() + "-" + taskBo.getTaskName();
+        String title =
+                historicProcessInstance.getProcessDefinitionName() + "-" + taskBo.getTaskName();
         for (String id : ids) {
             Long userId = Long.valueOf(id);
             WfCopy copy = new WfCopy();

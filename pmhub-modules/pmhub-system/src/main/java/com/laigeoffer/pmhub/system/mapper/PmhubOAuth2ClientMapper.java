@@ -4,11 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.laigeoffer.pmhub.system.domain.PmhubOAuth2Client;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * OAuth2客户端 数据层
- *
- */
+/** OAuth2客户端 数据层 */
 @Mapper
-public interface PmhubOAuth2ClientMapper extends BaseMapper<PmhubOAuth2Client> {
-
-}
+public interface PmhubOAuth2ClientMapper extends BaseMapper<PmhubOAuth2Client> {}

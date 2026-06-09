@@ -21,14 +21,17 @@ import org.springframework.web.multipart.MultipartFile;
 @Service("uploadCoverFileExecutor")
 @Slf4j
 public class UploadCoverFileExecutor extends UploadAbstractExecutor {
-    @Autowired
-    private ProjectMapper projectMapper;
+    @Autowired private ProjectMapper projectMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FileVO upload(LoginUser user, MultipartFile file, String id) throws Exception {
         log.info("封面上传的项目id:{}", id);
-        String coverPath = ProjectFileUtil.uploadProjectFile(PmhubConfig.getProjectCoverPath(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+        String coverPath =
+                ProjectFileUtil.uploadProjectFile(
+                        PmhubConfig.getProjectCoverPath(),
+                        file,
+                        MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         if (StringUtils.isBlank(coverPath)) {
             throw new ServiceException("上传文件异常，请联系管理员");
         }

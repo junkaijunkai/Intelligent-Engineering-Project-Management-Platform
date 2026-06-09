@@ -2,11 +2,10 @@ package com.laigeoffer.pmhub.base.core.core.page;
 
 import cn.hutool.http.HttpStatus;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @date 2023-02-23 09:44
@@ -16,30 +15,22 @@ import java.util.List;
 public class Table2DataInfo<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 总记录数
-     */
+    /** 总记录数 */
     private long total;
 
-    /**
-     * 列表数据
-     */
+    /** 列表数据 */
     private List<T> rows;
 
-    /**
-     * 消息状态码
-     */
+    /** 消息状态码 */
     private int code;
 
-    /**
-     * 消息内容
-     */
+    /** 消息内容 */
     private String msg;
 
     /**
      * 分页
      *
-     * @param list  列表数据
+     * @param list 列表数据
      * @param total 总记录数
      */
     public Table2DataInfo(List<T> list, long total) {
@@ -71,5 +62,4 @@ public class Table2DataInfo<T> implements Serializable {
         rspData.setMsg("查询成功");
         return rspData;
     }
-
 }

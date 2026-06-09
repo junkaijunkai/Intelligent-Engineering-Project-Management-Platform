@@ -8,5 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023-06-28 09:24
  */
 @Mapper
-public interface WfMaterialsScrappedProcessMapper extends BaseMapper<WfMaterialsScrappedProcess> {
-}
+public interface WfMaterialsScrappedProcessMapper extends BaseMapper<WfMaterialsScrappedProcess> {}

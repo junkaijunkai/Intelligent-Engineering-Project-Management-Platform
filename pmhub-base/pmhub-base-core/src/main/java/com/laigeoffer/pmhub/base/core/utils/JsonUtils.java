@@ -8,17 +8,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.laigeoffer.pmhub.base.core.utils.spring.SpringUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-/**
- * JSON 工具类
- *
- */
+/** JSON 工具类 */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonUtils {
 
@@ -77,7 +73,8 @@ public class JsonUtils {
             return null;
         }
         try {
-            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructType(Dict.class));
+            return OBJECT_MAPPER.readValue(
+                    text, OBJECT_MAPPER.getTypeFactory().constructType(Dict.class));
         } catch (MismatchedInputException e) {
             // 类型不匹配说明不是json
             return null;
@@ -91,7 +88,9 @@ public class JsonUtils {
             return null;
         }
         try {
-            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, Dict.class));
+            return OBJECT_MAPPER.readValue(
+                    text,
+                    OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, Dict.class));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -102,10 +101,11 @@ public class JsonUtils {
             return new ArrayList<>();
         }
         try {
-            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
+            return OBJECT_MAPPER.readValue(
+                    text,
+                    OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

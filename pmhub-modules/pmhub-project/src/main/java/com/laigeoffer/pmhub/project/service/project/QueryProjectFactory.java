@@ -2,13 +2,12 @@ package com.laigeoffer.pmhub.project.service.project;
 
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @date 2023-01-09 14:10
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class QueryProjectFactory {
 
     private static final Map<String, String> beanNames = new ConcurrentHashMap<>();
+
     static {
         // 通过枚举类实现了 type - beanName 的映射
         QueryProjectEnum[] queryProjectEnums = QueryProjectEnum.values();
@@ -26,8 +26,8 @@ public class QueryProjectFactory {
     }
 
     // 通过 Map 注入，通过 spring bean 的名称作为 key 动态获取对应 Bean 实例
-    @Autowired
-    private Map<String, QueryAbstractExecutor> executorMap;
+    @Autowired private Map<String, QueryAbstractExecutor> executorMap;
+
     // 工厂层执行器
     public List<ProjectResVO> execute(ProjectReqVO projectReqVO) {
         // 从请求中获取 type 字段，通过 type 找到对应的 beanName

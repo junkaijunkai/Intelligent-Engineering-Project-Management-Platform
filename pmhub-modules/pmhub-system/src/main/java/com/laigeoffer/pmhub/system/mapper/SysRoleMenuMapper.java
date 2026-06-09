@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysRoleMenu;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 角色与菜单关联表 数据层
- *
- */
+/** 角色与菜单关联表 数据层 */
 @Mapper
 public interface SysRoleMenuMapper {
     /**

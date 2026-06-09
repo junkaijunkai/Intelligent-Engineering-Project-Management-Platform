@@ -1,9 +1,8 @@
 package com.laigeoffer.pmhub.base.security.annotation;
 
 import com.laigeoffer.pmhub.base.security.aspect.DistributedLockAspect;
-import org.springframework.context.annotation.Import;
-
 import java.lang.annotation.*;
+import org.springframework.context.annotation.Import;
 
 /**
  * @description EnableDistributedLock 元注解，开启分布式锁功能
@@ -13,5 +12,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({DistributedLockAspect.class})
-public @interface EnableDistributedLock {
-}
+public @interface EnableDistributedLock {}

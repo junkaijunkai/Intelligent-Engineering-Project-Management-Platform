@@ -2,12 +2,11 @@ package com.laigeoffer.pmhub.workflow.utils;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import java.util.*;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.*;
 import org.flowable.bpmn.model.Process;
 import org.flowable.common.engine.impl.util.io.StringStreamSource;
-
-import java.util.*;
 
 /**
  * @createTime 2022/3/26 19:04
@@ -59,7 +58,6 @@ public class ModelUtils {
         }
         return sequenceFlows;
     }
-
 
     /**
      * 根据节点，获取出口连线
@@ -171,6 +169,7 @@ public class ModelUtils {
 
     /**
      * 获取开始节点属性值
+     *
      * @param model bpmnModel对象
      * @param name 属性名
      * @return 属性值
@@ -182,6 +181,7 @@ public class ModelUtils {
 
     /**
      * 获取结束节点属性值
+     *
      * @param model bpmnModel对象
      * @param name 属性名
      * @return 属性值
@@ -193,6 +193,7 @@ public class ModelUtils {
 
     /**
      * 获取用户任务节点属性值
+     *
      * @param model bpmnModel对象
      * @param taskKey 任务Key
      * @param name 属性名
@@ -205,6 +206,7 @@ public class ModelUtils {
 
     /**
      * 获取元素属性值
+     *
      * @param baseElement 流程元素
      * @param name 属性名
      * @return 属性值
@@ -215,7 +217,7 @@ public class ModelUtils {
             if (attributes != null && !attributes.isEmpty()) {
                 attributes.iterator().next().getValue();
                 Iterator<ExtensionAttribute> attrIterator = attributes.iterator();
-                if(attrIterator.hasNext()) {
+                if (attrIterator.hasNext()) {
                     ExtensionAttribute attribute = attrIterator.next();
                     return attribute.getValue();
                 }
@@ -246,11 +248,13 @@ public class ModelUtils {
 
     /**
      * 获取所有用户任务节点
+     *
      * @param flowElements 流程元素集合
      * @param allElements 所有流程元素集合
      * @return 用户任务节点列表
      */
-    public static Collection<UserTask> getAllUserTaskEvent(Collection<FlowElement> flowElements, Collection<UserTask> allElements) {
+    public static Collection<UserTask> getAllUserTaskEvent(
+            Collection<FlowElement> flowElements, Collection<UserTask> allElements) {
         allElements = allElements == null ? new ArrayList<>() : allElements;
         for (FlowElement flowElement : flowElements) {
             if (flowElement instanceof UserTask) {
@@ -258,7 +262,9 @@ public class ModelUtils {
             }
             if (flowElement instanceof SubProcess) {
                 // 继续深入子流程，进一步获取子流程
-                allElements = getAllUserTaskEvent(((SubProcess) flowElement).getFlowElements(), allElements);
+                allElements =
+                        getAllUserTaskEvent(
+                                ((SubProcess) flowElement).getFlowElements(), allElements);
             }
         }
         return allElements;
@@ -266,6 +272,7 @@ public class ModelUtils {
 
     /**
      * 查找起始节点下一个用户任务列表列表
+     *
      * @param source 起始节点
      * @return 结果
      */
@@ -275,12 +282,14 @@ public class ModelUtils {
 
     /**
      * 查找起始节点下一个用户任务列表列表
+     *
      * @param source 起始节点
      * @param hasSequenceFlow 已经经过的连线的 ID，用于判断线路是否重复
      * @param userTaskList 用户任务列表
      * @return 结果
      */
-    public static List<UserTask> findNextUserTasks(FlowElement source, Set<String> hasSequenceFlow, List<UserTask> userTaskList) {
+    public static List<UserTask> findNextUserTasks(
+            FlowElement source, Set<String> hasSequenceFlow, List<UserTask> userTaskList) {
         hasSequenceFlow = Optional.ofNullable(hasSequenceFlow).orElse(new HashSet<>());
         userTaskList = Optional.ofNullable(userTaskList).orElse(new ArrayList<>());
         // 获取出口连线
@@ -308,18 +317,23 @@ public class ModelUtils {
 
     /**
      * 设置默认的开始节点
+     *
      * @param modelKey
      * @param modelName
      * @param category
      * @return
      */
     public static String buildBpmnXml(String modelKey, String modelName, String category) {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<bpmn2:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn2=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" id=\"" +
-                "diagram_"
-                + modelKey + "\" targetNamespace=\""
-                + category + "\" xsi:schemaLocation=\"http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd\"><bpmn2:process id=\""
-                + modelKey + "\" name=\""
-                + modelName + "\" isExecutable=\"true\"><bpmn2:startEvent id=\"start_event\" /></bpmn2:process><bpmndi:BPMNDiagram id=\"BPMNDiagram_1\"><bpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Process_1678069650996\"><bpmndi:BPMNShape id=\"start_event_di\" bpmnElement=\"start_event\"><dc:Bounds x=\"602\" y=\"112\" width=\"36\" height=\"36\" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn2:definitions>";
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<bpmn2:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn2=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" id=\""
+                + "diagram_"
+                + modelKey
+                + "\" targetNamespace=\""
+                + category
+                + "\" xsi:schemaLocation=\"http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd\"><bpmn2:process id=\""
+                + modelKey
+                + "\" name=\""
+                + modelName
+                + "\" isExecutable=\"true\"><bpmn2:startEvent id=\"start_event\" /></bpmn2:process><bpmndi:BPMNDiagram id=\"BPMNDiagram_1\"><bpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Process_1678069650996\"><bpmndi:BPMNShape id=\"start_event_di\" bpmnElement=\"start_event\"><dc:Bounds x=\"602\" y=\"112\" width=\"36\" height=\"36\" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn2:definitions>";
     }
 }

@@ -12,26 +12,20 @@ import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.service.ISysDictDataService;
 import com.laigeoffer.pmhub.system.service.ISysDictTypeService;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * 数据字典信息
- *
- */
+/** 数据字典信息 */
 @RestController
 @RequestMapping("/system/dict/data")
 public class SysDictDataController extends BaseController {
-    @Autowired
-    private ISysDictDataService dictDataService;
+    @Autowired private ISysDictDataService dictDataService;
 
-    @Autowired
-    private ISysDictTypeService dictTypeService;
+    @Autowired private ISysDictTypeService dictTypeService;
 
     @RequiresPermissions("system:dict:list")
     @GetMapping("/list")
@@ -55,18 +49,14 @@ public class SysDictDataController extends BaseController {
         util.exportExcel(response, list, "字典数据");
     }
 
-    /**
-     * 查询字典数据详细
-     */
+    /** 查询字典数据详细 */
     @RequiresPermissions("system:dict:query")
     @GetMapping(value = "/{dictCode}")
     public AjaxResult getInfo(@PathVariable Long dictCode) {
         return success(dictDataService.selectDictDataById(dictCode));
     }
 
-    /**
-     * 根据字典类型查询字典数据信息
-     */
+    /** 根据字典类型查询字典数据信息 */
     @GetMapping(value = "/type/{dictType}")
     public AjaxResult dictType(@PathVariable String dictType) {
         List<SysDictData> data = dictTypeService.selectDictDataByType(dictType);
@@ -76,9 +66,7 @@ public class SysDictDataController extends BaseController {
         return success(data);
     }
 
-    /**
-     * 新增字典类型
-     */
+    /** 新增字典类型 */
     @RequiresPermissions("system:dict:add")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
@@ -87,9 +75,7 @@ public class SysDictDataController extends BaseController {
         return toAjax(dictDataService.insertDictData(dict));
     }
 
-    /**
-     * 修改保存字典类型
-     */
+    /** 修改保存字典类型 */
     @RequiresPermissions("system:dict:edit")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -98,9 +84,7 @@ public class SysDictDataController extends BaseController {
         return toAjax(dictDataService.updateDictData(dict));
     }
 
-    /**
-     * 删除字典类型
-     */
+    /** 删除字典类型 */
     @RequiresPermissions("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictCodes}")

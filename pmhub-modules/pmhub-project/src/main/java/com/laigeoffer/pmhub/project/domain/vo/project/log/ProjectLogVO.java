@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.log;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**
@@ -16,8 +15,10 @@ public class ProjectLogVO {
     private String projectName;
     private String taskId;
     private String taskName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
+
     private Long userId;
     private String userName;
     private String nickName;

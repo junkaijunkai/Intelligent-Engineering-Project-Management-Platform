@@ -1,39 +1,24 @@
 package com.laigeoffer.pmhub.base.core.core.domain.server;
 
-
 import com.laigeoffer.pmhub.base.core.utils.Arith;
 import com.laigeoffer.pmhub.base.core.utils.DateUtils;
-
 import java.lang.management.ManagementFactory;
 
-/**
- * JVM相关信息
- *
- */
+/** JVM相关信息 */
 public class Jvm {
-    /**
-     * 当前JVM占用的内存总数(M)
-     */
+    /** 当前JVM占用的内存总数(M) */
     private double total;
 
-    /**
-     * JVM最大可用内存总数(M)
-     */
+    /** JVM最大可用内存总数(M) */
     private double max;
 
-    /**
-     * JVM空闲内存(M)
-     */
+    /** JVM空闲内存(M) */
     private double free;
 
-    /**
-     * JDK版本
-     */
+    /** JDK版本 */
     private String version;
 
-    /**
-     * JDK路径
-     */
+    /** JDK路径 */
     private String home;
 
     public double getTotal() {
@@ -68,9 +53,7 @@ public class Jvm {
         return Arith.mul(Arith.div(total - free, total, 4), 100);
     }
 
-    /**
-     * 获取JDK名称
-     */
+    /** 获取JDK名称 */
     public String getName() {
         return ManagementFactory.getRuntimeMXBean().getVmName();
     }
@@ -91,23 +74,18 @@ public class Jvm {
         this.home = home;
     }
 
-    /**
-     * JDK启动时间
-     */
+    /** JDK启动时间 */
     public String getStartTime() {
-        return DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getServerStartDate());
+        return DateUtils.parseDateToStr(
+                DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getServerStartDate());
     }
 
-    /**
-     * JDK运行时间
-     */
+    /** JDK运行时间 */
     public String getRunTime() {
         return DateUtils.getDatePoor(DateUtils.getNowDate(), DateUtils.getServerStartDate());
     }
 
-    /**
-     * 运行参数
-     */
+    /** 运行参数 */
     public String getInputArgs() {
         return ManagementFactory.getRuntimeMXBean().getInputArguments().toString();
     }

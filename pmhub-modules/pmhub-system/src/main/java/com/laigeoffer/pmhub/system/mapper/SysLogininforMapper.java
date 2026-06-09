@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysLogininfor;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 系统访问日志情况信息 数据层
- *
- */
+/** 系统访问日志情况信息 数据层 */
 @Mapper
 public interface SysLogininforMapper {
     /**

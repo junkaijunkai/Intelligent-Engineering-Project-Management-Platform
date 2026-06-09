@@ -3,20 +3,15 @@ package com.laigeoffer.pmhub.system.service.impl;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysLogininfor;
 import com.laigeoffer.pmhub.system.mapper.SysLogininforMapper;
 import com.laigeoffer.pmhub.system.service.ISysLogininforService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 系统访问日志情况信息 服务层处理
- *
- */
+/** 系统访问日志情况信息 服务层处理 */
 @Service
 public class SysLogininforServiceImpl implements ISysLogininforService {
 
-    @Autowired
-    private SysLogininforMapper logininforMapper;
+    @Autowired private SysLogininforMapper logininforMapper;
 
     /**
      * 新增系统登录日志
@@ -50,9 +45,7 @@ public class SysLogininforServiceImpl implements ISysLogininforService {
         return logininforMapper.deleteLogininforByIds(infoIds);
     }
 
-    /**
-     * 清空系统登录日志
-     */
+    /** 清空系统登录日志 */
     @Override
     public void cleanLogininfor() {
         logininforMapper.cleanLogininfor();

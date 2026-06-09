@@ -3,6 +3,7 @@ package com.laigeoffer.pmhub.base.datasource.aspect;
 import com.laigeoffer.pmhub.base.core.annotation.DataSource;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.datasource.service.DynamicDataSourceContextHolder;
+import java.util.Objects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,23 +15,17 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
-/**
- * 多数据源处理
- *
- */
+/** 多数据源处理 */
 @Aspect
 @Order(1)
 @Component
 public class DataSourceAspect {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Pointcut("@annotation(com.laigeoffer.pmhub.base.core.annotation.DataSource)"
-            + "|| @within(com.laigeoffer.pmhub.base.core.annotation.DataSource)")
-    public void dsPointCut() {
-
-    }
+    @Pointcut(
+            "@annotation(com.laigeoffer.pmhub.base.core.annotation.DataSource)"
+                    + "|| @within(com.laigeoffer.pmhub.base.core.annotation.DataSource)")
+    public void dsPointCut() {}
 
     @Around("dsPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -48,12 +43,11 @@ public class DataSourceAspect {
         }
     }
 
-    /**
-     * 获取需要切换的数据源
-     */
+    /** 获取需要切换的数据源 */
     public DataSource getDataSource(ProceedingJoinPoint point) {
         MethodSignature signature = (MethodSignature) point.getSignature();
-        DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
+        DataSource dataSource =
+                AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
         if (Objects.nonNull(dataSource)) {
             return dataSource;
         }

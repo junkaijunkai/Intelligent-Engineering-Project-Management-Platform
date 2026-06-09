@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.job.util;
 
-import org.quartz.CronExpression;
-
 import java.text.ParseException;
 import java.util.Date;
+import org.quartz.CronExpression;
 
-/**
- * cron表达式工具类
- *
- */
+/** cron表达式工具类 */
 public class CronUtils {
     /**
      * 返回一个布尔值代表一个给定的Cron表达式的有效性

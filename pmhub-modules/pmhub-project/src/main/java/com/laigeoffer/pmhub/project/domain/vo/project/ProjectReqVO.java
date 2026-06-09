@@ -4,50 +4,37 @@ package com.laigeoffer.pmhub.project.domain.vo.project;
  * @date 2022-12-09 17:18
  */
 public class ProjectReqVO {
-    /**
-     * 页码
-     */
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
-    private Integer pageSize;
-    /**
-     * recycle collect archive my
-     */
 
+    /** 页数 */
+    private Integer pageSize;
+
+    /** recycle collect archive my */
     private String type;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
-    /**
-     * 关键词
-     */
+
+    /** 关键词 */
     private String keyword;
-    /**
-     * 阶段编码
-     */
+
+    /** 阶段编码 */
     private Integer stageCode;
-    /**
-     * 状态
-     */
+
+    /** 状态 */
     private Integer status;
-    /**
-     * 是否发布
-     */
+
+    /** 是否发布 */
     private Integer published;
-    /**
-     * 开始时间
-     */
+
+    /** 开始时间 */
     private String closeBeginTime;
-    /**
-     * 结束时间
-     */
+
+    /** 结束时间 */
     private String closeEndTime;
-    /**
-     * 项目类型
-     */
+
+    /** 项目类型 */
     private Integer projectType;
 
     public Integer getPageNum() {

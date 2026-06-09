@@ -8,6 +8,13 @@ import com.laigeoffer.pmhub.base.core.exception.file.InvalidExtensionException;
 import com.laigeoffer.pmhub.base.core.utils.DateUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.uuid.Seq;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Objects;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.io.FilenameUtils;
@@ -16,32 +23,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Objects;
-
-/**
- * 文件上传工具类
- *
- */
+/** 文件上传工具类 */
 public class FileUploadUtils {
-    /**
-     * 默认大小 50M
-     */
+    /** 默认大小 50M */
     public static final long DEFAULT_MAX_SIZE = 50 * 1024 * 1024;
 
-    /**
-     * 默认的文件名最大长度 100
-     */
+    /** 默认的文件名最大长度 100 */
     public static final int DEFAULT_FILE_NAME_LENGTH = 100;
 
-    /**
-     * 默认上传的地址
-     */
+    /** 默认上传的地址 */
     private static String defaultBaseDir = PmhubConfig.getProfile();
 
     public static String getDefaultBaseDir() {
@@ -71,7 +61,7 @@ public class FileUploadUtils {
      * 根据文件路径上传
      *
      * @param baseDir 相对应用的基目录
-     * @param file    上传的文件
+     * @param file 上传的文件
      * @return 文件名称
      * @throws IOException
      */
@@ -86,21 +76,24 @@ public class FileUploadUtils {
     /**
      * 文件上传
      *
-     * @param baseDir          相对应用的基目录
-     * @param file             上传的文件
+     * @param baseDir 相对应用的基目录
+     * @param file 上传的文件
      * @param allowedExtension 上传文件类型
      * @return 返回上传成功的文件名
-     * @throws FileSizeLimitExceededException       如果超出最大大小
+     * @throws FileSizeLimitExceededException 如果超出最大大小
      * @throws FileNameLengthLimitExceededException 文件名太长
-     * @throws IOException                          比如读写文件出错时
-     * @throws InvalidExtensionException            文件校验异常
+     * @throws IOException 比如读写文件出错时
+     * @throws InvalidExtensionException 文件校验异常
      */
     public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
-            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
-            InvalidExtensionException {
+            throws FileSizeLimitExceededException,
+                    IOException,
+                    FileNameLengthLimitExceededException,
+                    InvalidExtensionException {
         int fileNamelength = Objects.requireNonNull(file.getOriginalFilename()).length();
         if (fileNamelength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
-            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
+            throw new FileNameLengthLimitExceededException(
+                    FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
         }
 
         assertAllowed(file, allowedExtension);
@@ -114,16 +107,17 @@ public class FileUploadUtils {
 
     /**
      * file转 MultipartFile
+     *
      * @param file 需要转的file
      * @return MultipartFile
-     * */
+     */
     public static MultipartFile getMultipartFile(File file) {
-        FileItem item = new DiskFileItemFactory().createItem("file"
-                , MediaType.MULTIPART_FORM_DATA_VALUE
-                , true
-                , file.getName());
+        FileItem item =
+                new DiskFileItemFactory()
+                        .createItem(
+                                "file", MediaType.MULTIPART_FORM_DATA_VALUE, true, file.getName());
         try (InputStream input = Files.newInputStream(file.toPath());
-             OutputStream os = item.getOutputStream()) {
+                OutputStream os = item.getOutputStream()) {
             // 流转移
             IOUtils.copy(input, os);
         } catch (Exception e) {
@@ -132,22 +126,24 @@ public class FileUploadUtils {
         return new CommonsMultipartFile(item);
     }
 
-
-
-    /**
-     * 编码文件名
-     */
+    /** 编码文件名 */
     public static final String extractFilename(MultipartFile file) {
-        return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
+        return StringUtils.format(
+                "{}/{}_{}.{}",
+                DateUtils.datePath(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()),
+                Seq.getId(Seq.uploadSeqType),
+                getExtension(file));
     }
 
-    /**
-     * 编码文件名
-     */
+    /** 编码文件名 */
     public static String extractFileName(String username, MultipartFile file) {
-        return StringUtils.format("{}/{}/{}.{}", username, DateUtils.dateTime(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), getExtension(file));
+        return StringUtils.format(
+                "{}/{}/{}.{}",
+                username,
+                DateUtils.dateTime(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()),
+                getExtension(file));
     }
 
     public static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException {
@@ -161,12 +157,12 @@ public class FileUploadUtils {
         return desc;
     }
 
-    public static final String getPathFileName(String uploadDir, String fileName) throws IOException {
+    public static final String getPathFileName(String uploadDir, String fileName)
+            throws IOException {
         int dirLastIndex = PmhubConfig.getProfile().length() + 1;
         String currentDir = StringUtils.substring(uploadDir, dirLastIndex);
         return Constants.RESOURCE_PREFIX + "/" + currentDir + "/" + fileName;
     }
-
 
     /**
      * 文件大小校验
@@ -187,17 +183,17 @@ public class FileUploadUtils {
         String extension = getExtension(file);
         if (allowedExtension != null && !isAllowedExtension(extension, allowedExtension)) {
             if (allowedExtension == MimeTypeUtils.IMAGE_EXTENSION) {
-                throw new InvalidExtensionException.InvalidImageExtensionException(allowedExtension, extension,
-                        fileName);
+                throw new InvalidExtensionException.InvalidImageExtensionException(
+                        allowedExtension, extension, fileName);
             } else if (allowedExtension == MimeTypeUtils.FLASH_EXTENSION) {
-                throw new InvalidExtensionException.InvalidFlashExtensionException(allowedExtension, extension,
-                        fileName);
+                throw new InvalidExtensionException.InvalidFlashExtensionException(
+                        allowedExtension, extension, fileName);
             } else if (allowedExtension == MimeTypeUtils.MEDIA_EXTENSION) {
-                throw new InvalidExtensionException.InvalidMediaExtensionException(allowedExtension, extension,
-                        fileName);
+                throw new InvalidExtensionException.InvalidMediaExtensionException(
+                        allowedExtension, extension, fileName);
             } else if (allowedExtension == MimeTypeUtils.VIDEO_EXTENSION) {
-                throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
-                        fileName);
+                throw new InvalidExtensionException.InvalidVideoExtensionException(
+                        allowedExtension, extension, fileName);
             } else {
                 throw new InvalidExtensionException(allowedExtension, extension, fileName);
             }

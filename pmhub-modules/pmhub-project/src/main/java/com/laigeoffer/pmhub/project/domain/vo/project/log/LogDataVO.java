@@ -6,13 +6,10 @@ import java.util.List;
  * @date 2022-12-27 09:22
  */
 public class LogDataVO {
-    /**
-     * 备注
-     */
+    /** 备注 */
     private String remark;
-    /**
-     * 日志内容
-     */
+
+    /** 日志内容 */
     private List<LogContentVO> logContentVOList;
 
     public String getRemark() {

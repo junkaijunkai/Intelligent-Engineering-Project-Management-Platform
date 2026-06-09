@@ -1,26 +1,16 @@
 package com.laigeoffer.pmhub.base.core.core.domain.server;
 
-
 import com.laigeoffer.pmhub.base.core.utils.Arith;
 
-/**
- * 內存相关信息
- *
- */
+/** 內存相关信息 */
 public class Mem {
-    /**
-     * 内存总量
-     */
+    /** 内存总量 */
     private double total;
 
-    /**
-     * 已用内存
-     */
+    /** 已用内存 */
     private double used;
 
-    /**
-     * 剩余内存
-     */
+    /** 剩余内存 */
     private double free;
 
     public double getTotal() {

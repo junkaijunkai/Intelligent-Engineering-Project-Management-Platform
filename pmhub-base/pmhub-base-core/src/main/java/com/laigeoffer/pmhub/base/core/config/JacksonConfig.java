@@ -25,5 +25,4 @@ public class JacksonConfig {
         objectMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
-
 }

@@ -11,15 +11,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-/**
- * spring工具类 方便在非spring管理环境中获取bean
- *
- */
+/** spring工具类 方便在非spring管理环境中获取bean */
 @Component
 public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationContextAware {
-    /**
-     * Spring应用上下文环境
-     */
+    /** Spring应用上下文环境 */
     private static ConfigurableListableBeanFactory beanFactory;
 
     private static ApplicationContext applicationContext;
@@ -59,7 +54,8 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
     }
 
     /**
-     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
+     * 判断以给定名字注册的bean定义是一个singleton还是一个prototype。
+     * 如果与给定名字相应的bean定义没有被找到，将会抛出一个异常（NoSuchBeanDefinitionException）
      *
      * @param name
      * @return boolean
@@ -134,7 +130,8 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+            throws BeansException {
         SpringUtils.beanFactory = beanFactory;
     }
 

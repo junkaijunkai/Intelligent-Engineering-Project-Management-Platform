@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
-
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictType;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 字典表 数据层
- *
- */
+/** 字典表 数据层 */
 @Mapper
 public interface SysDictTypeMapper {
     /**

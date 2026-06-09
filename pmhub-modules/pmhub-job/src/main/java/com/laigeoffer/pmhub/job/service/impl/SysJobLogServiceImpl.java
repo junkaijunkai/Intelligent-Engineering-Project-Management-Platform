@@ -3,19 +3,14 @@ package com.laigeoffer.pmhub.job.service.impl;
 import com.laigeoffer.pmhub.job.domain.SysJobLog;
 import com.laigeoffer.pmhub.job.mapper.SysJobLogMapper;
 import com.laigeoffer.pmhub.job.service.ISysJobLogService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 定时任务调度日志信息 服务层
- *
- */
+/** 定时任务调度日志信息 服务层 */
 @Service
 public class SysJobLogServiceImpl implements ISysJobLogService {
-    @Autowired
-    private SysJobLogMapper jobLogMapper;
+    @Autowired private SysJobLogMapper jobLogMapper;
 
     /**
      * 获取quartz调度器日志的计划任务
@@ -70,9 +65,7 @@ public class SysJobLogServiceImpl implements ISysJobLogService {
         return jobLogMapper.deleteJobLogById(jobId);
     }
 
-    /**
-     * 清空任务日志
-     */
+    /** 清空任务日志 */
     @Override
     public void cleanJobLog() {
         jobLogMapper.cleanJobLog();

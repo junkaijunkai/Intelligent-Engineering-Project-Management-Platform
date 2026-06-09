@@ -9,10 +9,7 @@ import com.laigeoffer.pmhub.base.core.utils.http.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 获取地址类
- *
- */
+/** 获取地址类 */
 public class AddressUtils {
     // IP地址查询
     public static final String IP_URL = "http://whois.pconline.com.cn/ipJson.jsp";

@@ -6,39 +6,34 @@ import java.util.Date;
  * @date 2022-12-21 13:34
  */
 public class LogVO {
-    /**
-     * 日志类型
-     */
+    /** 日志类型 */
     private Integer logType;
+
     private String ptId;
     private Long userId;
     private Long toUserId;
     private String type;
-    /**
-     * 操作类型
-     */
+
+    /** 操作类型 */
     private String operateType;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
-    /**
-     * 内容
-     */
+
+    /** 内容 */
     private String content;
-    /**
-     * 备注
-     */
+
+    /** 备注 */
     private String remark;
-    /**
-     * 创建人
-     */
+
+    /** 创建人 */
     private String createdBy;
+
     private Date createdTime;
-    /**
-     * 更新人
-     */
+
+    /** 更新人 */
     private String updatedBy;
+
     private Date updatedTime;
 
     public Integer getLogType() {

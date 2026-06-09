@@ -5,23 +5,18 @@ import com.laigeoffer.pmhub.base.core.core.domain.AjaxResult;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.system.domain.SysCache;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-
-/**
- * 缓存监控
- *
- */
+/** 缓存监控 */
 @RestController
 @RequestMapping("/system/monitor/cache")
 public class CacheController {
-    private final static List<SysCache> caches = new ArrayList<SysCache>();
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private static final List<SysCache> caches = new ArrayList<SysCache>();
+    @Autowired private RedisTemplate<String, String> redisTemplate;
 
     {
         caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "用户信息"));
@@ -36,22 +31,35 @@ public class CacheController {
     @RequiresPermissions("monitor:cache:list")
     @GetMapping()
     public AjaxResult getInfo() throws Exception {
-        Properties info = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info());
-        Properties commandStats = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info("commandstats"));
-        Object dbSize = redisTemplate.execute((RedisCallback<Object>) connection -> connection.dbSize());
+        Properties info =
+                (Properties)
+                        redisTemplate.execute(
+                                (RedisCallback<Object>) connection -> connection.info());
+        Properties commandStats =
+                (Properties)
+                        redisTemplate.execute(
+                                (RedisCallback<Object>)
+                                        connection -> connection.info("commandstats"));
+        Object dbSize =
+                redisTemplate.execute((RedisCallback<Object>) connection -> connection.dbSize());
 
         Map<String, Object> result = new HashMap<>(3);
         result.put("info", info);
         result.put("dbSize", dbSize);
 
         List<Map<String, String>> pieList = new ArrayList<>();
-        commandStats.stringPropertyNames().forEach(key -> {
-            Map<String, String> data = new HashMap<>(2);
-            String property = commandStats.getProperty(key);
-            data.put("name", StringUtils.removeStart(key, "cmdstat_"));
-            data.put("value", StringUtils.substringBetween(property, "calls=", ",usec"));
-            pieList.add(data);
-        });
+        commandStats
+                .stringPropertyNames()
+                .forEach(
+                        key -> {
+                            Map<String, String> data = new HashMap<>(2);
+                            String property = commandStats.getProperty(key);
+                            data.put("name", StringUtils.removeStart(key, "cmdstat_"));
+                            data.put(
+                                    "value",
+                                    StringUtils.substringBetween(property, "calls=", ",usec"));
+                            pieList.add(data);
+                        });
         result.put("commandStats", pieList);
         return AjaxResult.success(result);
     }

@@ -1,12 +1,11 @@
 package com.laigeoffer.pmhub.workflow.service;
 
 import com.laigeoffer.pmhub.workflow.domain.bo.WfTaskBo;
-import org.flowable.bpmn.model.UserTask;
-import org.flowable.engine.runtime.ProcessInstance;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.flowable.bpmn.model.UserTask;
+import org.flowable.engine.runtime.ProcessInstance;
 
 /**
  * @createTime 2022/3/10 00:12
@@ -26,7 +25,6 @@ public interface IWfTaskService {
      * @param taskBo
      */
     void taskReject(WfTaskBo taskBo);
-
 
     /**
      * 退回任务
@@ -71,7 +69,6 @@ public interface IWfTaskService {
      */
     void delegateTask(WfTaskBo bo);
 
-
     /**
      * 转办任务
      *
@@ -81,6 +78,7 @@ public interface IWfTaskService {
 
     /**
      * 取消申请
+     *
      * @param bo
      * @return
      */
@@ -88,6 +86,7 @@ public interface IWfTaskService {
 
     /**
      * 撤回流程
+     *
      * @param bo
      * @return
      */
@@ -95,6 +94,7 @@ public interface IWfTaskService {
 
     /**
      * 获取流程过程图
+     *
      * @param processId
      * @return
      */
@@ -102,6 +102,7 @@ public interface IWfTaskService {
 
     /**
      * 获取流程变量
+     *
      * @param taskId 任务ID
      * @return 流程变量
      */
@@ -109,6 +110,7 @@ public interface IWfTaskService {
 
     /**
      * 启动第一个任务
+     *
      * @param processInstance 流程实例
      * @param variables 流程参数
      */

@@ -1,14 +1,9 @@
 package com.laigeoffer.pmhub.job.service;
 
-
 import com.laigeoffer.pmhub.job.domain.SysJobLog;
-
 import java.util.List;
 
-/**
- * 定时任务调度日志信息信息 服务层
- *
- */
+/** 定时任务调度日志信息信息 服务层 */
 public interface ISysJobLogService {
     /**
      * 获取quartz调度器日志的计划任务
@@ -49,8 +44,6 @@ public interface ISysJobLogService {
      */
     public int deleteJobLogById(Long jobId);
 
-    /**
-     * 清空任务日志
-     */
+    /** 清空任务日志 */
     public void cleanJobLog();
 }

@@ -3,6 +3,10 @@ package com.laigeoffer.pmhub.base.core.core.domain;
 import com.laigeoffer.pmhub.base.core.core.domain.server.*;
 import com.laigeoffer.pmhub.base.core.utils.Arith;
 import com.laigeoffer.pmhub.base.core.utils.ip.IpUtils;
+import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;
@@ -13,41 +17,23 @@ import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 import oshi.util.Util;
 
-import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-/**
- * 服务器相关信息
- *
- */
+/** 服务器相关信息 */
 public class Server {
     private static final int OSHI_WAIT_SECOND = 1000;
 
-    /**
-     * CPU相关信息
-     */
+    /** CPU相关信息 */
     private Cpu cpu = new Cpu();
 
-    /**
-     * 內存相关信息
-     */
+    /** 內存相关信息 */
     private Mem mem = new Mem();
 
-    /**
-     * JVM相关信息
-     */
+    /** JVM相关信息 */
     private Jvm jvm = new Jvm();
 
-    /**
-     * 服务器相关信息
-     */
+    /** 服务器相关信息 */
     private Sys sys = new Sys();
 
-    /**
-     * 磁盘相关信息
-     */
+    /** 磁盘相关信息 */
     private List<SysFile> sysFiles = new LinkedList<SysFile>();
 
     public Cpu getCpu() {
@@ -90,9 +76,7 @@ public class Server {
         this.sysFiles = sysFiles;
     }
 
-    /**
-     * 设置磁盘信息
-     */
+    /** 设置磁盘信息 */
     private void setSysFiles(OperatingSystem os) {
         FileSystem fileSystem = os.getFileSystem();
         List<OSFileStore> fsArray = fileSystem.getFileStores();
@@ -127,9 +111,7 @@ public class Server {
         setSysFiles(si.getOperatingSystem());
     }
 
-    /**
-     * 设置CPU信息
-     */
+    /** 设置CPU信息 */
     private void setCpuInfo(CentralProcessor processor) {
         // CPU信息
         long[] prevTicks = processor.getSystemCpuLoadTicks();
@@ -152,18 +134,14 @@ public class Server {
         cpu.setFree(idle);
     }
 
-    /**
-     * 设置内存信息
-     */
+    /** 设置内存信息 */
     private void setMemInfo(GlobalMemory memory) {
         mem.setTotal(memory.getTotal());
         mem.setUsed(memory.getTotal() - memory.getAvailable());
         mem.setFree(memory.getAvailable());
     }
 
-    /**
-     * 设置服务器信息
-     */
+    /** 设置服务器信息 */
     private void setSysInfo() {
         Properties props = System.getProperties();
         sys.setComputerName(IpUtils.getHostName());
@@ -173,9 +151,7 @@ public class Server {
         sys.setUserDir(props.getProperty("user.dir"));
     }
 
-    /**
-     * 设置Java虚拟机
-     */
+    /** 设置Java虚拟机 */
     private void setJvmInfo() throws UnknownHostException {
         Properties props = System.getProperties();
         jvm.setTotal(Runtime.getRuntime().totalMemory());

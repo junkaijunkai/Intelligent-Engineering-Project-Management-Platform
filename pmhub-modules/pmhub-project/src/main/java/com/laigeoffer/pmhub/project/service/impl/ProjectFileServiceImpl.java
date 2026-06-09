@@ -11,8 +11,8 @@ import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.core.domain.vo.SysUserVO;
 import com.laigeoffer.pmhub.base.core.enums.FileTypeEnum;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.file.FileUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.project.domain.ProjectFile;
 import com.laigeoffer.pmhub.project.domain.vo.project.file.FileVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.file.ProjectFileIdsVO;
@@ -22,38 +22,32 @@ import com.laigeoffer.pmhub.project.mapper.ProjectFileMapper;
 import com.laigeoffer.pmhub.project.mapper.ProjectMemberMapper;
 import com.laigeoffer.pmhub.project.mapper.ProjectTaskMapper;
 import com.laigeoffer.pmhub.project.service.ProjectFileService;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 /**
  * @date 2022-12-16 09:24
  */
 @Service
-public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, ProjectFile> implements ProjectFileService {
+public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, ProjectFile>
+        implements ProjectFileService {
 
-    @Autowired
-    private ProjectFileMapper projectFileMapper;
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
-    @Autowired
-    private ProjectTaskMapper projectTaskMapper;
-    @Resource
-    private UserFeignService userFeignService;
-
+    @Autowired private ProjectFileMapper projectFileMapper;
+    @Autowired private ProjectMemberMapper projectMemberMapper;
+    @Autowired private ProjectTaskMapper projectTaskMapper;
+    @Resource private UserFeignService userFeignService;
 
     @Override
     public PageInfo<ProjectFileResVO> queryFileList(ProjectFileReqVO projectFileReqVO) {
-
 
         PageHelper.startPage(projectFileReqVO.getPageNum(), projectFileReqVO.getPageSize());
         List<ProjectFileResVO> files = new ArrayList<>(10);
@@ -74,29 +68,37 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
         }
 
         if (CollectionUtils.isNotEmpty(files)) {
-            List<Long> userIds = files.stream().map(ProjectFileResVO::getUserId).distinct().collect(Collectors.toList());
+            List<Long> userIds =
+                    files.stream()
+                            .map(ProjectFileResVO::getUserId)
+                            .distinct()
+                            .collect(Collectors.toList());
             // 根据 userIds 查询用户列表
             SysUserDTO sysUserDTO = new SysUserDTO();
             sysUserDTO.setUserIds(userIds);
-            R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+            R<List<SysUserVO>> userResult =
+                    userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
             if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
                 throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
             }
             List<SysUserVO> userVOList = userResult.getData();
-            List<SysUser> sysUsers = userVOList.stream()
-                    .map(userVO -> (SysUser) userVO)
-                    .collect(Collectors.toList());
-            Map<Long, List<SysUser>> map = sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
-            files.forEach(a -> {
-                if (FileTypeEnum.P.getStatus().equals(a.getType())) {
-                    a.setName(a.getProjectName());
-                } else if (FileTypeEnum.T.getStatus().equals(a.getType())) {
-                    a.setName(projectTaskMapper.selectById(a.getPtId()).getTaskName());
-                }
-                a.setNickName(map.get(a.getUserId()).get(0).getNickName());
-                a.setTypeName(FileTypeEnum.getStatusNameByStatus(a.getType()));
-            });
+            List<SysUser> sysUsers =
+                    userVOList.stream()
+                            .map(userVO -> (SysUser) userVO)
+                            .collect(Collectors.toList());
+            Map<Long, List<SysUser>> map =
+                    sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
+            files.forEach(
+                    a -> {
+                        if (FileTypeEnum.P.getStatus().equals(a.getType())) {
+                            a.setName(a.getProjectName());
+                        } else if (FileTypeEnum.T.getStatus().equals(a.getType())) {
+                            a.setName(projectTaskMapper.selectById(a.getPtId()).getTaskName());
+                        }
+                        a.setNickName(map.get(a.getUserId()).get(0).getNickName());
+                        a.setTypeName(FileTypeEnum.getStatusNameByStatus(a.getType()));
+                    });
         }
 
         return new PageInfo<>(files);
@@ -106,9 +108,15 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
     @Transactional(rollbackFor = Exception.class)
     public void deleteFileList(ProjectFileIdsVO projectFileIdsVO) {
         if (CollectionUtils.isNotEmpty(projectFileIdsVO.getFileVOList())) {
-            List<String> ids = projectFileIdsVO.getFileVOList().stream().map(FileVO::getProjectFileId).collect(Collectors.toList());
+            List<String> ids =
+                    projectFileIdsVO.getFileVOList().stream()
+                            .map(FileVO::getProjectFileId)
+                            .collect(Collectors.toList());
             List<ProjectFile> projectFiles = projectFileMapper.selectBatchIds(ids);
-            List<String> urls = projectFiles.stream().map(ProjectFile::getPathName).collect(Collectors.toList());
+            List<String> urls =
+                    projectFiles.stream()
+                            .map(ProjectFile::getPathName)
+                            .collect(Collectors.toList());
             projectFileMapper.deleteBatchIds(ids);
             urls.forEach(FileUtils::deleteFile);
         }
@@ -123,15 +131,23 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
         // 旧的文件或目录
         File oldName = new File(fileUrl);
         // 新的文件或目录
-        File newName = new File(fileUrl.substring(0, fileUrl.lastIndexOf("/") + 1)
-                + projectFileReqVO.getFileName());
+        File newName =
+                new File(
+                        fileUrl.substring(0, fileUrl.lastIndexOf("/") + 1)
+                                + projectFileReqVO.getFileName());
         // 确保新的文件名不存在
         if (newName.exists()) {
             throw new ServiceException("file exists");
         }
         if (oldName.renameTo(newName)) {
-            projectFile.setPathName(fileUrl.substring(0, fileUrl.lastIndexOf("/") + 1) + projectFileReqVO.getFileName());
-            projectFile.setFileUrl(projectFile.getFileUrl().substring(0, projectFile.getFileUrl().lastIndexOf("/") + 1) + projectFileReqVO.getFileName());
+            projectFile.setPathName(
+                    fileUrl.substring(0, fileUrl.lastIndexOf("/") + 1)
+                            + projectFileReqVO.getFileName());
+            projectFile.setFileUrl(
+                    projectFile
+                                    .getFileUrl()
+                                    .substring(0, projectFile.getFileUrl().lastIndexOf("/") + 1)
+                            + projectFileReqVO.getFileName());
             projectFile.setFileName(projectFileReqVO.getFileName());
             projectFile.setUpdatedBy(SecurityUtils.getUsername());
             projectFile.setUpdatedTime(new Date());
@@ -141,7 +157,7 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
 
     @Override
     public void batchDownload(String totalZip, List<String> paths) throws IOException {
-        //Linux不会自动创建，手动创建临时的.zip文件
+        // Linux不会自动创建，手动创建临时的.zip文件
         File totalFile = new File(totalZip);
         if (!totalFile.exists()) {
             totalFile.createNewFile();
@@ -159,7 +175,6 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
             }
             totalZipOut.close();
         }
-
     }
 
     private static void fileToZip(String filePath, ZipOutputStream zipOut) throws IOException {
@@ -184,5 +199,4 @@ public class ProjectFileServiceImpl extends ServiceImpl<ProjectFileMapper, Proje
         bufferStream.close();
         // 压缩流不必关闭,使用完后再关
     }
-
 }

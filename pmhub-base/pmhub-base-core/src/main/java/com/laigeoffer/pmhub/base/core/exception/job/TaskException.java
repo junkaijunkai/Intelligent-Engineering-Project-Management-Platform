@@ -1,9 +1,6 @@
 package com.laigeoffer.pmhub.base.core.exception.job;
 
-/**
- * 计划策略异常
- *
- */
+/** 计划策略异常 */
 public class TaskException extends Exception {
     private static final long serialVersionUID = 1L;
 
@@ -23,6 +20,11 @@ public class TaskException extends Exception {
     }
 
     public enum Code {
-        TASK_EXISTS, NO_TASK_EXISTS, TASK_ALREADY_STARTED, UNKNOWN, CONFIG_ERROR, TASK_NODE_NOT_AVAILABLE
+        TASK_EXISTS,
+        NO_TASK_EXISTS,
+        TASK_ALREADY_STARTED,
+        UNKNOWN,
+        CONFIG_ERROR,
+        TASK_NODE_NOT_AVAILABLE
     }
 }

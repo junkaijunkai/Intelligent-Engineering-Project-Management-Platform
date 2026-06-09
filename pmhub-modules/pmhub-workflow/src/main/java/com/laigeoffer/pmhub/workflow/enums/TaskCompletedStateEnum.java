@@ -1,48 +1,30 @@
 package com.laigeoffer.pmhub.workflow.enums;
 
-
 import com.laigeoffer.pmhub.base.core.enums.OAMessageStatusEnum;
 
-/**
- * 任务完成时的状态
- */
+/** 任务完成时的状态 */
 public enum TaskCompletedStateEnum {
 
-    /**
-     * 通过
-     * */
+    /** 通过 */
     PASS("已通过"),
 
-    /**
-     * 退回
-     * */
+    /** 退回 */
     RETURN("已退回"),
 
-    /**
-     * 驳回
-     * */
+    /** 驳回 */
     REJECT("已驳回"),
 
-    /**
-     * 委派
-     * */
+    /** 委派 */
     APPOINT("已委派"),
 
-    /**
-     * 转办
-     * */
+    /** 转办 */
     TRANSFER("已转办"),
 
-    /**
-     * 终止
-     * */
+    /** 终止 */
     STOP("已终止"),
 
-    /**
-     * 撤回
-     * */
+    /** 撤回 */
     RECALL("已撤回");
-
 
     private String desc;
 
@@ -51,12 +33,12 @@ public enum TaskCompletedStateEnum {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return desc;
     }
 
-    public static TaskCompletedStateEnum getTaskCompletedStateEnum(int code){
-        switch (code){
+    public static TaskCompletedStateEnum getTaskCompletedStateEnum(int code) {
+        switch (code) {
             case 1:
                 return TaskCompletedStateEnum.PASS;
             case 2:

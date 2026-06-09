@@ -7,22 +7,16 @@ import com.laigeoffer.pmhub.system.domain.SysPost;
 import com.laigeoffer.pmhub.system.mapper.SysPostMapper;
 import com.laigeoffer.pmhub.system.mapper.SysUserPostMapper;
 import com.laigeoffer.pmhub.system.service.ISysPostService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 岗位信息 服务层处理
- *
- */
+/** 岗位信息 服务层处理 */
 @Service
 public class SysPostServiceImpl implements ISysPostService {
-    @Autowired
-    private SysPostMapper postMapper;
+    @Autowired private SysPostMapper postMapper;
 
-    @Autowired
-    private SysUserPostMapper userPostMapper;
+    @Autowired private SysUserPostMapper userPostMapper;
 
     /**
      * 查询岗位信息集合

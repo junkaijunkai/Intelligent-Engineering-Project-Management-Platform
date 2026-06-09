@@ -1,27 +1,22 @@
 package com.laigeoffer.pmhub.base.core.config.redis;
 
 import cn.hutool.core.util.ObjectUtil;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-/**
- * spring redis 工具类
- *
- **/
+/** spring redis 工具类 */
 @SuppressWarnings(value = {"unchecked", "rawtypes"})
 @Component
 public class RedisService {
-    @Autowired
-    public RedisTemplate redisTemplate;
+    @Autowired public RedisTemplate redisTemplate;
 
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
-     * @param key   缓存的键值
+     * @param key 缓存的键值
      * @param value 缓存的值
      */
     public <T> void setCacheObject(final String key, final T value) {
@@ -31,19 +26,20 @@ public class RedisService {
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
-     * @param key      缓存的键值
-     * @param value    缓存的值
-     * @param timeout  时间
+     * @param key 缓存的键值
+     * @param value 缓存的值
+     * @param timeout 时间
      * @param timeUnit 时间颗粒度
      */
-    public <T> void setCacheObject(final String key, final T value, final Integer timeout, final TimeUnit timeUnit) {
+    public <T> void setCacheObject(
+            final String key, final T value, final Integer timeout, final TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
     }
 
     /**
      * 设置有效时间
      *
-     * @param key     Redis键
+     * @param key Redis键
      * @param timeout 超时时间
      * @return true=设置成功；false=设置失败
      */
@@ -54,9 +50,9 @@ public class RedisService {
     /**
      * 设置有效时间
      *
-     * @param key     Redis键
+     * @param key Redis键
      * @param timeout 超时时间
-     * @param unit    时间单位
+     * @param unit 时间单位
      * @return true=设置成功；false=设置失败
      */
     public boolean expire(final String key, final long timeout, final TimeUnit unit) {
@@ -116,7 +112,7 @@ public class RedisService {
     /**
      * 缓存List数据
      *
-     * @param key      缓存的键值
+     * @param key 缓存的键值
      * @param dataList 待缓存的List数据
      * @return 缓存的对象
      */
@@ -138,7 +134,7 @@ public class RedisService {
     /**
      * 缓存Set
      *
-     * @param key     缓存键值
+     * @param key 缓存键值
      * @param dataSet 缓存的数据
      * @return 缓存数据的对象
      */
@@ -186,8 +182,8 @@ public class RedisService {
     /**
      * 往Hash中存入数据
      *
-     * @param key   Redis键
-     * @param hKey  Hash键
+     * @param key Redis键
+     * @param hKey Hash键
      * @param value 值
      */
     public <T> void setCacheMapValue(final String key, final String hKey, final T value) {
@@ -197,7 +193,7 @@ public class RedisService {
     /**
      * 获取Hash中的数据
      *
-     * @param key  Redis键
+     * @param key Redis键
      * @param hKey Hash键
      * @return Hash中的对象
      */
@@ -209,7 +205,7 @@ public class RedisService {
     /**
      * 获取多个Hash中的数据
      *
-     * @param key   Redis键
+     * @param key Redis键
      * @param hKeys Hash键集合
      * @return Hash对象集合
      */
@@ -220,7 +216,7 @@ public class RedisService {
     /**
      * 删除Hash中的某条数据
      *
-     * @param key  Redis键
+     * @param key Redis键
      * @param hKey Hash键
      * @return 是否成功
      */
@@ -241,30 +237,30 @@ public class RedisService {
     /**
      * 获取缓存kv
      *
-     * @param pattern 匹配Key  "*"为通配符
+     * @param pattern 匹配Key "*"为通配符
      * @return {@link Map}<{@link String},{@link String}>>
      */
-    public Map<String,Object> getCacheKv(String pattern){
+    public Map<String, Object> getCacheKv(String pattern) {
         // 获取所有键
         Set<String> keys = redisTemplate.keys(pattern);
         // 遍历出所有数据
-        Map<String,Object> kv = new HashMap<>();
-        if (ObjectUtil.isNotEmpty(keys)){
+        Map<String, Object> kv = new HashMap<>();
+        if (ObjectUtil.isNotEmpty(keys)) {
             assert keys != null;
             for (String key : keys) {
-                kv.put(key,redisTemplate.opsForValue().get(key));
+                kv.put(key, redisTemplate.opsForValue().get(key));
             }
         }
         return kv;
     }
 
-    /**
-     * 删除所有缓存数据（慎用）
-     */
+    /** 删除所有缓存数据（慎用） */
     public void flushAll() {
-        redisTemplate.execute((RedisCallback<Object>) connection -> {
-            connection.flushDb();
-            return "OK";
-        });
+        redisTemplate.execute(
+                (RedisCallback<Object>)
+                        connection -> {
+                            connection.flushDb();
+                            return "OK";
+                        });
     }
 }

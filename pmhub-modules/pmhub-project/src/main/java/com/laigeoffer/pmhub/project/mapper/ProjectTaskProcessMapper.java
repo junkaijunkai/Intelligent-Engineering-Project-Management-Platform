@@ -5,5 +5,4 @@ import com.laigeoffer.pmhub.project.domain.ProjectTaskProcess;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface ProjectTaskProcessMapper extends BaseMapper<ProjectTaskProcess> {
-}
+public interface ProjectTaskProcessMapper extends BaseMapper<ProjectTaskProcess> {}

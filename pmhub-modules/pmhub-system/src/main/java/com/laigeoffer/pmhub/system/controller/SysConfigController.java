@@ -1,6 +1,5 @@
 package com.laigeoffer.pmhub.system.controller;
 
-
 import com.laigeoffer.pmhub.base.core.annotation.Log;
 import com.laigeoffer.pmhub.base.core.constant.UserConstants;
 import com.laigeoffer.pmhub.base.core.core.controller.BaseController;
@@ -12,26 +11,19 @@ import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.domain.SysConfig;
 import com.laigeoffer.pmhub.system.service.ISysConfigService;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-/**
- * 参数配置 信息操作处理
- *
- */
+/** 参数配置 信息操作处理 */
 @RestController
 @RequestMapping("/system/config")
 public class SysConfigController extends BaseController {
-    @Autowired
-    private ISysConfigService configService;
+    @Autowired private ISysConfigService configService;
 
-    /**
-     * 获取参数配置列表
-     */
+    /** 获取参数配置列表 */
     @RequiresPermissions("system:config:list")
     @GetMapping("/list")
     public TableDataInfo list(SysConfig config) {
@@ -49,26 +41,20 @@ public class SysConfigController extends BaseController {
         util.exportExcel(response, list, "参数数据");
     }
 
-    /**
-     * 根据参数编号获取详细信息
-     */
+    /** 根据参数编号获取详细信息 */
     @RequiresPermissions("system:config:query")
     @GetMapping(value = "/{configId}")
     public AjaxResult getInfo(@PathVariable Long configId) {
         return success(configService.selectConfigById(configId));
     }
 
-    /**
-     * 根据参数键名查询参数值
-     */
+    /** 根据参数键名查询参数值 */
     @GetMapping(value = "/configKey/{configKey}")
     public AjaxResult getConfigKey(@PathVariable String configKey) {
         return success(configService.selectConfigByKey(configKey));
     }
 
-    /**
-     * 新增参数配置
-     */
+    /** 新增参数配置 */
     @RequiresPermissions("system:config:add")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -80,9 +66,7 @@ public class SysConfigController extends BaseController {
         return toAjax(configService.insertConfig(config));
     }
 
-    /**
-     * 修改参数配置
-     */
+    /** 修改参数配置 */
     @RequiresPermissions("system:config:edit")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -94,9 +78,7 @@ public class SysConfigController extends BaseController {
         return toAjax(configService.updateConfig(config));
     }
 
-    /**
-     * 删除参数配置
-     */
+    /** 删除参数配置 */
     @RequiresPermissions("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
@@ -105,9 +87,7 @@ public class SysConfigController extends BaseController {
         return success();
     }
 
-    /**
-     * 刷新参数缓存
-     */
+    /** 刷新参数缓存 */
     @RequiresPermissions("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")

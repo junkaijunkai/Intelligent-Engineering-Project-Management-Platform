@@ -13,16 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @date 2022-12-15 16:32
  */
-
 @RestController
 @RequestMapping("/project")
 public class ProjectCollectionController {
 
-    @Autowired
-    private ProjectCollectionService projectCollectionService;
+    @Autowired private ProjectCollectionService projectCollectionService;
 
     /**
      * 收藏项目
+     *
      * @param projectVO
      * @return
      */
@@ -35,6 +34,7 @@ public class ProjectCollectionController {
 
     /**
      * 取消收藏项目
+     *
      * @param projectVO
      * @return
      */

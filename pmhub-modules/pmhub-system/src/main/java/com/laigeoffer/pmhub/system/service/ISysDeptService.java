@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.system.service;
 
-
 import com.laigeoffer.pmhub.base.core.core.domain.TreeSelect;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDept;
-
 import java.util.List;
 
-/**
- * 部门管理 服务层
- *
- */
+/** 部门管理 服务层 */
 public interface ISysDeptService {
     /**
      * 查询部门管理数据

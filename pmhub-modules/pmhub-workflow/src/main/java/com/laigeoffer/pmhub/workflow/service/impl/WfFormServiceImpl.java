@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.laigeoffer.pmhub.base.core.core.domain.PageQuery;
 import com.laigeoffer.pmhub.base.core.core.page.Table2DataInfo;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.workflow.domain.WfDeployForm;
 import com.laigeoffer.pmhub.workflow.domain.WfForm;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfFormBo;
@@ -17,11 +17,10 @@ import com.laigeoffer.pmhub.workflow.domain.vo.WfFormVo;
 import com.laigeoffer.pmhub.workflow.mapper.WfDeployFormMapper;
 import com.laigeoffer.pmhub.workflow.mapper.WfFormMapper;
 import com.laigeoffer.pmhub.workflow.service.IWfFormService;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 /**
  * 流程表单Service业务层处理
@@ -98,12 +97,21 @@ public class WfFormServiceImpl implements IWfFormService {
      */
     @Override
     public int updateForm(WfFormBo bo) {
-        return baseMapper.update(new WfForm(), new LambdaUpdateWrapper<WfForm>()
-            .set(StrUtil.isNotBlank(bo.getFormName()), WfForm::getFormName, bo.getFormName())
-            .set(StrUtil.isNotBlank(bo.getContent()), WfForm::getContent, bo.getContent())
-            .set(StrUtil.isNotBlank(bo.getRemark()), WfForm::getRemark, bo.getRemark())
-            .set(WfForm::getUpdateBy, SecurityUtils.getUsername()).set(WfForm::getUpdateTime, new Date())
-            .eq(WfForm::getFormId, bo.getFormId()));
+        return baseMapper.update(
+                new WfForm(),
+                new LambdaUpdateWrapper<WfForm>()
+                        .set(
+                                StrUtil.isNotBlank(bo.getFormName()),
+                                WfForm::getFormName,
+                                bo.getFormName())
+                        .set(
+                                StrUtil.isNotBlank(bo.getContent()),
+                                WfForm::getContent,
+                                bo.getContent())
+                        .set(StrUtil.isNotBlank(bo.getRemark()), WfForm::getRemark, bo.getRemark())
+                        .set(WfForm::getUpdateBy, SecurityUtils.getUsername())
+                        .set(WfForm::getUpdateTime, new Date())
+                        .eq(WfForm::getFormId, bo.getFormId()));
     }
 
     /**
@@ -115,16 +123,18 @@ public class WfFormServiceImpl implements IWfFormService {
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids) {
         List<String> errorIds = new ArrayList<>(10);
-        ids.forEach(id -> {
-            LambdaQueryWrapper<WfDeployForm> qw = new LambdaQueryWrapper<>();
-            qw.eq(WfDeployForm::getFormKey, "key_" + id);
-            Long count = wfDeployFormMapper.selectCount(qw);
-            if (count > 0L) {
-                errorIds.add(id.toString());
-            }
-        });
+        ids.forEach(
+                id -> {
+                    LambdaQueryWrapper<WfDeployForm> qw = new LambdaQueryWrapper<>();
+                    qw.eq(WfDeployForm::getFormKey, "key_" + id);
+                    Long count = wfDeployFormMapper.selectCount(qw);
+                    if (count > 0L) {
+                        errorIds.add(id.toString());
+                    }
+                });
         if (CollectionUtils.isNotEmpty(errorIds)) {
-            throw new ServiceException("表单主键[" + String.join(",", errorIds) + "]" + "存在历史部署版本不允许删除");
+            throw new ServiceException(
+                    "表单主键[" + String.join(",", errorIds) + "]" + "存在历史部署版本不允许删除");
         }
         return baseMapper.deleteBatchIds(ids) > 0;
     }

@@ -1,62 +1,53 @@
 package com.laigeoffer.pmhub.project.domain.vo.project;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @date 2022-12-15 16:50
  */
-
 public class ProjectDetailResVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Long userId;
-    /**
-     * 昵称
-     */
+
+    /** 昵称 */
     private String nickName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updatedTime;
-    /**
-     * 开始时间
-     */
+
+    /** 开始时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date beginTime;
-    /**
-     * 结束时间
-     */
+
+    /** 结束时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
-    /**
-     * 阶段名称
-     */
+
+    /** 阶段名称 */
     private String stageName;
-    /**
-     * 状态
-     */
+
+    /** 状态 */
     private Integer status;
+
     private String statusName;
-    /**
-     * 是否发布
-     */
+
+    /** 是否发布 */
     private Integer published;
+
     private String publishedName;
-    /**
-     * 进度
-     */
+
+    /** 进度 */
     private BigDecimal process;
 
     public String getProjectId() {

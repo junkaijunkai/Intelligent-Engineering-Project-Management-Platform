@@ -1,15 +1,11 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDept;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
-/**
- * 部门管理 数据层
- *
- */
+/** 部门管理 数据层 */
 @Mapper
 public interface SysDeptMapper {
     /**
@@ -23,11 +19,12 @@ public interface SysDeptMapper {
     /**
      * 根据角色ID查询部门树信息
      *
-     * @param roleId            角色ID
+     * @param roleId 角色ID
      * @param deptCheckStrictly 部门树选择项是否关联显示
      * @return 选中部门列表
      */
-    public List<Long> selectDeptListByRoleId(@Param("roleId") Long roleId, @Param("deptCheckStrictly") boolean deptCheckStrictly);
+    public List<Long> selectDeptListByRoleId(
+            @Param("roleId") Long roleId, @Param("deptCheckStrictly") boolean deptCheckStrictly);
 
     /**
      * 根据部门ID查询信息
@@ -76,7 +73,8 @@ public interface SysDeptMapper {
      * @param parentId 父部门ID
      * @return 结果
      */
-    public SysDept checkDeptNameUnique(@Param("deptName") String deptName, @Param("parentId") Long parentId);
+    public SysDept checkDeptNameUnique(
+            @Param("deptName") String deptName, @Param("parentId") Long parentId);
 
     /**
      * 新增部门信息

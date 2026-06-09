@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.base.core.enums;
  * @date 2022-12-19 17:04
  */
 public enum ProjectStageEnum {
-
     STAGE_0(0, "项目立项阶段"),
     STAGE_1(1, "研发设计输入阶段"),
     STAGE_2(2, "研发实施阶段"),

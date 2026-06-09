@@ -1,21 +1,18 @@
 package com.laigeoffer.pmhub.base.core.config;
 
 import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-/**
- * 服务相关配置
- *
- */
+/** 服务相关配置 */
 @Component
 public class ServerConfig {
     public static String getDomain(HttpServletRequest request) {
         StringBuffer url = request.getRequestURL();
         String contextPath = request.getServletContext().getContextPath();
-        return url.delete(url.length() - request.getRequestURI().length(), url.length()).append(contextPath).toString();
+        return url.delete(url.length() - request.getRequestURI().length(), url.length())
+                .append(contextPath)
+                .toString();
     }
 
     /**
@@ -27,5 +24,4 @@ public class ServerConfig {
         HttpServletRequest request = ServletUtils.getRequest();
         return getDomain(request);
     }
-
 }

@@ -1,13 +1,9 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.system.domain.SysNotice;
-
 import java.util.List;
 
-/**
- * 公告 服务层
- *
- */
+/** 公告 服务层 */
 public interface ISysNoticeService {
     /**
      * 查询公告信息

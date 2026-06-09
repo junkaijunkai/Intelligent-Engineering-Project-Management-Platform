@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.workflow.listener.strategy;
  * @date 2023-07-11 09:25
  */
 public enum ListenerTypeEnum {
-
     PROJECT("project", "projectListenerExecutor"),
     TASK("task", "taskListenerExecutor"),
     PURCHASE_INTO("PURCHASE_INTO", "purchaseIntoListenerExecutor"),
@@ -16,6 +15,7 @@ public enum ListenerTypeEnum {
     SCRAPPED_OUT("USELESS_OUT", "scrappedOutListenerExecutor");
     private final String type;
     private final String beanName;
+
     ListenerTypeEnum(String type, String beanName) {
         this.type = type;
         this.beanName = beanName;

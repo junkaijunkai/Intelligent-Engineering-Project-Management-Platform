@@ -1,8 +1,7 @@
 package com.laigeoffer.pmhub.base.notice.domain.dto;
 
-import lombok.Data;
-
 import java.io.Serializable;
+import lombok.Data;
 
 /**
  * @date 2023-04-10 10:59

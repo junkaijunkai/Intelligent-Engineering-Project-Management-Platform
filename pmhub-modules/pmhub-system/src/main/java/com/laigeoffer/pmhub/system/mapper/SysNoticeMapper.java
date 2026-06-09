@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysNotice;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 通知公告表 数据层
- *
- */
+/** 通知公告表 数据层 */
 @Mapper
 public interface SysNoticeMapper {
     /**

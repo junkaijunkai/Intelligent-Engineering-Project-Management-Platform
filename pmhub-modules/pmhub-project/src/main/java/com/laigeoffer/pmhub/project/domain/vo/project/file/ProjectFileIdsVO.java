@@ -6,13 +6,10 @@ import java.util.List;
  * @date 2022-12-16 10:34
  */
 public class ProjectFileIdsVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 下载内容
-     */
+
+    /** 下载内容 */
     private List<FileVO> fileVOList;
 
     public String getProjectId() {

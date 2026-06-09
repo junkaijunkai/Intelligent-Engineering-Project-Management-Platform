@@ -6,21 +6,18 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.ip.IpUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-
-/**
- * feign 请求拦截器
- *
- */
+/** feign 请求拦截器 */
 @Component
 public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         HttpServletRequest httpServletRequest = ServletUtils.getRequest();
-        Map<String, String> headers = ServletUtils.getHeaders(httpServletRequest); // key: Security常量，value: 对应的字段
+        Map<String, String> headers =
+                ServletUtils.getHeaders(httpServletRequest); // key: Security常量，value: 对应的字段
         // 传递用户信息请求头，防止丢失
         String userId = headers.get(SecurityConstants.DETAILS_USER_ID);
         if (StringUtils.isNotEmpty(userId)) {

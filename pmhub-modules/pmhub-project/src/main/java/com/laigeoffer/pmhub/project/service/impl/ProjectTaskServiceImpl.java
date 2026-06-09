@@ -36,6 +36,15 @@ import com.laigeoffer.pmhub.project.service.ProjectTaskService;
 import com.laigeoffer.pmhub.project.service.task.QueryTaskLogFactory;
 import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.rmi.ServerException;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,63 +54,54 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.rmi.ServerException;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * @date 2022-12-14 15:00
  */
 @Service
 @Slf4j
-public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, ProjectTask> implements ProjectTaskService {
-    @Autowired
-    private ProjectTaskMapper projectTaskMapper;
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
-    @Autowired
-    private ProjectLogService projectLogService;
-    @Autowired
-    private ProjectMapper projectMapper;
-    @Autowired
-    private ProjectStageMapper projectStageMapper;
-    @Autowired
-    private QueryTaskLogFactory queryTaskLogFactory;
-    @Autowired
-    private ProjectFileMapper projectFileMapper;
-    @Autowired
-    private ProjectTaskProcessMapper projectTaskProcessMapper;
+public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, ProjectTask>
+        implements ProjectTaskService {
+    @Autowired private ProjectTaskMapper projectTaskMapper;
+    @Autowired private ProjectMemberMapper projectMemberMapper;
+    @Autowired private ProjectLogService projectLogService;
+    @Autowired private ProjectMapper projectMapper;
+    @Autowired private ProjectStageMapper projectStageMapper;
+    @Autowired private QueryTaskLogFactory queryTaskLogFactory;
+    @Autowired private ProjectFileMapper projectFileMapper;
+    @Autowired private ProjectTaskProcessMapper projectTaskProcessMapper;
 
     // 远程调用流程服务
-    @Resource
-    private DeployFeignService wfDeployService;
+    @Resource private DeployFeignService wfDeployService;
 
     // 远程调用用户服务
-    @Resource
-    private UserFeignService userFeignService;
+    @Resource private UserFeignService userFeignService;
 
     @Override
     public Long queryTodayTaskNum() {
         LambdaQueryWrapper<ProjectTask> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.between(ProjectTask::getBeginTime, DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS).format(LocalDateTime.now().with(LocalTime.MIN))
-                , DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS).format(LocalDateTime.now().with(LocalTime.MAX))).eq(ProjectTask::getDeleted, 0);
+        queryWrapper
+                .between(
+                        ProjectTask::getBeginTime,
+                        DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
+                                .format(LocalDateTime.now().with(LocalTime.MIN)),
+                        DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
+                                .format(LocalDateTime.now().with(LocalTime.MAX)))
+                .eq(ProjectTask::getDeleted, 0);
         if (projectTaskMapper.selectCount(queryWrapper) == null) {
             return 0L;
         }
         return projectTaskMapper.selectCount(queryWrapper);
-
     }
 
     @Override
     public Long queryOverdueTaskNum() {
         LambdaQueryWrapper<ProjectTask> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.lt(ProjectTask::getCloseTime, DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS).format(LocalDateTime.now())).eq(ProjectTask::getDeleted, 0)
+        queryWrapper
+                .lt(
+                        ProjectTask::getCloseTime,
+                        DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)
+                                .format(LocalDateTime.now()))
+                .eq(ProjectTask::getDeleted, 0)
                 .ne(ProjectTask::getExecuteStatus, ProjectTaskStatusEnum.FINISHED.getStatus());
         if (projectTaskMapper.selectCount(queryWrapper) == null) {
             return 0L;
@@ -132,21 +132,42 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             noClaim.setTaskNum((int) list.stream().filter(a -> a.getUserId() == null).count());
             taskStatisticsVOList.add(noClaim);
             // 进行中
-            List<ProjectTask> doingList = list.stream().filter(a -> ProjectTaskStatusEnum.DOING.getStatus().equals(a.getStatus())).collect(Collectors.toList());
+            List<ProjectTask> doingList =
+                    list.stream()
+                            .filter(
+                                    a ->
+                                            ProjectTaskStatusEnum.DOING
+                                                    .getStatus()
+                                                    .equals(a.getStatus()))
+                            .collect(Collectors.toList());
             TaskStatisticsVO doing = new TaskStatisticsVO();
             doing.setStatus(ProjectTaskStatusEnum.DOING.getStatus());
             doing.setStatusName(ProjectTaskStatusEnum.DOING.getStatusName());
             doing.setTaskNum(doingList.size());
             taskStatisticsVOList.add(doing);
             // 已完成
-            List<ProjectTask> finishList = list.stream().filter(a -> ProjectTaskStatusEnum.FINISHED.getStatus().equals(a.getStatus())).collect(Collectors.toList());
+            List<ProjectTask> finishList =
+                    list.stream()
+                            .filter(
+                                    a ->
+                                            ProjectTaskStatusEnum.FINISHED
+                                                    .getStatus()
+                                                    .equals(a.getStatus()))
+                            .collect(Collectors.toList());
             TaskStatisticsVO finish = new TaskStatisticsVO();
             finish.setStatus(ProjectTaskStatusEnum.FINISHED.getStatus());
             finish.setStatusName(ProjectTaskStatusEnum.FINISHED.getStatusName());
             finish.setTaskNum(finishList.size());
             taskStatisticsVOList.add(finish);
             // 已逾期
-            List<ProjectTask> overdueList = list.stream().filter(a -> a.getCloseTime() != null && a.getCloseTime().getTime() < new Date().getTime()).collect(Collectors.toList());
+            List<ProjectTask> overdueList =
+                    list.stream()
+                            .filter(
+                                    a ->
+                                            a.getCloseTime() != null
+                                                    && a.getCloseTime().getTime()
+                                                            < new Date().getTime())
+                            .collect(Collectors.toList());
             TaskStatisticsVO overdue = new TaskStatisticsVO();
             overdue.setStatus(ProjectTaskStatusEnum.OVERDUE.getStatus());
             overdue.setStatusName(ProjectTaskStatusEnum.OVERDUE.getStatusName());
@@ -162,25 +183,49 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         PageInfo<TaskResVO> pageInfo;
         PageHelper.startPage(taskReqVO.getPageNum(), taskReqVO.getPageSize());
         switch (taskReqVO.getType()) {
-            // 我执行的
+                // 我执行的
             case 1:
-                pageInfo = new PageInfo<>(projectTaskMapper.queryMyExecutedTaskList(taskReqVO.getProjectId(), SecurityUtils.getUserId()));
+                pageInfo =
+                        new PageInfo<>(
+                                projectTaskMapper.queryMyExecutedTaskList(
+                                        taskReqVO.getProjectId(), SecurityUtils.getUserId()));
                 if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
-                    pageInfo.getList().forEach(a -> a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus())));
+                    pageInfo.getList()
+                            .forEach(
+                                    a ->
+                                            a.setStatusName(
+                                                    ProjectTaskStatusEnum.getStatusNameByStatus(
+                                                            a.getStatus())));
                 }
                 return pageInfo;
-            // 我参与的
+                // 我参与的
             case 2:
-                pageInfo = new PageInfo<>(projectTaskMapper.queryMyPartookTaskList(taskReqVO.getProjectId(), SecurityUtils.getUserId()));
+                pageInfo =
+                        new PageInfo<>(
+                                projectTaskMapper.queryMyPartookTaskList(
+                                        taskReqVO.getProjectId(), SecurityUtils.getUserId()));
                 if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
-                    pageInfo.getList().forEach(a -> a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus())));
+                    pageInfo.getList()
+                            .forEach(
+                                    a ->
+                                            a.setStatusName(
+                                                    ProjectTaskStatusEnum.getStatusNameByStatus(
+                                                            a.getStatus())));
                 }
                 return pageInfo;
-            // 我创建的
+                // 我创建的
             case 3:
-                pageInfo = new PageInfo<>(projectTaskMapper.queryMyCreatedTaskList(taskReqVO.getProjectId(), SecurityUtils.getUsername()));
+                pageInfo =
+                        new PageInfo<>(
+                                projectTaskMapper.queryMyCreatedTaskList(
+                                        taskReqVO.getProjectId(), SecurityUtils.getUsername()));
                 if (CollectionUtils.isNotEmpty(pageInfo.getList())) {
-                    pageInfo.getList().forEach(a -> a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus())));
+                    pageInfo.getList()
+                            .forEach(
+                                    a ->
+                                            a.setStatusName(
+                                                    ProjectTaskStatusEnum.getStatusNameByStatus(
+                                                            a.getStatus())));
                 }
                 return pageInfo;
         }
@@ -196,13 +241,66 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<ProjectTask> projectTasks = projectTaskMapper.selectList(queryWrapper);
         if (CollectionUtils.isNotEmpty(projectTasks)) {
             taskStatusStatsVO.setTotal(projectTasks.size());
-            taskStatusStatsVO.setToBeAssign((int) projectTasks.stream().filter(a -> a.getUserId() == null).count());
-            taskStatusStatsVO.setUnDone((int) projectTasks.stream().filter(a -> !Objects.equals(a.getStatus(), ProjectTaskStatusEnum.FINISHED.getStatus())).count());
-            taskStatusStatsVO.setDone((int) projectTasks.stream().filter(a -> Objects.equals(a.getStatus(), ProjectTaskStatusEnum.FINISHED.getStatus())).count());
-            taskStatusStatsVO.setDoneOverdue((int) projectTasks.stream().filter(a -> a.getCloseTime() != null && a.getCloseTime().getTime() < new Date().getTime() && Objects.equals(a.getStatus(), ProjectTaskStatusEnum.FINISHED.getStatus())).count());
-            taskStatusStatsVO.setExpireToday((int) projectTasks.stream().filter(a -> a.getCloseTime() != null && DateUtils.dateTime(new Date()).compareTo(DateUtils.dateTime(a.getCloseTime())) == 0).count());
-            taskStatusStatsVO.setTimeUndetermined((int) projectTasks.stream().filter(a -> a.getEndTime() == null).count());
-            taskStatusStatsVO.setOverdue((int) projectTasks.stream().filter(a -> a.getCloseTime() != null && a.getCloseTime().getTime() < new Date().getTime()).count());
+            taskStatusStatsVO.setToBeAssign(
+                    (int) projectTasks.stream().filter(a -> a.getUserId() == null).count());
+            taskStatusStatsVO.setUnDone(
+                    (int)
+                            projectTasks.stream()
+                                    .filter(
+                                            a ->
+                                                    !Objects.equals(
+                                                            a.getStatus(),
+                                                            ProjectTaskStatusEnum.FINISHED
+                                                                    .getStatus()))
+                                    .count());
+            taskStatusStatsVO.setDone(
+                    (int)
+                            projectTasks.stream()
+                                    .filter(
+                                            a ->
+                                                    Objects.equals(
+                                                            a.getStatus(),
+                                                            ProjectTaskStatusEnum.FINISHED
+                                                                    .getStatus()))
+                                    .count());
+            taskStatusStatsVO.setDoneOverdue(
+                    (int)
+                            projectTasks.stream()
+                                    .filter(
+                                            a ->
+                                                    a.getCloseTime() != null
+                                                            && a.getCloseTime().getTime()
+                                                                    < new Date().getTime()
+                                                            && Objects.equals(
+                                                                    a.getStatus(),
+                                                                    ProjectTaskStatusEnum.FINISHED
+                                                                            .getStatus()))
+                                    .count());
+            taskStatusStatsVO.setExpireToday(
+                    (int)
+                            projectTasks.stream()
+                                    .filter(
+                                            a ->
+                                                    a.getCloseTime() != null
+                                                            && DateUtils.dateTime(new Date())
+                                                                            .compareTo(
+                                                                                    DateUtils
+                                                                                            .dateTime(
+                                                                                                    a
+                                                                                                            .getCloseTime()))
+                                                                    == 0)
+                                    .count());
+            taskStatusStatsVO.setTimeUndetermined(
+                    (int) projectTasks.stream().filter(a -> a.getEndTime() == null).count());
+            taskStatusStatsVO.setOverdue(
+                    (int)
+                            projectTasks.stream()
+                                    .filter(
+                                            a ->
+                                                    a.getCloseTime() != null
+                                                            && a.getCloseTime().getTime()
+                                                                    < new Date().getTime())
+                                    .count());
 
         } else {
             taskStatusStatsVO.setTotal(0);
@@ -219,8 +317,9 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void  deleteTask(TaskIdsVO taskIdsVO) {
-        LambdaUpdateChainWrapper<ProjectTask> wrapper = lambdaUpdate().in(ProjectTask::getId, taskIdsVO.getTaskIdList());
+    public void deleteTask(TaskIdsVO taskIdsVO) {
+        LambdaUpdateChainWrapper<ProjectTask> wrapper =
+                lambdaUpdate().in(ProjectTask::getId, taskIdsVO.getTaskIdList());
         wrapper.set(ProjectTask::getDeleted, 1).set(ProjectTask::getDeletedTime, new Date());
         wrapper.update();
     }
@@ -229,7 +328,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
     public TaskResVO detail(TaskReqVO taskReqVO) {
         TaskResVO detail = projectTaskMapper.detail(taskReqVO.getTaskId());
         detail.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(detail.getStatus()));
-        detail.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(detail.getExecuteStatus()));
+        detail.setExecuteStatusName(
+                ProjectTaskStatusEnum.getStatusNameByStatus(detail.getExecuteStatus()));
         String createdBy = "";
         if (detail.getUserId() != null) {
             // 查询用户信息
@@ -238,7 +338,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             detail.setExecutor(createdBy);
         }
         detail.setCreatedBy(createdBy);
-        detail.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(detail.getTaskPriority()));
+        detail.setTaskPriorityName(
+                ProjectTaskPriorityEnum.getStatusNameByStatus(detail.getTaskPriority()));
         return detail;
     }
 
@@ -246,30 +347,33 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         // 查询用户信息
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
         }
         List<SysUserVO> userVOList = userResult.getData();
-        return userVOList.stream()
-                .map(userVO -> (SysUser) userVO)
-                .collect(Collectors.toList());
+        return userVOList.stream().map(userVO -> (SysUser) userVO).collect(Collectors.toList());
     }
 
     @Override
     public List<ProjectMemberResVO> queryExecutorList(TaskReqVO taskReqVO) {
-        List<ProjectMemberResVO> list = projectMemberMapper.queryExecutorList(taskReqVO.getProjectId());
+        List<ProjectMemberResVO> list =
+                projectMemberMapper.queryExecutorList(taskReqVO.getProjectId());
         if (CollectionUtils.isEmpty(list)) {
             return Collections.emptyList();
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(ProjectMemberResVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream()
+                        .map(ProjectMemberResVO::getUserId)
+                        .distinct()
+                        .collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -277,16 +381,18 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(projectMemberResVO -> {
-            SysUserVO sysUserVO = userMap.get(projectMemberResVO.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                projectMemberResVO.setUserName(sysUserVO.getUserName());
-                projectMemberResVO.setNickName(sysUserVO.getNickName());
-                projectMemberResVO.setEmail(sysUserVO.getEmail());
-                projectMemberResVO.setAvatar(sysUserVO.getAvatar());
-            }
-        });
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                projectMemberResVO -> {
+                    SysUserVO sysUserVO = userMap.get(projectMemberResVO.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        projectMemberResVO.setUserName(sysUserVO.getUserName());
+                        projectMemberResVO.setNickName(sysUserVO.getNickName());
+                        projectMemberResVO.setEmail(sysUserVO.getEmail());
+                        projectMemberResVO.setAvatar(sysUserVO.getAvatar());
+                    }
+                });
         return list;
     }
 
@@ -298,9 +404,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             return new PageInfo<>(list);
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(TaskResVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream().map(TaskResVO::getUserId).distinct().collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
         if (StringUtils.isNotEmpty(taskReqVO.getExecutor())) {
@@ -309,7 +414,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         if (StringUtils.isNotEmpty(taskReqVO.getCreatedBy())) {
             sysUserDTO.setNickName(taskReqVO.getCreatedBy());
         }
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -317,39 +423,49 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(a -> {
-            WorkFlowable workFlowable = new WorkFlowable();
-            workFlowable.setTaskId(a.getTaskProcessId());
-            workFlowable.setApproved(a.getApproved());
-            workFlowable.setDeploymentId(a.getDeployId());
-            workFlowable.setProcInsId(a.getProcInsId());
-            workFlowable.setDefinitionId(a.getDefinitionId());
-            a.setWorkFlowable(workFlowable);
-            a.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
-            a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
-            a.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
-            if (a.getEndTime() != null && a.getBeginTime() != null) {
-                a.setPeriod(DateUtils.differentDaysByMillisecond(a.getEndTime(), a.getBeginTime()));
-            }
-            // 设置用户信息
-            SysUserVO sysUserVO = userMap.get(a.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                a.setExecutor(sysUserVO.getNickName());
-                a.setCreatedBy(sysUserVO.getNickName());
-            }
-        });
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                a -> {
+                    WorkFlowable workFlowable = new WorkFlowable();
+                    workFlowable.setTaskId(a.getTaskProcessId());
+                    workFlowable.setApproved(a.getApproved());
+                    workFlowable.setDeploymentId(a.getDeployId());
+                    workFlowable.setProcInsId(a.getProcInsId());
+                    workFlowable.setDefinitionId(a.getDefinitionId());
+                    a.setWorkFlowable(workFlowable);
+                    a.setTaskPriorityName(
+                            ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
+                    a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
+                    a.setExecuteStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
+                    if (a.getEndTime() != null && a.getBeginTime() != null) {
+                        a.setPeriod(
+                                DateUtils.differentDaysByMillisecond(
+                                        a.getEndTime(), a.getBeginTime()));
+                    }
+                    // 设置用户信息
+                    SysUserVO sysUserVO = userMap.get(a.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        a.setExecutor(sysUserVO.getNickName());
+                        a.setCreatedBy(sysUserVO.getNickName());
+                    }
+                });
         return new PageInfo<>(list);
     }
 
     @Override
-    @GlobalTransactional(name = "pmhub-project-addTask",rollbackFor = Exception.class) //seata分布式事务，AT模式
+    @GlobalTransactional(
+            name = "pmhub-project-addTask",
+            rollbackFor = Exception.class) // seata分布式事务，AT模式
     public String add(TaskReqVO taskReqVO) {
         // xid 全局事务id的检查（方便查看）
         String xid = RootContext.getXID();
-        log.info("---------------开始新建任务: "+"\t"+"xid: "+xid);
+        log.info("---------------开始新建任务: " + "\t" + "xid: " + xid);
 
-        if (ProjectStatusEnum.PAUSE.getStatus().equals(projectTaskMapper.queryProjectStatus(taskReqVO.getProjectId()))) {
+        if (ProjectStatusEnum.PAUSE
+                .getStatus()
+                .equals(projectTaskMapper.queryProjectStatus(taskReqVO.getProjectId()))) {
             throw new ServiceException("归属项目已暂停，无法新增任务");
         }
 
@@ -368,47 +484,78 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         // 2、添加任务成员
         insertMember(projectTask.getId(), 1, SecurityUtils.getUserId());
         // 3、添加日志
-        saveLog("addTask", projectTask.getId(), taskReqVO.getProjectId(), taskReqVO.getTaskName(), "参与了任务", null);
+        saveLog(
+                "addTask",
+                projectTask.getId(),
+                taskReqVO.getProjectId(),
+                taskReqVO.getTaskName(),
+                "参与了任务",
+                null);
         // 将执行人加入
-        if (taskReqVO.getUserId() != null && !Objects.equals(taskReqVO.getUserId(), SecurityUtils.getUserId())) {
+        if (taskReqVO.getUserId() != null
+                && !Objects.equals(taskReqVO.getUserId(), SecurityUtils.getUserId())) {
             insertMember(projectTask.getId(), 0, taskReqVO.getUserId());
             // 添加日志
-            saveLog("invitePartakeTask", projectTask.getId(), taskReqVO.getProjectId(), taskReqVO.getTaskName(), "邀请 " + getSysUserList(Collections.singletonList(taskReqVO.getUserId())).get(0).getNickName() + " 参与任务", taskReqVO.getUserId());
+            saveLog(
+                    "invitePartakeTask",
+                    projectTask.getId(),
+                    taskReqVO.getProjectId(),
+                    taskReqVO.getTaskName(),
+                    "邀请 "
+                            + getSysUserList(Collections.singletonList(taskReqVO.getUserId()))
+                                    .get(0)
+                                    .getNickName()
+                            + " 参与任务",
+                    taskReqVO.getUserId());
         }
         // 4、任务指派消息提醒
-        extracted(taskReqVO.getTaskName(), taskReqVO.getUserId(), SecurityUtils.getUsername(), projectTask.getId());
+        extracted(
+                taskReqVO.getTaskName(),
+                taskReqVO.getUserId(),
+                SecurityUtils.getUsername(),
+                projectTask.getId());
 
         // 5、添加或更新审批设置（远程调用 pmhub-workflow 微服务）
-        ApprovalSetDTO approvalSetDTO = new ApprovalSetDTO(projectTask.getId(), ProjectStatusEnum.TASK.getStatusName(),
-                taskReqVO.getApproved(), taskReqVO.getDefinitionId(), taskReqVO.getDeploymentId());
-        R<Boolean> result = wfDeployService.insertOrUpdateApprovalSet(approvalSetDTO, SecurityConstants.INNER);
+        ApprovalSetDTO approvalSetDTO =
+                new ApprovalSetDTO(
+                        projectTask.getId(),
+                        ProjectStatusEnum.TASK.getStatusName(),
+                        taskReqVO.getApproved(),
+                        taskReqVO.getDefinitionId(),
+                        taskReqVO.getDeploymentId());
+        R<Boolean> result =
+                wfDeployService.insertOrUpdateApprovalSet(approvalSetDTO, SecurityConstants.INNER);
 
-        if (Objects.isNull(result) || Objects.isNull(result.getData())
+        if (Objects.isNull(result)
+                || Objects.isNull(result.getData())
                 || R.fail().equals(result.getData())) {
-            throw  new ServiceException("远程调用审批服务失败");
+            throw new ServiceException("远程调用审批服务失败");
         }
-        log.info("---------------结束新建任务: "+"\t"+"xid: "+xid);
+        log.info("---------------结束新建任务: " + "\t" + "xid: " + xid);
         return projectTask.getId();
     }
 
     private void extracted(String taskName, Long userId, String username, String taskId) {
-//        String name = projectTaskMapper.queryVxUserName(userId);
-//        if (StringUtils.isNotBlank(name)) {
-            // TODO: 2024.04.25 逾期任务提醒暂时关闭
-//            TaskAssignRemindDTO taskAssignRemindDTO = new TaskAssignRemindDTO();
-//            taskAssignRemindDTO.setTaskName(taskName);
-//            taskAssignRemindDTO.setUserIds(Collections.singletonList(name));
-//            taskAssignRemindDTO.setCreator(projectTaskMapper.queryNickName(username));
-//            // 设置任务详情地址
-//            String url = SsoUrlUtils.ssoCreate(appid, agentid, host + path + ssoPath + URLEncoder.encode(host + "/pmhub-project/my-task/info?taskId=" + taskId));
-//            taskAssignRemindDTO.setDetailUrl(url);
-//            taskAssignRemindDTO.setUserName(username);
-//            taskAssignRemindDTO.setOaTitle("任务指派提醒");
-//            taskAssignRemindDTO.setOaContext("【" + projectTaskMapper.queryNickName(username) + "】给您指派了任务【" + taskName + "】，请及时处理！");
-//            taskAssignRemindDTO.setLinkUrl(OAUtils.ssoCreate(host + "/pmhub-project/my-task/info?taskId=" + taskId));
-            // TODO: 2024.03.03 @canghe 推送消息暂时关闭
-//            RocketMqUtils.push2Wx(taskAssignRemindDTO);
-//        }
+        //        String name = projectTaskMapper.queryVxUserName(userId);
+        //        if (StringUtils.isNotBlank(name)) {
+        // TODO: 2024.04.25 逾期任务提醒暂时关闭
+        //            TaskAssignRemindDTO taskAssignRemindDTO = new TaskAssignRemindDTO();
+        //            taskAssignRemindDTO.setTaskName(taskName);
+        //            taskAssignRemindDTO.setUserIds(Collections.singletonList(name));
+        //            taskAssignRemindDTO.setCreator(projectTaskMapper.queryNickName(username));
+        //            // 设置任务详情地址
+        //            String url = SsoUrlUtils.ssoCreate(appid, agentid, host + path + ssoPath +
+        // URLEncoder.encode(host + "/pmhub-project/my-task/info?taskId=" + taskId));
+        //            taskAssignRemindDTO.setDetailUrl(url);
+        //            taskAssignRemindDTO.setUserName(username);
+        //            taskAssignRemindDTO.setOaTitle("任务指派提醒");
+        //            taskAssignRemindDTO.setOaContext("【" +
+        // projectTaskMapper.queryNickName(username) + "】给您指派了任务【" + taskName + "】，请及时处理！");
+        //            taskAssignRemindDTO.setLinkUrl(OAUtils.ssoCreate(host +
+        // "/pmhub-project/my-task/info?taskId=" + taskId));
+        // TODO: 2024.03.03 @canghe 推送消息暂时关闭
+        //            RocketMqUtils.push2Wx(taskAssignRemindDTO);
+        //        }
 
     }
 
@@ -416,25 +563,29 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
     @Transactional(rollbackFor = Exception.class)
     public void edit(TaskReqVO taskReqVO) {
         ProjectTask oldObj = projectTaskMapper.selectById(taskReqVO.getTaskId());
-        if (ProjectStatusEnum.PAUSE.getStatus().equals(projectTaskMapper.queryProjectStatus(oldObj.getProjectId()))) {
+        if (ProjectStatusEnum.PAUSE
+                .getStatus()
+                .equals(projectTaskMapper.queryProjectStatus(oldObj.getProjectId()))) {
             throw new ServiceException("归属项目已暂停，无法操作任务");
         }
-        if (ProjectStatusEnum.PAUSE.getStatus().equals(projectTaskMapper.queryProjectStatus(taskReqVO.getProjectId()))) {
+        if (ProjectStatusEnum.PAUSE
+                .getStatus()
+                .equals(projectTaskMapper.queryProjectStatus(taskReqVO.getProjectId()))) {
             throw new ServiceException("该任务不能切换到已暂停的项目");
         }
-         // TODO: 2024.06.24 暂时注释掉审批过滤，待远程调用
-//        if (!Objects.equals(oldObj.getStatus(), taskReqVO.getStatus())) {
-//            // 根据 taskId 去查询 是否需要审批
-//            String queryApproved = projectTaskMapper.queryApproved(taskReqVO.getTaskId());
-//            String approved = "0";
-//            if (approved.equals(queryApproved)) {
-//                throw new ServiceException("该任务需要审批，任务状态不允许手动修改");
-//            } else {
-//                if (!SecurityUtils.getUsername().equals(oldObj.getCreatedBy())) {
-//                    throw new ServiceException("该任务不需要审批，只有创建人才能修改任务状态");
-//                }
-//            }
-//        }
+        // TODO: 2024.06.24 暂时注释掉审批过滤，待远程调用
+        //        if (!Objects.equals(oldObj.getStatus(), taskReqVO.getStatus())) {
+        //            // 根据 taskId 去查询 是否需要审批
+        //            String queryApproved = projectTaskMapper.queryApproved(taskReqVO.getTaskId());
+        //            String approved = "0";
+        //            if (approved.equals(queryApproved)) {
+        //                throw new ServiceException("该任务需要审批，任务状态不允许手动修改");
+        //            } else {
+        //                if (!SecurityUtils.getUsername().equals(oldObj.getCreatedBy())) {
+        //                    throw new ServiceException("该任务不需要审批，只有创建人才能修改任务状态");
+        //                }
+        //            }
+        //        }
         ProjectTask projectTask = new ProjectTask();
         BeanUtils.copyProperties(taskReqVO, projectTask);
         projectTask.setId(taskReqVO.getTaskId());
@@ -443,7 +594,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         projectTaskMapper.updateById(projectTask);
 
         LambdaQueryWrapper<ProjectMember> qw = new LambdaQueryWrapper<>();
-        qw.eq(ProjectMember::getPtId, taskReqVO.getTaskId()).eq(ProjectMember::getType, ProjectStatusEnum.TASK.getStatusName());
+        qw.eq(ProjectMember::getPtId, taskReqVO.getTaskId())
+                .eq(ProjectMember::getType, ProjectStatusEnum.TASK.getStatusName());
         List<ProjectMember> projectMembers = projectMemberMapper.selectList(qw);
         if (projectMembers.size() == 1) {
             if (!Objects.equals(taskReqVO.getUserId(), projectMembers.get(0).getUserId())) {
@@ -459,12 +611,15 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
                 projectMemberMapper.insert(projectMember);
             }
         } else if (projectMembers.size() == 2) {
-            Map<Long, List<ProjectMember>> map = projectMembers.stream().collect(Collectors.groupingBy(ProjectMember::getUserId));
+            Map<Long, List<ProjectMember>> map =
+                    projectMembers.stream()
+                            .collect(Collectors.groupingBy(ProjectMember::getUserId));
             List<ProjectMember> pms = map.get(taskReqVO.getUserId());
             if (CollectionUtils.isEmpty(pms)) {
                 // 将creator为0的进行更新
                 LambdaQueryWrapper<ProjectMember> lqw = new LambdaQueryWrapper<>();
-                lqw.eq(ProjectMember::getPtId, taskReqVO.getTaskId()).eq(ProjectMember::getCreator, 0);
+                lqw.eq(ProjectMember::getPtId, taskReqVO.getTaskId())
+                        .eq(ProjectMember::getCreator, 0);
                 ProjectMember projectMember = projectMemberMapper.selectOne(lqw);
                 projectMember.setUserId(taskReqVO.getUserId());
                 projectMember.setUpdatedBy(SecurityUtils.getUsername());
@@ -475,73 +630,114 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
                 if (pms.get(0).getCreator() == 1) {
                     // 删除creator为0的
                     LambdaQueryWrapper<ProjectMember> lqw = new LambdaQueryWrapper<>();
-                    lqw.eq(ProjectMember::getPtId, taskReqVO.getTaskId()).eq(ProjectMember::getCreator, 0);
+                    lqw.eq(ProjectMember::getPtId, taskReqVO.getTaskId())
+                            .eq(ProjectMember::getCreator, 0);
                     projectMemberMapper.delete(lqw);
                 }
             }
         }
         if (!oldObj.getUserId().equals(taskReqVO.getUserId())) {
             // 任务指派消息提醒
-            extracted(taskReqVO.getTaskName(), taskReqVO.getUserId(), SecurityUtils.getUsername(), taskReqVO.getTaskId());
+            extracted(
+                    taskReqVO.getTaskName(),
+                    taskReqVO.getUserId(),
+                    SecurityUtils.getUsername(),
+                    taskReqVO.getTaskId());
         }
         ProjectTask newObj = projectTaskMapper.selectById(taskReqVO.getTaskId());
         List<LogDataVO> data = FieldUtils.getChangedFields(newObj, oldObj);
-        data.forEach(a -> {
-            // 添加日志
-            LogVO lv = new LogVO();
-            lv.setLogType(LogTypeEnum.TRENDS.getStatus());
-            lv.setOperateType("editTask");
-            lv.setType(ProjectStatusEnum.TASK.getStatusName());
-            lv.setPtId(projectTask.getId());
-            lv.setProjectId(projectTask.getProjectId());
-            lv.setUserId(SecurityUtils.getUserId());
+        data.forEach(
+                a -> {
+                    // 添加日志
+                    LogVO lv = new LogVO();
+                    lv.setLogType(LogTypeEnum.TRENDS.getStatus());
+                    lv.setOperateType("editTask");
+                    lv.setType(ProjectStatusEnum.TASK.getStatusName());
+                    lv.setPtId(projectTask.getId());
+                    lv.setProjectId(projectTask.getProjectId());
+                    lv.setUserId(SecurityUtils.getUserId());
 
-            lv.setRemark(a.getRemark());
-            List<LogContentVO> logContentVOList = a.getLogContentVOList();
-            logContentVOList.forEach(logContentVO -> {
-                switch (logContentVO.getField()) {
-                    case "userId":
-                        logContentVO.setOldValue(getSysUserList(Collections.singletonList(Long.valueOf(logContentVO.getOldValue()))).get(0).getNickName());
-                        logContentVO.setNewValue(getSysUserList(Collections.singletonList(Long.valueOf(logContentVO.getNewValue()))).get(0).getNickName());
-                        break;
-                    case "status":
-                    case "executeStatus":
-                        logContentVO.setOldValue(ProjectTaskStatusEnum.getStatusNameByStatus(Integer.parseInt(logContentVO.getOldValue())));
-                        logContentVO.setNewValue(ProjectTaskStatusEnum.getStatusNameByStatus(Integer.parseInt(logContentVO.getNewValue())));
-                        break;
-                    case "taskPriority":
-                        logContentVO.setOldValue(ProjectTaskPriorityEnum.getStatusNameByStatus(Integer.parseInt(logContentVO.getOldValue())));
-                        logContentVO.setNewValue(ProjectTaskPriorityEnum.getStatusNameByStatus(Integer.parseInt(logContentVO.getNewValue())));
-                        break;
-                }
-            });
-            lv.setContent(JSON.toJSONString(logContentVOList));
-            lv.setCreatedBy(SecurityUtils.getUsername());
-            lv.setCreatedTime(new Date());
-            lv.setUpdatedBy(SecurityUtils.getUsername());
-            lv.setUpdatedTime(new Date());
-            projectLogService.run(lv);
-            if (ProjectTaskStatusEnum.FINISHED.getStatus().equals(taskReqVO.getStatus())) {
-                projectTask.setTaskProcess(new BigDecimal("100"));
-            }
-            projectTaskMapper.updateById(projectTask);
-        });
+                    lv.setRemark(a.getRemark());
+                    List<LogContentVO> logContentVOList = a.getLogContentVOList();
+                    logContentVOList.forEach(
+                            logContentVO -> {
+                                switch (logContentVO.getField()) {
+                                    case "userId":
+                                        logContentVO.setOldValue(
+                                                getSysUserList(
+                                                                Collections.singletonList(
+                                                                        Long.valueOf(
+                                                                                logContentVO
+                                                                                        .getOldValue())))
+                                                        .get(0)
+                                                        .getNickName());
+                                        logContentVO.setNewValue(
+                                                getSysUserList(
+                                                                Collections.singletonList(
+                                                                        Long.valueOf(
+                                                                                logContentVO
+                                                                                        .getNewValue())))
+                                                        .get(0)
+                                                        .getNickName());
+                                        break;
+                                    case "status":
+                                    case "executeStatus":
+                                        logContentVO.setOldValue(
+                                                ProjectTaskStatusEnum.getStatusNameByStatus(
+                                                        Integer.parseInt(
+                                                                logContentVO.getOldValue())));
+                                        logContentVO.setNewValue(
+                                                ProjectTaskStatusEnum.getStatusNameByStatus(
+                                                        Integer.parseInt(
+                                                                logContentVO.getNewValue())));
+                                        break;
+                                    case "taskPriority":
+                                        logContentVO.setOldValue(
+                                                ProjectTaskPriorityEnum.getStatusNameByStatus(
+                                                        Integer.parseInt(
+                                                                logContentVO.getOldValue())));
+                                        logContentVO.setNewValue(
+                                                ProjectTaskPriorityEnum.getStatusNameByStatus(
+                                                        Integer.parseInt(
+                                                                logContentVO.getNewValue())));
+                                        break;
+                                }
+                            });
+                    lv.setContent(JSON.toJSONString(logContentVOList));
+                    lv.setCreatedBy(SecurityUtils.getUsername());
+                    lv.setCreatedTime(new Date());
+                    lv.setUpdatedBy(SecurityUtils.getUsername());
+                    lv.setUpdatedTime(new Date());
+                    projectLogService.run(lv);
+                    if (ProjectTaskStatusEnum.FINISHED.getStatus().equals(taskReqVO.getStatus())) {
+                        projectTask.setTaskProcess(new BigDecimal("100"));
+                    }
+                    projectTaskMapper.updateById(projectTask);
+                });
     }
 
     @Override
     public List<TaskResVO> queryChildTask(TaskReqVO taskReqVO) {
         List<TaskResVO> taskResVOList = projectTaskMapper.queryChildTask(taskReqVO.getTaskId());
-        taskResVOList.forEach(detail -> {
-            detail.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(detail.getStatus()));
-            detail.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(detail.getExecuteStatus()));
-            String createdBy = "";
-            if (detail.getUserId() != null) {
-                createdBy = getSysUserList(Collections.singletonList(detail.getUserId())).get(0).getNickName();
-                detail.setExecutor(createdBy);
-            }
-            detail.setCreatedBy(createdBy);
-            detail.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(detail.getTaskPriority()));
-        });
+        taskResVOList.forEach(
+                detail -> {
+                    detail.setStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(detail.getStatus()));
+                    detail.setExecuteStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(detail.getExecuteStatus()));
+                    String createdBy = "";
+                    if (detail.getUserId() != null) {
+                        createdBy =
+                                getSysUserList(Collections.singletonList(detail.getUserId()))
+                                        .get(0)
+                                        .getNickName();
+                        detail.setExecutor(createdBy);
+                    }
+                    detail.setCreatedBy(createdBy);
+                    detail.setTaskPriorityName(
+                            ProjectTaskPriorityEnum.getStatusNameByStatus(
+                                    detail.getTaskPriority()));
+                });
         return taskResVOList;
     }
 
@@ -549,7 +745,9 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
     public List<BurnDownChartVO> burnDownChart(ProjectVO projectVO) {
         List<BurnDownChartVO> list = new ArrayList<>(10);
         LambdaQueryWrapper<ProjectTask> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectTask::getProjectId, projectVO.getProjectId()).orderByAsc(ProjectTask::getCreatedTime);
+        queryWrapper
+                .eq(ProjectTask::getProjectId, projectVO.getProjectId())
+                .orderByAsc(ProjectTask::getCreatedTime);
         List<ProjectTask> projectTasks = projectTaskMapper.selectList(queryWrapper);
 
         if (CollectionUtils.isNotEmpty(projectTasks)) {
@@ -557,50 +755,93 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             String beginDate = DateUtils.dateTime(createdTime);
             String endDate = DateUtils.dateTime(new Date());
             List<String> betweenDate = DateUtils.getBetweenDate(beginDate, endDate);
-            betweenDate.forEach(date -> {
-                LocalDate now = LocalDate.parse(date, DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD)).plusDays(1);
-                BurnDownChartVO burnDownChartVO = new BurnDownChartVO();
-                burnDownChartVO.setDate(date);
-                LambdaQueryWrapper<ProjectTask> qw = new LambdaQueryWrapper<>();
-                qw.eq(ProjectTask::getProjectId, projectVO.getProjectId()).lt(ProjectTask::getCreatedTime, now);
-                List<ProjectTask> projectTasks2 = projectTaskMapper.selectList(qw);
-                burnDownChartVO.setTaskNum(projectTasks2.size());
-                burnDownChartVO.setUnDoneTaskNum((int) projectTasks2.stream().filter(a -> !Objects.equals(a.getStatus(), ProjectTaskStatusEnum.FINISHED.getStatus())).count());
-                burnDownChartVO.setBaseLineNum((int) projectTasks2.stream().filter(a -> !Objects.equals(a.getStatus(), ProjectTaskStatusEnum.FINISHED.getStatus())).filter(o -> {
-                    if (o.getEndTime() == null) {
-                        if (o.getCreatedTime() != null) {
-                            Instant instant = o.getCreatedTime().toInstant();
-                            ZoneId zoneId = ZoneId.systemDefault();
-                            LocalDate create = instant.atZone(zoneId).toLocalDate();
-                            return create.plusDays(5).isAfter(now);
-                        }
-                        return true;
-                    } else {
-                        Instant instant = o.getEndTime().toInstant();
-                        ZoneId zoneId = ZoneId.systemDefault();
-                        LocalDate end = instant.atZone(zoneId).toLocalDate();
-                        return end.plusDays(-1).isBefore(now);
-                    }
-                }).count());
-                list.add(burnDownChartVO);
-            });
+            betweenDate.forEach(
+                    date -> {
+                        LocalDate now =
+                                LocalDate.parse(
+                                                date,
+                                                DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD))
+                                        .plusDays(1);
+                        BurnDownChartVO burnDownChartVO = new BurnDownChartVO();
+                        burnDownChartVO.setDate(date);
+                        LambdaQueryWrapper<ProjectTask> qw = new LambdaQueryWrapper<>();
+                        qw.eq(ProjectTask::getProjectId, projectVO.getProjectId())
+                                .lt(ProjectTask::getCreatedTime, now);
+                        List<ProjectTask> projectTasks2 = projectTaskMapper.selectList(qw);
+                        burnDownChartVO.setTaskNum(projectTasks2.size());
+                        burnDownChartVO.setUnDoneTaskNum(
+                                (int)
+                                        projectTasks2.stream()
+                                                .filter(
+                                                        a ->
+                                                                !Objects.equals(
+                                                                        a.getStatus(),
+                                                                        ProjectTaskStatusEnum
+                                                                                .FINISHED
+                                                                                .getStatus()))
+                                                .count());
+                        burnDownChartVO.setBaseLineNum(
+                                (int)
+                                        projectTasks2.stream()
+                                                .filter(
+                                                        a ->
+                                                                !Objects.equals(
+                                                                        a.getStatus(),
+                                                                        ProjectTaskStatusEnum
+                                                                                .FINISHED
+                                                                                .getStatus()))
+                                                .filter(
+                                                        o -> {
+                                                            if (o.getEndTime() == null) {
+                                                                if (o.getCreatedTime() != null) {
+                                                                    Instant instant =
+                                                                            o.getCreatedTime()
+                                                                                    .toInstant();
+                                                                    ZoneId zoneId =
+                                                                            ZoneId.systemDefault();
+                                                                    LocalDate create =
+                                                                            instant.atZone(zoneId)
+                                                                                    .toLocalDate();
+                                                                    return create.plusDays(5)
+                                                                            .isAfter(now);
+                                                                }
+                                                                return true;
+                                                            } else {
+                                                                Instant instant =
+                                                                        o.getEndTime().toInstant();
+                                                                ZoneId zoneId =
+                                                                        ZoneId.systemDefault();
+                                                                LocalDate end =
+                                                                        instant.atZone(zoneId)
+                                                                                .toLocalDate();
+                                                                return end.plusDays(-1)
+                                                                        .isBefore(now);
+                                                            }
+                                                        })
+                                                .count());
+                        list.add(burnDownChartVO);
+                    });
         }
         return list;
     }
 
     @Override
     public List<ProjectMemberResVO> queryUserList(ProjectTaskReqVO projectTaskReqVO) {
-        List<ProjectMemberResVO> list = projectMemberMapper.queryTaskUserList(projectTaskReqVO.getTaskId());
+        List<ProjectMemberResVO> list =
+                projectMemberMapper.queryTaskUserList(projectTaskReqVO.getTaskId());
         if (CollectionUtils.isEmpty(list)) {
             return Collections.emptyList();
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(ProjectMemberResVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream()
+                        .map(ProjectMemberResVO::getUserId)
+                        .distinct()
+                        .collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -608,16 +849,17 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(projectMemberResVO -> {
-            SysUserVO sysUserVO = userMap.get(projectMemberResVO.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                projectMemberResVO.setUserName(sysUserVO.getUserName());
-                projectMemberResVO.setNickName(sysUserVO.getNickName());
-            }
-        });
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                projectMemberResVO -> {
+                    SysUserVO sysUserVO = userMap.get(projectMemberResVO.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        projectMemberResVO.setUserName(sysUserVO.getUserName());
+                        projectMemberResVO.setNickName(sysUserVO.getNickName());
+                    }
+                });
         return list;
-
     }
 
     @Override
@@ -640,7 +882,6 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
     }
 
     /**
-     *
      * @param logReqVO
      * @return
      */
@@ -655,7 +896,9 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
 
         // 根据 taskId 查询最新的模板
         LambdaQueryWrapper<ProjectFile> lw = new LambdaQueryWrapper<>();
-        lw.eq(ProjectFile::getPtId, taskId).eq(ProjectFile::getType, ProjectStatusEnum.TEMPLATE.getStatusName()).orderByDesc(ProjectFile::getCreatedTime);
+        lw.eq(ProjectFile::getPtId, taskId)
+                .eq(ProjectFile::getType, ProjectStatusEnum.TEMPLATE.getStatusName())
+                .orderByDesc(ProjectFile::getCreatedTime);
         List<ProjectFile> projectFiles = projectFileMapper.selectList(lw);
         if (CollectionUtils.isEmpty(projectFiles)) {
             throw new ServerException("不存在模板文件，请上传之后再下载");
@@ -663,10 +906,10 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             String filePath = projectFiles.get(0).getPathName();
             String fileUrl = projectFiles.get(0).getFileUrl();
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            FileUtils.setAttachmentResponseHeader(response, fileUrl.substring(fileUrl.lastIndexOf("/") + 1));
+            FileUtils.setAttachmentResponseHeader(
+                    response, fileUrl.substring(fileUrl.lastIndexOf("/") + 1));
             FileUtils.writeBytes(filePath, response);
         }
-
     }
 
     @Override
@@ -676,12 +919,12 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             return Collections.emptyList();
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(TaskExportVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream().map(TaskExportVO::getUserId).distinct().collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -689,19 +932,23 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(a -> {
-            a.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
-            a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
-            a.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                a -> {
+                    a.setExecuteStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
+                    a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
+                    a.setTaskPriorityName(
+                            ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
 
-            // 设置用户信息
-            SysUserVO sysUserVO = userMap.get(a.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                a.setExecutor(sysUserVO.getNickName());
-                a.setCreatedBy(sysUserVO.getNickName());
-            }
-        });
+                    // 设置用户信息
+                    SysUserVO sysUserVO = userMap.get(a.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        a.setExecutor(sysUserVO.getNickName());
+                        a.setCreatedBy(sysUserVO.getNickName());
+                    }
+                });
         return list;
     }
 
@@ -714,12 +961,12 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             return Collections.emptyList();
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(TaskExportVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream().map(TaskExportVO::getUserId).distinct().collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -727,19 +974,23 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(a -> {
-            a.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
-            a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
-            a.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                a -> {
+                    a.setExecuteStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
+                    a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
+                    a.setTaskPriorityName(
+                            ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
 
-            // 设置用户信息
-            SysUserVO sysUserVO = userMap.get(a.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                a.setExecutor(sysUserVO.getNickName());
-                a.setCreatedBy(sysUserVO.getNickName());
-            }
-        });
+                    // 设置用户信息
+                    SysUserVO sysUserVO = userMap.get(a.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        a.setExecutor(sysUserVO.getNickName());
+                        a.setCreatedBy(sysUserVO.getNickName());
+                    }
+                });
 
         return list;
     }
@@ -751,63 +1002,90 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             throw new ServiceException("导入任务数据不能为空");
         }
         // todo 后期优化成批量查询，性能优化
-        taskList.forEach(task -> {
-            // 查询用户信息
-            R<LoginUser> userResult = userFeignService.info(task.getUsername(), SecurityConstants.INNER);
+        taskList.forEach(
+                task -> {
+                    // 查询用户信息
+                    R<LoginUser> userResult =
+                            userFeignService.info(task.getUsername(), SecurityConstants.INNER);
 
-            if (Objects.isNull(userResult) || Objects.isNull(userResult.getData())) {
-                throw new ServiceException("登录用户：" + task.getUsername() + " 不存在");
-            }
+                    if (Objects.isNull(userResult) || Objects.isNull(userResult.getData())) {
+                        throw new ServiceException("登录用户：" + task.getUsername() + " 不存在");
+                    }
 
-            LoginUser loginUser = userResult.getData();
-            if (Objects.isNull(loginUser)) {
-                return;
-            }
-            SysUser sysUser =  loginUser.getUser();
+                    LoginUser loginUser = userResult.getData();
+                    if (Objects.isNull(loginUser)) {
+                        return;
+                    }
+                    SysUser sysUser = loginUser.getUser();
 
-            ProjectTask projectTask = new ProjectTask();
-            projectTask.setTaskName(task.getTaskName());
-            projectTask.setBeginTime(DateUtils.parseDate(task.getBeginTime()));
-            projectTask.setEndTime(DateUtils.parseDate(task.getEndTime()));
-            projectTask.setCloseTime(DateUtils.parseDate(task.getCloseTime()));
-            projectTask.setTaskPriority(Integer.valueOf(task.getTaskPriority()));
-            LambdaQueryWrapper<Project> qw = new LambdaQueryWrapper<>();
-            qw.eq(Project::getProjectCode, task.getProjectCode());
-            String projectId = projectMapper.selectOne(qw).getId();
-            if (StringUtils.isBlank(projectId)) {
-                return;
-            }
-            // 根据项目id查询成员
-            LambdaQueryWrapper<ProjectMember> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(ProjectMember::getPtId, projectId).eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName());
-            List<ProjectMember> projectMembers = projectMemberMapper.selectList(queryWrapper);
-            List<Long> userIds = projectMembers.stream().map(ProjectMember::getUserId).collect(Collectors.toList());
-            if (!userIds.contains(sysUser.getUserId())) {
-                return;
-            }
-            projectTask.setProjectId(projectId);
-            LambdaQueryWrapper<ProjectStage> qw2 = new LambdaQueryWrapper<>();
-            qw2.eq(ProjectStage::getProjectId, projectId).orderByAsc(ProjectStage::getStageCode);
-            projectTask.setProjectStageId(projectStageMapper.selectList(qw2).get(0).getId());
-            projectTask.setUserId(sysUser.getUserId());
-            projectTask.setCreatedBy(SecurityUtils.getUsername());
-            projectTask.setCreatedTime(new Date());
-            projectTask.setUpdatedBy(SecurityUtils.getUsername());
-            projectTask.setUpdatedTime(new Date());
-            projectTaskMapper.insert(projectTask);
-            insertMember(projectTask.getId(), 1, SecurityUtils.getUserId());
-            // 添加日志
-            saveLog("importTask", projectTask.getId(), projectTask.getProjectId(), projectTask.getTaskName()
-                    , "导入了任务", null);
-            // 将执行人加入
-            if (projectTask.getUserId() != null && !Objects.equals(projectTask.getUserId(), SecurityUtils.getUserId())) {
-                insertMember(projectTask.getId(), 0, projectTask.getUserId());
-                // 添加日志
-                saveLog("invitePartakeTask", projectTask.getId(), projectTask.getProjectId(), projectTask.getTaskName()
-                        ,"邀请 " + getSysUserList(Collections.singletonList(projectTask.getUserId())).get(0).getNickName() + " 参与任务"
-                        , projectTask.getUserId());
-            }
-        });
+                    ProjectTask projectTask = new ProjectTask();
+                    projectTask.setTaskName(task.getTaskName());
+                    projectTask.setBeginTime(DateUtils.parseDate(task.getBeginTime()));
+                    projectTask.setEndTime(DateUtils.parseDate(task.getEndTime()));
+                    projectTask.setCloseTime(DateUtils.parseDate(task.getCloseTime()));
+                    projectTask.setTaskPriority(Integer.valueOf(task.getTaskPriority()));
+                    LambdaQueryWrapper<Project> qw = new LambdaQueryWrapper<>();
+                    qw.eq(Project::getProjectCode, task.getProjectCode());
+                    String projectId = projectMapper.selectOne(qw).getId();
+                    if (StringUtils.isBlank(projectId)) {
+                        return;
+                    }
+                    // 根据项目id查询成员
+                    LambdaQueryWrapper<ProjectMember> queryWrapper = new LambdaQueryWrapper<>();
+                    queryWrapper
+                            .eq(ProjectMember::getPtId, projectId)
+                            .eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName());
+                    List<ProjectMember> projectMembers =
+                            projectMemberMapper.selectList(queryWrapper);
+                    List<Long> userIds =
+                            projectMembers.stream()
+                                    .map(ProjectMember::getUserId)
+                                    .collect(Collectors.toList());
+                    if (!userIds.contains(sysUser.getUserId())) {
+                        return;
+                    }
+                    projectTask.setProjectId(projectId);
+                    LambdaQueryWrapper<ProjectStage> qw2 = new LambdaQueryWrapper<>();
+                    qw2.eq(ProjectStage::getProjectId, projectId)
+                            .orderByAsc(ProjectStage::getStageCode);
+                    projectTask.setProjectStageId(
+                            projectStageMapper.selectList(qw2).get(0).getId());
+                    projectTask.setUserId(sysUser.getUserId());
+                    projectTask.setCreatedBy(SecurityUtils.getUsername());
+                    projectTask.setCreatedTime(new Date());
+                    projectTask.setUpdatedBy(SecurityUtils.getUsername());
+                    projectTask.setUpdatedTime(new Date());
+                    projectTaskMapper.insert(projectTask);
+                    insertMember(projectTask.getId(), 1, SecurityUtils.getUserId());
+                    // 添加日志
+                    saveLog(
+                            "importTask",
+                            projectTask.getId(),
+                            projectTask.getProjectId(),
+                            projectTask.getTaskName(),
+                            "导入了任务",
+                            null);
+                    // 将执行人加入
+                    if (projectTask.getUserId() != null
+                            && !Objects.equals(
+                                    projectTask.getUserId(), SecurityUtils.getUserId())) {
+                        insertMember(projectTask.getId(), 0, projectTask.getUserId());
+                        // 添加日志
+                        saveLog(
+                                "invitePartakeTask",
+                                projectTask.getId(),
+                                projectTask.getProjectId(),
+                                projectTask.getTaskName(),
+                                "邀请 "
+                                        + getSysUserList(
+                                                        Collections.singletonList(
+                                                                projectTask.getUserId()))
+                                                .get(0)
+                                                .getNickName()
+                                        + " 参与任务",
+                                projectTask.getUserId());
+                    }
+                });
     }
 
     void insertMember(String taskId, Integer creator, Long userId) {
@@ -825,7 +1103,13 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         projectMemberMapper.insert(projectMember);
     }
 
-    void saveLog(String operateType, String taskId, String projectId, String taskName, String remark, Long userId) {
+    void saveLog(
+            String operateType,
+            String taskId,
+            String projectId,
+            String taskName,
+            String remark,
+            Long userId) {
         LogVO logVO = new LogVO();
         logVO.setLogType(LogTypeEnum.TRENDS.getStatus());
         logVO.setOperateType(operateType);
@@ -861,9 +1145,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
             return new PageInfo<>(list);
         }
         // 拿到userids
-        List<Long> userIds = list.stream().map(TaskResVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                list.stream().map(TaskResVO::getUserId).distinct().collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
         if (StringUtils.isNotEmpty(taskReqVO.getExecutor())) {
@@ -872,7 +1155,8 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         if (StringUtils.isNotEmpty(taskReqVO.getCreatedBy())) {
             sysUserDTO.setNickName(taskReqVO.getCreatedBy());
         }
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -880,28 +1164,34 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        list.forEach(a -> {
-            a.setTaskPriorityName(ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
-            a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
-            a.setExecuteStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
-            if (a.getEndTime() != null && a.getBeginTime() != null) {
-                a.setPeriod(DateUtils.differentDaysByMillisecond(a.getEndTime(), a.getBeginTime()));
-            }
-            WorkFlowable workFlowable = new WorkFlowable();
-            workFlowable.setTaskId(a.getTaskProcessId());
-            workFlowable.setApproved(a.getApproved());
-            workFlowable.setDeploymentId(a.getDeployId());
-            workFlowable.setProcInsId(a.getProcInsId());
-            workFlowable.setDefinitionId(a.getDefinitionId());
-            a.setWorkFlowable(workFlowable);
-            // 设置用户信息
-            SysUserVO sysUserVO = userMap.get(a.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                a.setExecutor(sysUserVO.getNickName());
-                a.setCreatedBy(sysUserVO.getNickName());
-            }
-        });
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        list.forEach(
+                a -> {
+                    a.setTaskPriorityName(
+                            ProjectTaskPriorityEnum.getStatusNameByStatus(a.getTaskPriority()));
+                    a.setStatusName(ProjectTaskStatusEnum.getStatusNameByStatus(a.getStatus()));
+                    a.setExecuteStatusName(
+                            ProjectTaskStatusEnum.getStatusNameByStatus(a.getExecuteStatus()));
+                    if (a.getEndTime() != null && a.getBeginTime() != null) {
+                        a.setPeriod(
+                                DateUtils.differentDaysByMillisecond(
+                                        a.getEndTime(), a.getBeginTime()));
+                    }
+                    WorkFlowable workFlowable = new WorkFlowable();
+                    workFlowable.setTaskId(a.getTaskProcessId());
+                    workFlowable.setApproved(a.getApproved());
+                    workFlowable.setDeploymentId(a.getDeployId());
+                    workFlowable.setProcInsId(a.getProcInsId());
+                    workFlowable.setDefinitionId(a.getDefinitionId());
+                    a.setWorkFlowable(workFlowable);
+                    // 设置用户信息
+                    SysUserVO sysUserVO = userMap.get(a.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        a.setExecutor(sysUserVO.getNickName());
+                        a.setCreatedBy(sysUserVO.getNickName());
+                    }
+                });
         return new PageInfo<>(list);
     }
 
@@ -926,5 +1216,4 @@ public class ProjectTaskServiceImpl extends ServiceImpl<ProjectTaskMapper, Proje
         queryWrapper.in(ProjectTaskProcess::getExtraId, taskIds);
         return projectTaskProcessMapper.selectList(queryWrapper);
     }
-
 }

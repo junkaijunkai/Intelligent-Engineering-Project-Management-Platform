@@ -1,12 +1,10 @@
 package com.laigeoffer.pmhub.workflow.service;
 
-
 import com.laigeoffer.pmhub.base.core.core.domain.PageQuery;
 import com.laigeoffer.pmhub.base.core.core.page.Table2DataInfo;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfCopyBo;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfTaskBo;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfCopyVo;
-
 import java.util.List;
 
 /**
@@ -42,6 +40,7 @@ public interface IWfCopyService {
 
     /**
      * 抄送
+     *
      * @param taskBo
      * @return
      */

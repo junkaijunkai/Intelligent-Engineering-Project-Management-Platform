@@ -1,20 +1,21 @@
 package com.laigeoffer.pmhub.workflow.listener.strategy;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * 监听器抽象类工厂
+ *
  * @date 2023-01-09 09:25
  */
 @Service
 public class ListenerFactory {
 
     private static final Map<String, String> beanNames = new ConcurrentHashMap<>();
+
     static {
         ListenerTypeEnum[] listenerTypeEnums = ListenerTypeEnum.values();
         for (ListenerTypeEnum listenerTypeEnum : listenerTypeEnums) {
@@ -23,8 +24,8 @@ public class ListenerFactory {
     }
 
     // 通过 Map 注入，通过 spring bean 的名称作为 key 动态获取对应实例
-    @Autowired
-    private Map<String, ListenerAbstractExecutor> executorMap;
+    @Autowired private Map<String, ListenerAbstractExecutor> executorMap;
+
     // 工厂层执行器
     public void execute(String type, ListenerDTO listenerDTO) {
         String beanName = beanNames.get(type);

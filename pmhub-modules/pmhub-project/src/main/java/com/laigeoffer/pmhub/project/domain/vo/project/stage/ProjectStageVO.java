@@ -4,21 +4,16 @@ package com.laigeoffer.pmhub.project.domain.vo.project.stage;
  * @date 2022-12-19 16:42
  */
 public class ProjectStageVO {
-    /**
-     * 阶段id
-     */
+    /** 阶段id */
     private String stageId;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
-    /**
-     * 阶段编号
-     */
+
+    /** 阶段编号 */
     private Integer stageCode;
-    /**
-     * 阶段名
-     */
+
+    /** 阶段名 */
     private String stageName;
 
     public String getStageId() {

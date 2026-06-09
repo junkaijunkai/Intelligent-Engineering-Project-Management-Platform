@@ -4,21 +4,16 @@ package com.laigeoffer.pmhub.project.domain.vo.project.log;
  * @date 2022-12-21 14:30
  */
 public class LogReqVO {
-    /**
-     * 任务id
-     */
+    /** 任务id */
     private String taskId;
-    /**
-     * 类型
-     */
+
+    /** 类型 */
     private Integer logType;
-    /**
-     * 页码
-     */
+
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
+
+    /** 页数 */
     private Integer pageSize;
 
     public String getTaskId() {

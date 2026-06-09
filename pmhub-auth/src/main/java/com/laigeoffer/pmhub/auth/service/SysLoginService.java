@@ -1,6 +1,5 @@
 package com.laigeoffer.pmhub.auth.service;
 
-
 import com.laigeoffer.pmhub.api.system.UserFeignService;
 import com.laigeoffer.pmhub.base.core.config.redis.RedisService;
 import com.laigeoffer.pmhub.base.core.constant.CacheConstants;
@@ -19,27 +18,18 @@ import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * 登录校验方法
- *
- */
+/** 登录校验方法 */
 @Component
 public class SysLoginService {
-    @Autowired
-    private UserFeignService userFeignService;
+    @Autowired private UserFeignService userFeignService;
 
-    @Autowired
-    private SysPasswordService passwordService;
+    @Autowired private SysPasswordService passwordService;
 
-    @Autowired
-    private SysRecordLogService recordLogService;
+    @Autowired private SysRecordLogService recordLogService;
 
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
-    /**
-     * 登录
-     */
+    /** 登录 */
     public LoginUser login(String username, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isAnyBlank(username, password)) {
@@ -59,7 +49,8 @@ public class SysLoginService {
             throw new ServiceException("用户名不在指定范围");
         }
         // IP黑名单校验
-        String blackStr = Convert.toStr(redisService.getCacheObject(CacheConstants.SYS_LOGIN_BLACKIPLIST));
+        String blackStr =
+                Convert.toStr(redisService.getCacheObject(CacheConstants.SYS_LOGIN_BLACKIPLIST));
         if (IpUtils.isMatchedIp(blackStr, IpUtils.getIpAddr())) {
             recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, "很遗憾，访问IP已被列入系统黑名单");
             throw new ServiceException("很遗憾，访问IP已被列入系统黑名单");
@@ -95,9 +86,7 @@ public class SysLoginService {
         recordLogService.recordLogininfor(loginName, Constants.LOGOUT, "退出成功");
     }
 
-    /**
-     * 注册
-     */
+    /** 注册 */
     public void register(String username, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isAnyBlank(username, password)) {

@@ -7,9 +7,7 @@ package com.laigeoffer.pmhub.workflow.common.enums;
  */
 public enum FlowComment {
 
-    /**
-     * 说明
-     */
+    /** 说明 */
     NORMAL("1", "正常"),
     REBACK("2", "退回"),
     REJECT("3", "驳回"),
@@ -18,14 +16,10 @@ public enum FlowComment {
     STOP("6", "终止"),
     REVOKE("7", "撤回");
 
-    /**
-     * 类型
-     */
+    /** 类型 */
     private final String type;
 
-    /**
-     * 说明
-     */
+    /** 说明 */
     private final String remark;
 
     FlowComment(String type, String remark) {

@@ -11,33 +11,25 @@ import com.laigeoffer.pmhub.gen.domain.GenTable;
 import com.laigeoffer.pmhub.gen.domain.GenTableColumn;
 import com.laigeoffer.pmhub.gen.service.IGenTableColumnService;
 import com.laigeoffer.pmhub.gen.service.IGenTableService;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * 代码生成 操作处理
- *
- */
+/** 代码生成 操作处理 */
 @RestController
 @RequestMapping("/gen/tool/gen")
 public class GenController extends BaseController {
-    @Autowired
-    private IGenTableService genTableService;
+    @Autowired private IGenTableService genTableService;
 
-    @Autowired
-    private IGenTableColumnService genTableColumnService;
+    @Autowired private IGenTableColumnService genTableColumnService;
 
-    /**
-     * 查询代码生成列表
-     */
+    /** 查询代码生成列表 */
     @RequiresPermissions("@ss.hasPermi('tool:gen:list')")
     @GetMapping("/list")
     public TableDataInfo genList(GenTable genTable) {
@@ -46,15 +38,14 @@ public class GenController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 修改代码生成业务
-     */
+    /** 修改代码生成业务 */
     @RequiresPermissions("@ss.hasPermi('tool:gen:query')")
     @GetMapping(value = "/{tableId}")
     public AjaxResult getInfo(@PathVariable Long tableId) {
         GenTable table = genTableService.selectGenTableById(tableId);
         List<GenTable> tables = genTableService.selectGenTableAll();
-        List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
+        List<GenTableColumn> list =
+                genTableColumnService.selectGenTableColumnListByTableId(tableId);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("info", table);
         map.put("rows", list);
@@ -62,9 +53,7 @@ public class GenController extends BaseController {
         return success(map);
     }
 
-    /**
-     * 查询数据库列表
-     */
+    /** 查询数据库列表 */
     @RequiresPermissions("@ss.hasPermi('tool:gen:list')")
     @GetMapping("/db/list")
     public TableDataInfo dataList(GenTable genTable) {
@@ -73,22 +62,19 @@ public class GenController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 查询数据表字段列表
-     */
+    /** 查询数据表字段列表 */
     @RequiresPermissions("@ss.hasPermi('tool:gen:list')")
     @GetMapping(value = "/column/{tableId}")
     public TableDataInfo columnList(Long tableId) {
         TableDataInfo dataInfo = new TableDataInfo();
-        List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
+        List<GenTableColumn> list =
+                genTableColumnService.selectGenTableColumnListByTableId(tableId);
         dataInfo.setRows(list);
         dataInfo.setTotal(list.size());
         return dataInfo;
     }
 
-    /**
-     * 导入表结构（保存）
-     */
+    /** 导入表结构（保存） */
     @RequiresPermissions("@ss.hasPermi('tool:gen:import')")
     @Log(title = "代码生成", businessType = BusinessType.IMPORT)
     @PostMapping("/importTable")
@@ -100,9 +86,7 @@ public class GenController extends BaseController {
         return success();
     }
 
-    /**
-     * 修改保存代码生成业务
-     */
+    /** 修改保存代码生成业务 */
     @RequiresPermissions("@ss.hasPermi('tool:gen:edit')")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -112,9 +96,7 @@ public class GenController extends BaseController {
         return success();
     }
 
-    /**
-     * 删除代码生成
-     */
+    /** 删除代码生成 */
     @RequiresPermissions("tool:gen:remove")
     @Log(title = "代码生成", businessType = BusinessType.DELETE)
     @DeleteMapping("/{tableIds}")
@@ -123,9 +105,7 @@ public class GenController extends BaseController {
         return success();
     }
 
-    /**
-     * 预览代码
-     */
+    /** 预览代码 */
     @RequiresPermissions("tool:gen:preview")
     @GetMapping("/preview/{tableId}")
     public AjaxResult preview(@PathVariable("tableId") Long tableId) throws IOException {
@@ -133,20 +113,17 @@ public class GenController extends BaseController {
         return success(dataMap);
     }
 
-    /**
-     * 生成代码（下载方式）
-     */
+    /** 生成代码（下载方式） */
     @RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/download/{tableName}")
-    public void download(HttpServletResponse response, @PathVariable("tableName") String tableName) throws IOException {
+    public void download(HttpServletResponse response, @PathVariable("tableName") String tableName)
+            throws IOException {
         byte[] data = genTableService.downloadCode(tableName);
         genCode(response, data);
     }
 
-    /**
-     * 生成代码（自定义路径）
-     */
+    /** 生成代码（自定义路径） */
     @RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/genCode/{tableName}")
@@ -155,9 +132,7 @@ public class GenController extends BaseController {
         return success();
     }
 
-    /**
-     * 同步数据库
-     */
+    /** 同步数据库 */
     @RequiresPermissions("tool:gen:edit")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @GetMapping("/synchDb/{tableName}")
@@ -166,9 +141,7 @@ public class GenController extends BaseController {
         return success();
     }
 
-    /**
-     * 批量生成代码
-     */
+    /** 批量生成代码 */
     @RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/batchGenCode")
@@ -178,9 +151,7 @@ public class GenController extends BaseController {
         genCode(response, data);
     }
 
-    /**
-     * 生成zip文件
-     */
+    /** 生成zip文件 */
     private void genCode(HttpServletResponse response, byte[] data) throws IOException {
         response.reset();
         response.addHeader("Access-Control-Allow-Origin", "*");
@@ -190,6 +161,4 @@ public class GenController extends BaseController {
         response.setContentType("application/octet-stream; charset=UTF-8");
         IOUtils.write(data, response.getOutputStream());
     }
-
-
 }

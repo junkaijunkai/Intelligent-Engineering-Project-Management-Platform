@@ -9,40 +9,28 @@ import com.laigeoffer.pmhub.base.notice.utils.StringCreateUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 任务指派提醒
- *
- */
+/** 任务指派提醒 */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = TaskAssignRemindDTO.class, name = "任务指派提醒")
-})
+@JsonSubTypes({@JsonSubTypes.Type(value = TaskAssignRemindDTO.class, name = "任务指派提醒")})
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TaskAssignRemindDTO extends Message {
 
-    private static final String DESC = "<div class='gray'>%s</div> <div class='normal'>【%s】给您指派了任务【%s】，请及时处理！</div>";
+    private static final String DESC =
+            "<div class='gray'>%s</div> <div class='normal'>【%s】给您指派了任务【%s】，请及时处理！</div>";
     private static final String MSG_TITLE = "任务指派提醒";
     private static final String BUTTON_TEXT = "查看详情";
 
-    /**
-     * 企微消息类型固定为TEMPLATE_CARD
-     */
+    /** 企微消息类型固定为TEMPLATE_CARD */
     public final String msgType = "textcard";
 
-    /**
-     * 任务名
-     */
+    /** 任务名 */
     private String taskName;
 
-    /**
-     * 详情url
-     */
+    /** 详情url */
     private String detailUrl;
 
-    /**
-     * 指派人
-     */
+    /** 指派人 */
     private String creator;
 
     private String oaTitle;
@@ -50,10 +38,7 @@ public class TaskAssignRemindDTO extends Message {
     private String userName;
     private String linkUrl;
 
-
-    /**
-     * 转微信消息
-     */
+    /** 转微信消息 */
     public NoticeWxMessageDTO toWxMessage() {
         NoticeWxMessageDTO noticeWxMessageDTO = new NoticeWxMessageDTO();
 
@@ -79,7 +64,6 @@ public class TaskAssignRemindDTO extends Message {
         // 重复消息检查的时间间隔
         noticeWxMessageDTO.setDuplicate_check_interval(getDuplicateCheckInterval());
 
-
         // 设置模板消息
         TextCardDTO textcard = new TextCardDTO();
         textcard.setBtntxt(BUTTON_TEXT);
@@ -91,5 +75,4 @@ public class TaskAssignRemindDTO extends Message {
         noticeWxMessageDTO.setTextcard(textcard);
         return noticeWxMessageDTO;
     }
-
 }

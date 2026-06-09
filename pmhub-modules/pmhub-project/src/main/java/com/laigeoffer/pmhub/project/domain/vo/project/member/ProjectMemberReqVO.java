@@ -4,21 +4,16 @@ package com.laigeoffer.pmhub.project.domain.vo.project.member;
  * @date 2022-12-13 09:34
  */
 public class ProjectMemberReqVO {
-    /**
-     * 页码
-     */
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
+
+    /** 页数 */
     private Integer pageSize;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
-    /**
-     * 关键词
-     */
+
+    /** 关键词 */
     private String keyword;
 
     public Integer getPageNum() {

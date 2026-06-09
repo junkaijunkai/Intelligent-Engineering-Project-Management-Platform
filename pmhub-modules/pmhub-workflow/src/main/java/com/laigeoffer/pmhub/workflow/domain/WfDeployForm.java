@@ -14,34 +14,22 @@ import lombok.Data;
 public class WfDeployForm {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 流程部署主键
-     */
+    /** 流程部署主键 */
     @TableId(value = "deploy_id")
     private String deployId;
 
-    /**
-     * 表单Key
-     */
+    /** 表单Key */
     private String formKey;
 
-    /**
-     * 节点Key
-     */
+    /** 节点Key */
     private String nodeKey;
 
-    /**
-     * 表单名称
-     */
+    /** 表单名称 */
     private String formName;
 
-    /**
-     * 节点名称
-     */
+    /** 节点名称 */
     private String nodeName;
 
-    /**
-     * 表单内容
-     */
+    /** 表单内容 */
     private String content;
 }

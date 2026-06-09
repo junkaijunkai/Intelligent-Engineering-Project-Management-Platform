@@ -14,7 +14,8 @@ public class ProjectProcessDTO implements Serializable {
     private Map<String, Object> variables;
 
     // 构造函数
-    public ProjectProcessDTO(String projectId, String procDefId, String url, Map<String, Object> variables) {
+    public ProjectProcessDTO(
+            String projectId, String procDefId, String url, Map<String, Object> variables) {
         this.projectId = projectId;
         this.procDefId = procDefId;
         this.url = url;

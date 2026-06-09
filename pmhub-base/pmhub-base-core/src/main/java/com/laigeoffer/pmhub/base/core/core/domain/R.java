@@ -1,23 +1,16 @@
 package com.laigeoffer.pmhub.base.core.core.domain;
 
-
 import com.laigeoffer.pmhub.base.core.constant.HttpStatus;
-
 import java.io.Serializable;
 
-/**
- * 响应信息主体
- *
- */
+/** 响应信息主体 */
 public class R<T> implements Serializable {
-    /**
-     * 成功
-     */
+    /** 成功 */
     public static final int SUCCESS = HttpStatus.SUCCESS;
-    /**
-     * 失败
-     */
+
+    /** 失败 */
     public static final int FAIL = HttpStatus.ERROR;
+
     private static final long serialVersionUID = 1L;
     private int code;
 

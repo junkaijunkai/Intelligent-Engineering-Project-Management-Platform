@@ -9,31 +9,24 @@ import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.core.domain.model.LoginUser;
 import com.laigeoffer.pmhub.base.core.enums.BusinessType;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
+import com.laigeoffer.pmhub.base.core.utils.file.FileUploadUtils;
 import com.laigeoffer.pmhub.base.core.utils.file.MimeTypeUtils;
 import com.laigeoffer.pmhub.base.security.service.TokenService;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
-import com.laigeoffer.pmhub.base.core.utils.file.FileUploadUtils;
 import com.laigeoffer.pmhub.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * 个人信息 业务处理
- *
- */
+/** 个人信息 业务处理 */
 @RestController
 @RequestMapping("/system/user/profile")
 public class SysProfileController extends BaseController {
-    @Autowired
-    private ISysUserService userService;
+    @Autowired private ISysUserService userService;
 
-    @Autowired
-    private TokenService tokenService;
+    @Autowired private TokenService tokenService;
 
-    /**
-     * 个人信息
-     */
+    /** 个人信息 */
     @GetMapping
     public AjaxResult profile() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
@@ -44,9 +37,7 @@ public class SysProfileController extends BaseController {
         return ajax;
     }
 
-    /**
-     * 修改用户
-     */
+    /** 修改用户 */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult updateProfile(@RequestBody SysUser user) {
@@ -77,9 +68,7 @@ public class SysProfileController extends BaseController {
         return error("修改个人信息异常，请联系管理员");
     }
 
-    /**
-     * 重置密码
-     */
+    /** 重置密码 */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
     public AjaxResult updatePwd(String oldPassword, String newPassword) {
@@ -101,16 +90,16 @@ public class SysProfileController extends BaseController {
         return error("修改密码异常，请联系管理员");
     }
 
-    /**
-     * 头像上传
-     */
+    /** 头像上传 */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
     public AjaxResult avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             LoginUser loginUser = SecurityUtils.getLoginUser();
             // TODO: 2024.05.11 文件上传微服务调用
-            String avatar = FileUploadUtils.upload(PmhubConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            String avatar =
+                    FileUploadUtils.upload(
+                            PmhubConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
                 AjaxResult ajax = AjaxResult.success();
                 ajax.put("imgUrl", avatar);

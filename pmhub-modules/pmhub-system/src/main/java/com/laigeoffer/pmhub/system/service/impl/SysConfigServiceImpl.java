@@ -11,28 +11,20 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.system.domain.SysConfig;
 import com.laigeoffer.pmhub.system.mapper.SysConfigMapper;
 import com.laigeoffer.pmhub.system.service.ISysConfigService;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.Collection;
-import java.util.List;
-
-/**
- * 参数配置 服务层实现
- *
- */
+/** 参数配置 服务层实现 */
 @Service
 public class SysConfigServiceImpl implements ISysConfigService {
-    @Autowired
-    private SysConfigMapper configMapper;
+    @Autowired private SysConfigMapper configMapper;
 
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
-    /**
-     * 项目启动时，初始化参数到缓存
-     */
+    /** 项目启动时，初始化参数到缓存 */
     @PostConstruct
     public void init() {
         loadingConfigCache();
@@ -109,7 +101,8 @@ public class SysConfigServiceImpl implements ISysConfigService {
     public int insertConfig(SysConfig config) {
         int row = configMapper.insertConfig(config);
         if (row > 0) {
-            redisService.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisService.setCacheObject(
+                    getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
         return row;
     }
@@ -124,7 +117,8 @@ public class SysConfigServiceImpl implements ISysConfigService {
     public int updateConfig(SysConfig config) {
         int row = configMapper.updateConfig(config);
         if (row > 0) {
-            redisService.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisService.setCacheObject(
+                    getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
         return row;
     }
@@ -146,29 +140,24 @@ public class SysConfigServiceImpl implements ISysConfigService {
         }
     }
 
-    /**
-     * 加载参数缓存数据
-     */
+    /** 加载参数缓存数据 */
     @Override
     public void loadingConfigCache() {
         List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
         for (SysConfig config : configsList) {
-            redisService.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisService.setCacheObject(
+                    getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
     }
 
-    /**
-     * 清空参数缓存数据
-     */
+    /** 清空参数缓存数据 */
     @Override
     public void clearConfigCache() {
         Collection<String> keys = redisService.keys(CacheConstants.SYS_CONFIG_KEY + "*");
         redisService.deleteObject(keys);
     }
 
-    /**
-     * 重置参数缓存数据
-     */
+    /** 重置参数缓存数据 */
     @Override
     public void resetConfigCache() {
         clearConfigCache();

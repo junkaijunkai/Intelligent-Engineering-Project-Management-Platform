@@ -2,19 +2,13 @@ package com.laigeoffer.pmhub.workflow.domain.vo;
 
 import cn.hutool.json.JSONUtil;
 
-/**
- * 代办任务数量提醒
- */
+/** 代办任务数量提醒 */
 public class TodoNumVO {
 
-    /**
-     * 微信id
-     * */
+    /** 微信id */
     String userWxName;
 
-    /**
-     * 代办数量
-     * */
+    /** 代办数量 */
     Integer num;
 
     String userName;
@@ -44,7 +38,7 @@ public class TodoNumVO {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return JSONUtil.toJsonStr(this);
     }
 }

@@ -6,17 +6,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.laigeoffer.pmhub.base.core.core.domain.PageQuery;
+import com.laigeoffer.pmhub.base.core.core.domain.entity.WfTaskProcess;
 import com.laigeoffer.pmhub.base.core.core.page.Table2DataInfo;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
 import com.laigeoffer.pmhub.base.core.utils.JsonUtils;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.workflow.common.constant.ProcessConstants;
 import com.laigeoffer.pmhub.workflow.common.enums.FormType;
 import com.laigeoffer.pmhub.workflow.domain.WfApprovalSet;
 import com.laigeoffer.pmhub.workflow.domain.WfMaterialsScrappedProcess;
 import com.laigeoffer.pmhub.workflow.domain.WfModelDeploy;
-import com.laigeoffer.pmhub.base.core.core.domain.entity.WfTaskProcess;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfModelBo;
 import com.laigeoffer.pmhub.workflow.domain.dto.WfMetaInfoDto;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfFormVo;
@@ -31,6 +31,10 @@ import com.laigeoffer.pmhub.workflow.service.IWfDeployFormService;
 import com.laigeoffer.pmhub.workflow.service.IWfFormService;
 import com.laigeoffer.pmhub.workflow.service.IWfModelService;
 import com.laigeoffer.pmhub.workflow.utils.ModelUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,11 +46,6 @@ import org.flowable.engine.repository.ModelQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @createTime 2022/6/21 9:11
@@ -65,7 +64,8 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
 
     @Override
     public Table2DataInfo<WfModelVo> list(WfModelBo modelBo, PageQuery pageQuery) {
-        ModelQuery modelQuery = repositoryService.createModelQuery().latestVersion().orderByCreateTime().desc();
+        ModelQuery modelQuery =
+                repositoryService.createModelQuery().latestVersion().orderByCreateTime().desc();
         // 构建查询条件
         if (StringUtils.isNotBlank(modelBo.getModelKey())) {
             modelQuery.modelKey(modelBo.getModelKey());
@@ -84,33 +84,40 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         int offset = pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<Model> modelList = modelQuery.listPage(offset, pageQuery.getPageSize());
         List<WfModelVo> modelVoList = new ArrayList<>(modelList.size());
-        modelList.forEach(model -> {
-            WfModelVo modelVo = new WfModelVo();
-            modelVo.setModelId(model.getId());
-            modelVo.setModelName(model.getName());
-            modelVo.setModelKey(model.getKey());
-            modelVo.setCategory(model.getCategory());
-            modelVo.setCreateTime(model.getCreateTime());
-            modelVo.setVersion(model.getVersion());
-            WfMetaInfoDto metaInfo = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
-            if (metaInfo != null) {
-                modelVo.setDescription(metaInfo.getDescription());
-                modelVo.setFormType(metaInfo.getFormType());
-                modelVo.setFormId(metaInfo.getFormId());
-            }
-            modelVoList.add(modelVo);
-        });
-        modelVoList.forEach(a -> {
-            LambdaQueryWrapper<WfModelDeploy> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(WfModelDeploy::getModelId, a.getModelId());
-            WfModelDeploy wfModelDeploy = wfModelDeployMapper.selectOne(queryWrapper);
-            if (wfModelDeploy != null) {
-                a.setDeployed(wfModelDeploy.getDeployed() == 1);
-            } else {
-                List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().processDefinitionKey(a.getModelKey()).list();
-                a.setDeployed(CollectionUtils.isNotEmpty(list));
-            }
-        });
+        modelList.forEach(
+                model -> {
+                    WfModelVo modelVo = new WfModelVo();
+                    modelVo.setModelId(model.getId());
+                    modelVo.setModelName(model.getName());
+                    modelVo.setModelKey(model.getKey());
+                    modelVo.setCategory(model.getCategory());
+                    modelVo.setCreateTime(model.getCreateTime());
+                    modelVo.setVersion(model.getVersion());
+                    WfMetaInfoDto metaInfo =
+                            JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
+                    if (metaInfo != null) {
+                        modelVo.setDescription(metaInfo.getDescription());
+                        modelVo.setFormType(metaInfo.getFormType());
+                        modelVo.setFormId(metaInfo.getFormId());
+                    }
+                    modelVoList.add(modelVo);
+                });
+        modelVoList.forEach(
+                a -> {
+                    LambdaQueryWrapper<WfModelDeploy> queryWrapper = new LambdaQueryWrapper<>();
+                    queryWrapper.eq(WfModelDeploy::getModelId, a.getModelId());
+                    WfModelDeploy wfModelDeploy = wfModelDeployMapper.selectOne(queryWrapper);
+                    if (wfModelDeploy != null) {
+                        a.setDeployed(wfModelDeploy.getDeployed() == 1);
+                    } else {
+                        List<ProcessDefinition> list =
+                                repositoryService
+                                        .createProcessDefinitionQuery()
+                                        .processDefinitionKey(a.getModelKey())
+                                        .list();
+                        a.setDeployed(CollectionUtils.isNotEmpty(list));
+                    }
+                });
 
         Page<WfModelVo> page = new Page<>();
         page.setRecords(modelVoList);
@@ -120,7 +127,8 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
 
     @Override
     public List<WfModelVo> list(WfModelBo modelBo) {
-        ModelQuery modelQuery = repositoryService.createModelQuery().latestVersion().orderByCreateTime().desc();
+        ModelQuery modelQuery =
+                repositoryService.createModelQuery().latestVersion().orderByCreateTime().desc();
         // 构建查询条件
         if (StringUtils.isNotBlank(modelBo.getModelKey())) {
             modelQuery.modelKey(modelBo.getModelKey());
@@ -133,31 +141,35 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         }
         List<Model> modelList = modelQuery.list();
         List<WfModelVo> modelVoList = new ArrayList<>(modelList.size());
-        modelList.forEach(model -> {
-            WfModelVo modelVo = new WfModelVo();
-            modelVo.setModelId(model.getId());
-            modelVo.setModelName(model.getName());
-            modelVo.setModelKey(model.getKey());
-            modelVo.setCategory(model.getCategory());
-            modelVo.setCreateTime(model.getCreateTime());
-            modelVo.setVersion(model.getVersion());
-            WfMetaInfoDto metaInfo = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
-            if (metaInfo != null) {
-                modelVo.setDescription(metaInfo.getDescription());
-                modelVo.setFormType(metaInfo.getFormType());
-                modelVo.setFormId(metaInfo.getFormId());
-            }
-            modelVoList.add(modelVo);
-        });
+        modelList.forEach(
+                model -> {
+                    WfModelVo modelVo = new WfModelVo();
+                    modelVo.setModelId(model.getId());
+                    modelVo.setModelName(model.getName());
+                    modelVo.setModelKey(model.getKey());
+                    modelVo.setCategory(model.getCategory());
+                    modelVo.setCreateTime(model.getCreateTime());
+                    modelVo.setVersion(model.getVersion());
+                    WfMetaInfoDto metaInfo =
+                            JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
+                    if (metaInfo != null) {
+                        modelVo.setDescription(metaInfo.getDescription());
+                        modelVo.setFormType(metaInfo.getFormType());
+                        modelVo.setFormId(metaInfo.getFormId());
+                    }
+                    modelVoList.add(modelVo);
+                });
         return modelVoList;
     }
 
     @Override
     public Table2DataInfo<WfModelVo> historyList(WfModelBo modelBo, PageQuery pageQuery) {
-        ModelQuery modelQuery = repositoryService.createModelQuery()
-            .modelKey(modelBo.getModelKey())
-            .orderByModelVersion()
-            .desc();
+        ModelQuery modelQuery =
+                repositoryService
+                        .createModelQuery()
+                        .modelKey(modelBo.getModelKey())
+                        .orderByModelVersion()
+                        .desc();
         // 执行查询（不显示最新版，-1）
         long pageTotal = modelQuery.count() - 1;
         if (pageTotal <= 0) {
@@ -167,22 +179,24 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         int offset = 1 + pageQuery.getPageSize() * (pageQuery.getPageNum() - 1);
         List<Model> modelList = modelQuery.listPage(offset, pageQuery.getPageSize());
         List<WfModelVo> modelVoList = new ArrayList<>(modelList.size());
-        modelList.forEach(model -> {
-            WfModelVo modelVo = new WfModelVo();
-            modelVo.setModelId(model.getId());
-            modelVo.setModelName(model.getName());
-            modelVo.setModelKey(model.getKey());
-            modelVo.setCategory(model.getCategory());
-            modelVo.setCreateTime(model.getCreateTime());
-            modelVo.setVersion(model.getVersion());
-            WfMetaInfoDto metaInfo = JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
-            if (metaInfo != null) {
-                modelVo.setDescription(metaInfo.getDescription());
-                modelVo.setFormType(metaInfo.getFormType());
-                modelVo.setFormId(metaInfo.getFormId());
-            }
-            modelVoList.add(modelVo);
-        });
+        modelList.forEach(
+                model -> {
+                    WfModelVo modelVo = new WfModelVo();
+                    modelVo.setModelId(model.getId());
+                    modelVo.setModelName(model.getName());
+                    modelVo.setModelKey(model.getKey());
+                    modelVo.setCategory(model.getCategory());
+                    modelVo.setCreateTime(model.getCreateTime());
+                    modelVo.setVersion(model.getVersion());
+                    WfMetaInfoDto metaInfo =
+                            JsonUtils.parseObject(model.getMetaInfo(), WfMetaInfoDto.class);
+                    if (metaInfo != null) {
+                        modelVo.setDescription(metaInfo.getDescription());
+                        modelVo.setFormType(metaInfo.getFormType());
+                        modelVo.setFormId(metaInfo.getFormId());
+                    }
+                    modelVoList.add(modelVo);
+                });
         Page<WfModelVo> page = new Page<>();
         page.setRecords(modelVoList);
         page.setTotal(pageTotal);
@@ -239,7 +253,12 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         // 保存流程模型
         repositoryService.saveModel(model);
         // 初始化开始节点
-        BpmnModel bpmnModel = ModelUtils.getBpmnModel(ModelUtils.buildBpmnXml(modelBo.getModelKey(), modelBo.getModelName(), modelBo.getCategory()));
+        BpmnModel bpmnModel =
+                ModelUtils.getBpmnModel(
+                        ModelUtils.buildBpmnXml(
+                                modelBo.getModelKey(),
+                                modelBo.getModelName(),
+                                modelBo.getCategory()));
         repositoryService.addModelEditorSource(model.getId(), ModelUtils.getBpmnXml(bpmnModel));
         // 新增模型部署关联 判断是否部署
         insertOrUpdate(model.getId(), 0);
@@ -258,6 +277,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
 
     /**
      * 新增模型部署关联 判断是否部署
+     *
      * @param modelId
      */
     private void insertOrUpdate(String modelId, Integer deployed) {
@@ -351,11 +371,13 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
             throw new RuntimeException("流程模型不存在！");
         }
         String bpmnXml = queryBpmnXmlById(modelId);
-        Integer latestVersion = repositoryService.createModelQuery()
-            .modelKey(model.getKey())
-            .latestVersion()
-            .singleResult()
-            .getVersion();
+        Integer latestVersion =
+                repositoryService
+                        .createModelQuery()
+                        .modelKey(model.getKey())
+                        .latestVersion()
+                        .singleResult()
+                        .getVersion();
         if (model.getVersion().equals(latestVersion)) {
             throw new RuntimeException("当前版本已是最新版！");
         }
@@ -375,21 +397,27 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
     @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(Collection<String> ids) {
         List<String> errorIds = new ArrayList<>(10);
-        ids.forEach(id -> {
-            Model model = repositoryService.getModel(id);
-            if (ObjectUtil.isNull(model)) {
-                throw new RuntimeException("流程模型不存在！");
-            }
-            long count = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey()).count();
+        ids.forEach(
+                id -> {
+                    Model model = repositoryService.getModel(id);
+                    if (ObjectUtil.isNull(model)) {
+                        throw new RuntimeException("流程模型不存在！");
+                    }
+                    long count =
+                            repositoryService
+                                    .createProcessDefinitionQuery()
+                                    .processDefinitionKey(model.getKey())
+                                    .count();
 
-            if (count > 0L) {
-                errorIds.add(model.getKey());
-            }
-            if (CollectionUtils.isNotEmpty(errorIds)) {
-                throw new ServiceException("模型标识[" + String.join(",", errorIds) + "]" + "存在历史部署版本的流程模型，不允许删除");
-            }
-            repositoryService.deleteModel(id);
-        });
+                    if (count > 0L) {
+                        errorIds.add(model.getKey());
+                    }
+                    if (CollectionUtils.isNotEmpty(errorIds)) {
+                        throw new ServiceException(
+                                "模型标识[" + String.join(",", errorIds) + "]" + "存在历史部署版本的流程模型，不允许删除");
+                    }
+                    repositoryService.deleteModel(id);
+                });
     }
 
     @Override
@@ -405,33 +433,49 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
         String processName = model.getName() + ProcessConstants.SUFFIX;
         // 部署流程
-        Deployment deployment = repositoryService.createDeployment()
-            .name(model.getName())
-            .key(model.getKey())
-            .addBpmnModel(processName, bpmnModel)
-            .category(model.getCategory())
-            .deploy();
+        Deployment deployment =
+                repositoryService
+                        .createDeployment()
+                        .name(model.getName())
+                        .key(model.getKey())
+                        .addBpmnModel(processName, bpmnModel)
+                        .category(model.getCategory())
+                        .deploy();
         // 已部署
         insertOrUpdate(modelId, 1);
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
-                .latestVersion().singleResult();
+        ProcessDefinition processDefinition =
+                repositoryService
+                        .createProcessDefinitionQuery()
+                        .processDefinitionKey(model.getKey())
+                        .latestVersion()
+                        .singleResult();
         // 更新审批设置
-        LambdaUpdateChainWrapper<WfTaskProcess> wfTaskProcess = new LambdaUpdateChainWrapper<>(wfTaskProcessMapper);
-        wfTaskProcess.likeRight(WfTaskProcess::getDefinitionId, model.getKey()).eq(WfTaskProcess::getApproved, 0)
+        LambdaUpdateChainWrapper<WfTaskProcess> wfTaskProcess =
+                new LambdaUpdateChainWrapper<>(wfTaskProcessMapper);
+        wfTaskProcess
+                .likeRight(WfTaskProcess::getDefinitionId, model.getKey())
+                .eq(WfTaskProcess::getApproved, 0)
                 .isNull(WfTaskProcess::getInstanceId)
                 .set(WfTaskProcess::getDefinitionId, processDefinition.getId())
                 .set(WfTaskProcess::getDeploymentId, processDefinition.getDeploymentId());
         wfTaskProcess.update();
-        LambdaUpdateChainWrapper<WfApprovalSet> materialsApprovalSet = new LambdaUpdateChainWrapper<>(wfApprovalSetMapper);
-        materialsApprovalSet.likeRight(WfApprovalSet::getDefinitionId, model.getKey())
+        LambdaUpdateChainWrapper<WfApprovalSet> materialsApprovalSet =
+                new LambdaUpdateChainWrapper<>(wfApprovalSetMapper);
+        materialsApprovalSet
+                .likeRight(WfApprovalSet::getDefinitionId, model.getKey())
                 .set(WfApprovalSet::getDefinitionId, processDefinition.getId())
                 .set(WfApprovalSet::getDeploymentId, processDefinition.getDeploymentId());
         materialsApprovalSet.update();
-        LambdaUpdateChainWrapper<WfMaterialsScrappedProcess> wfMaterialsScrappedProcess = new LambdaUpdateChainWrapper<>(wfMaterialsScrappedProcessMapper);
-        wfMaterialsScrappedProcess.likeRight(WfMaterialsScrappedProcess::getDefinitionId, model.getKey()).eq(WfMaterialsScrappedProcess::getApproved, 0)
+        LambdaUpdateChainWrapper<WfMaterialsScrappedProcess> wfMaterialsScrappedProcess =
+                new LambdaUpdateChainWrapper<>(wfMaterialsScrappedProcessMapper);
+        wfMaterialsScrappedProcess
+                .likeRight(WfMaterialsScrappedProcess::getDefinitionId, model.getKey())
+                .eq(WfMaterialsScrappedProcess::getApproved, 0)
                 .isNull(WfMaterialsScrappedProcess::getInstanceId)
                 .set(WfMaterialsScrappedProcess::getDefinitionId, processDefinition.getId())
-                .set(WfMaterialsScrappedProcess::getDeploymentId, processDefinition.getDeploymentId());
+                .set(
+                        WfMaterialsScrappedProcess::getDeploymentId,
+                        processDefinition.getDeploymentId());
         wfMaterialsScrappedProcess.update();
         // 保存部署表单
         return deployFormService.saveInternalDeployForm(deployment.getId(), bpmnModel);
@@ -439,6 +483,7 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
 
     /**
      * 构建模型扩展信息
+     *
      * @return
      */
     private String buildMetaInfo(WfMetaInfoDto metaInfo, String description) {

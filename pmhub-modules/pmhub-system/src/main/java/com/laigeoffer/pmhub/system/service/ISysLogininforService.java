@@ -1,13 +1,9 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysLogininfor;
-
 import java.util.List;
 
-/**
- * 系统访问日志情况信息 服务层
- *
- */
+/** 系统访问日志情况信息 服务层 */
 public interface ISysLogininforService {
     /**
      * 新增系统登录日志
@@ -32,8 +28,6 @@ public interface ISysLogininforService {
      */
     public int deleteLogininforByIds(Long[] infoIds);
 
-    /**
-     * 清空系统登录日志
-     */
+    /** 清空系统登录日志 */
     public void cleanLogininfor();
 }

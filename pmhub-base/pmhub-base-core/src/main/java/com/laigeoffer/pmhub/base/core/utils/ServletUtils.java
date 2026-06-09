@@ -4,6 +4,18 @@ import com.alibaba.fastjson2.JSON;
 import com.laigeoffer.pmhub.base.core.constant.Constants;
 import com.laigeoffer.pmhub.base.core.core.domain.R;
 import com.laigeoffer.pmhub.base.core.core.text.Convert;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,64 +27,34 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * 客户端工具类
- *
- */
+/** 客户端工具类 */
 public class ServletUtils {
-    /**
-     * 获取String参数
-     */
+    /** 获取String参数 */
     public static String getParameter(String name) {
         return getRequest().getParameter(name);
     }
 
-    /**
-     * 获取String参数
-     */
+    /** 获取String参数 */
     public static String getParameter(String name, String defaultValue) {
         return Convert.toStr(getRequest().getParameter(name), defaultValue);
     }
 
-    /**
-     * 获取Integer参数
-     */
+    /** 获取Integer参数 */
     public static Integer getParameterToInt(String name) {
         return Convert.toInt(getRequest().getParameter(name));
     }
 
-    /**
-     * 获取Integer参数
-     */
+    /** 获取Integer参数 */
     public static Integer getParameterToInt(String name, Integer defaultValue) {
         return Convert.toInt(getRequest().getParameter(name), defaultValue);
     }
 
-
-
-    /**
-     * 获取Boolean参数
-     */
+    /** 获取Boolean参数 */
     public static Boolean getParameterToBool(String name) {
         return Convert.toBool(getRequest().getParameter(name));
     }
 
-    /**
-     * 获取Boolean参数
-     */
+    /** 获取Boolean参数 */
     public static Boolean getParameterToBool(String name, Boolean defaultValue) {
         return Convert.toBool(getRequest().getParameter(name), defaultValue);
     }
@@ -102,23 +84,17 @@ public class ServletUtils {
         return params;
     }
 
-    /**
-     * 获取request
-     */
+    /** 获取request */
     public static HttpServletRequest getRequest() {
         return getRequestAttributes().getRequest();
     }
 
-    /**
-     * 获取response
-     */
+    /** 获取response */
     public static HttpServletResponse getResponse() {
         return getRequestAttributes().getResponse();
     }
 
-    /**
-     * 获取session
-     */
+    /** 获取session */
     public static HttpSession getSession() {
         return getRequest().getSession();
     }
@@ -132,7 +108,7 @@ public class ServletUtils {
      * 将字符串渲染到客户端
      *
      * @param response 渲染对象
-     * @param string   待渲染的字符串
+     * @param string 待渲染的字符串
      */
     public static void renderString(HttpServletResponse response, String string) {
         try {
@@ -200,17 +176,15 @@ public class ServletUtils {
 
     /**
      * feign调用传递用户请求头
+     *
      * @param request
      * @return
      */
-    public static Map<String, String> getHeaders(HttpServletRequest request)
-    {
+    public static Map<String, String> getHeaders(HttpServletRequest request) {
         Map<String, String> map = new LinkedCaseInsensitiveMap<>();
         Enumeration<String> enumeration = request.getHeaderNames();
-        if (enumeration != null)
-        {
-            while (enumeration.hasMoreElements())
-            {
+        if (enumeration != null) {
+            while (enumeration.hasMoreElements()) {
                 String key = enumeration.nextElement();
                 String value = request.getHeader(key);
                 map.put(key, value);
@@ -219,11 +193,9 @@ public class ServletUtils {
         return map;
     }
 
-    public static String getHeader(HttpServletRequest request, String name)
-    {
+    public static String getHeader(HttpServletRequest request, String name) {
         String value = request.getHeader(name);
-        if (StringUtils.isEmpty(value))
-        {
+        if (StringUtils.isEmpty(value)) {
             return StringUtils.EMPTY;
         }
         return urlDecode(value);
@@ -236,8 +208,7 @@ public class ServletUtils {
      * @param value 响应内容
      * @return Mono<Void>
      */
-    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, Object value)
-    {
+    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, Object value) {
         return webFluxResponseWriter(response, HttpStatus.OK, value, R.FAIL);
     }
 
@@ -249,8 +220,8 @@ public class ServletUtils {
      * @param value 响应内容
      * @return Mono<Void>
      */
-    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, Object value, int code)
-    {
+    public static Mono<Void> webFluxResponseWriter(
+            ServerHttpResponse response, Object value, int code) {
         return webFluxResponseWriter(response, HttpStatus.OK, value, code);
     }
 
@@ -263,9 +234,10 @@ public class ServletUtils {
      * @param value 响应内容
      * @return Mono<Void>
      */
-    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, HttpStatus status, Object value, int code)
-    {
-        return webFluxResponseWriter(response, MediaType.APPLICATION_JSON_VALUE, status, value, code);
+    public static Mono<Void> webFluxResponseWriter(
+            ServerHttpResponse response, HttpStatus status, Object value, int code) {
+        return webFluxResponseWriter(
+                response, MediaType.APPLICATION_JSON_VALUE, status, value, code);
     }
 
     /**
@@ -278,8 +250,12 @@ public class ServletUtils {
      * @param value 响应内容
      * @return Mono<Void>
      */
-    public static Mono<Void> webFluxResponseWriter(ServerHttpResponse response, String contentType, HttpStatus status, Object value, int code)
-    {
+    public static Mono<Void> webFluxResponseWriter(
+            ServerHttpResponse response,
+            String contentType,
+            HttpStatus status,
+            Object value,
+            int code) {
         response.setStatusCode(status);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, contentType);
         R<?> result = R.fail(code, value.toString());

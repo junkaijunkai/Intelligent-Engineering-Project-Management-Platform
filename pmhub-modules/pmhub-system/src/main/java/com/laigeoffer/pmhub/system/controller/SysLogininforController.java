@@ -12,24 +12,18 @@ import com.laigeoffer.pmhub.base.core.utils.poi.ExcelUtil;
 import com.laigeoffer.pmhub.base.security.annotation.InnerAuth;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.system.service.ISysLogininforService;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-/**
- * 系统访问记录
- *
- */
+/** 系统访问记录 */
 @RestController
 @RequestMapping("/system/monitor/logininfor")
 public class SysLogininforController extends BaseController {
-    @Autowired
-    private ISysLogininforService logininforService;
+    @Autowired private ISysLogininforService logininforService;
 
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
     @RequiresPermissions("@ss.hasPermi('monitor:logininfor:list')")
     @GetMapping("/list")
@@ -73,13 +67,13 @@ public class SysLogininforController extends BaseController {
 
     /**
      * 插入访问记录-内部微服务调用
+     *
      * @param logininfor
      * @return
      */
     @InnerAuth
     @PostMapping
-    public AjaxResult add(@RequestBody SysLogininfor logininfor)
-    {
+    public AjaxResult add(@RequestBody SysLogininfor logininfor) {
         return toAjax(logininforService.insertLogininfor(logininfor));
     }
 }

@@ -5,16 +5,15 @@ import com.laigeoffer.pmhub.base.core.core.domain.R;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfTaskBo;
 import com.laigeoffer.pmhub.workflow.service.IWfTaskService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 工作流任务管理
@@ -29,9 +28,7 @@ public class WfTaskController {
 
     private final IWfTaskService flowTaskService;
 
-    /**
-     * 取消申请
-     */
+    /** 取消申请 */
     @PostMapping(value = "/stopProcess")
     @RequiresPermissions("workflow:process:cancel")
     public R stopProcess(@RequestBody WfTaskBo bo) {
@@ -39,9 +36,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 撤回流程
-     */
+    /** 撤回流程 */
     @PostMapping(value = "/revokeProcess")
     @RequiresPermissions("workflow:process:revoke")
     public R revokeProcess(@RequestBody WfTaskBo bo) {
@@ -51,6 +46,7 @@ public class WfTaskController {
 
     /**
      * 获取流程变量
+     *
      * @param taskId 流程任务Id
      */
     @GetMapping(value = "/processVariables/{taskId}")
@@ -59,9 +55,7 @@ public class WfTaskController {
         return R.ok(flowTaskService.getProcessVariables(taskId));
     }
 
-    /**
-     * 审批任务
-     */
+    /** 审批任务 */
     @PostMapping(value = "/complete")
     @RequiresPermissions("workflow:process:approval")
     public R complete(@RequestBody WfTaskBo bo) {
@@ -69,9 +63,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 拒绝任务
-     */
+    /** 拒绝任务 */
     @PostMapping(value = "/reject")
     @RequiresPermissions("workflow:process:approval")
     public R taskReject(@RequestBody WfTaskBo taskBo) {
@@ -79,9 +71,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 退回任务
-     */
+    /** 退回任务 */
     @PostMapping(value = "/return")
     @RequiresPermissions("orkflow:process:approval")
     public R taskReturn(@RequestBody WfTaskBo bo) {
@@ -89,18 +79,14 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 获取所有可回退的节点
-     */
+    /** 获取所有可回退的节点 */
     @PostMapping(value = "/returnList")
     @RequiresPermissions("workflow:process:query")
     public R findReturnTaskList(@RequestBody WfTaskBo bo) {
         return R.ok(flowTaskService.findReturnTaskList(bo));
     }
 
-    /**
-     * 删除任务
-     */
+    /** 删除任务 */
     @DeleteMapping(value = "/delete")
     @RequiresPermissions("orkflow:process:approval")
     public R delete(@RequestBody WfTaskBo bo) {
@@ -108,9 +94,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 认领/签收任务
-     */
+    /** 认领/签收任务 */
     @PostMapping(value = "/claim")
     @RequiresPermissions("workflow:process:claim")
     public R claim(@RequestBody WfTaskBo bo) {
@@ -118,9 +102,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 取消认领/签收任务
-     */
+    /** 取消认领/签收任务 */
     @PostMapping(value = "/unClaim")
     @RequiresPermissions("workflow:process:claim")
     public R unClaim(@RequestBody WfTaskBo bo) {
@@ -128,9 +110,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 委派任务
-     */
+    /** 委派任务 */
     @PostMapping(value = "/delegate")
     @RequiresPermissions("workflow:process:approval")
     public R delegate(@RequestBody WfTaskBo bo) {
@@ -141,9 +121,7 @@ public class WfTaskController {
         return R.ok();
     }
 
-    /**
-     * 转办任务
-     */
+    /** 转办任务 */
     @PostMapping(value = "/transfer")
     @RequiresPermissions("workflow:process:approval")
     public R transfer(@RequestBody WfTaskBo bo) {
@@ -160,8 +138,8 @@ public class WfTaskController {
      * @param processId 任务ID
      */
     @RequestMapping("/diagram/{processId}")
-    public void genProcessDiagram(HttpServletResponse response,
-                                  @PathVariable("processId") String processId) {
+    public void genProcessDiagram(
+            HttpServletResponse response, @PathVariable("processId") String processId) {
         InputStream inputStream = flowTaskService.diagram(processId);
         OutputStream os = null;
         BufferedImage image = null;

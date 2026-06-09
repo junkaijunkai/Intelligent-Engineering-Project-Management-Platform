@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysOperLog;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 操作日志 数据层
- *
- */
+/** 操作日志 数据层 */
 @Mapper
 public interface SysOperLogMapper {
     /**
@@ -42,8 +38,6 @@ public interface SysOperLogMapper {
      */
     public SysOperLog selectOperLogById(Long operId);
 
-    /**
-     * 清空操作日志
-     */
+    /** 清空操作日志 */
     public void cleanOperLog();
 }

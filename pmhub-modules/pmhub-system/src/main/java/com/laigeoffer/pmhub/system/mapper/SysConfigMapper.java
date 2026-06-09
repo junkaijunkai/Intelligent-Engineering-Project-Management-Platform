@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysConfig;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 参数配置 数据层
- *
- */
+/** 参数配置 数据层 */
 @Mapper
 public interface SysConfigMapper {
     /**

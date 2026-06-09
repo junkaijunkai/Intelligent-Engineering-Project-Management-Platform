@@ -15,6 +15,9 @@ import com.laigeoffer.pmhub.workflow.mapper.WfDeployFormMapper;
 import com.laigeoffer.pmhub.workflow.mapper.WfFormMapper;
 import com.laigeoffer.pmhub.workflow.service.IWfDeployFormService;
 import com.laigeoffer.pmhub.workflow.utils.ModelUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.FlowNode;
@@ -22,10 +25,6 @@ import org.flowable.bpmn.model.StartEvent;
 import org.flowable.bpmn.model.UserTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * 流程实例关联表单Service业务层处理
@@ -50,7 +49,9 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
     @Transactional(rollbackFor = Exception.class)
     public int insertWfDeployForm(WfDeployForm deployForm) {
         // 删除部署流程和表单的关联关系
-        baseMapper.delete(new LambdaQueryWrapper<WfDeployForm>().eq(WfDeployForm::getDeployId, deployForm.getDeployId()));
+        baseMapper.delete(
+                new LambdaQueryWrapper<WfDeployForm>()
+                        .eq(WfDeployForm::getDeployId, deployForm.getDeployId()));
         // 新增部署流程和表单关系
         return baseMapper.insert(deployForm);
     }
@@ -107,6 +108,7 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService {
 
     /**
      * 构建部署表单关联信息对象
+     *
      * @param deployId 部署ID
      * @param node 节点信息
      * @return 部署表单关联对象。若无表单信息（formKey），则返回null

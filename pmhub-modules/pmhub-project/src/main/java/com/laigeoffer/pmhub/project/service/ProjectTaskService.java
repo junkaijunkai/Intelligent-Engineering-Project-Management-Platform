@@ -2,18 +2,17 @@ package com.laigeoffer.pmhub.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
+import com.laigeoffer.pmhub.project.domain.Project;
+import com.laigeoffer.pmhub.project.domain.ProjectTask;
 import com.laigeoffer.pmhub.project.domain.ProjectTaskProcess;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.LogReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.ProjectLogVO;
-import com.laigeoffer.pmhub.project.domain.Project;
-import com.laigeoffer.pmhub.project.domain.ProjectTask;
 import com.laigeoffer.pmhub.project.domain.vo.project.member.ProjectMemberResVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.*;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @date 2022-12-14 15:00
@@ -21,23 +20,27 @@ import java.util.List;
 public interface ProjectTaskService extends IService<ProjectTask> {
     /**
      * 今日任务数
+     *
      * @return
      */
     Long queryTodayTaskNum();
 
     /**
      * 逾期任务数
+     *
      * @return
      */
     Long queryOverdueTaskNum();
 
     /**
      * 任务状态统计
+     *
      * @return
      */
     List<TaskStatisticsVO> queryTaskStatisticsList();
 
     PageInfo<TaskResVO> queryMyTaskList(TaskReqVO taskReqVO);
+
     TaskStatusStatsVO queryTaskStatusStats(ProjectVO projectVO);
 
     void deleteTask(TaskIdsVO taskIdsVO);
@@ -60,12 +63,12 @@ public interface ProjectTaskService extends IService<ProjectTask> {
 
     void addComment(TaskCommentVO taskCommentVO);
 
-
     List<ProjectLogVO> queryTaskLogList(LogReqVO logReqVO);
 
     void downloadTemplate(String taskId, HttpServletResponse response) throws IOException;
 
     List<TaskExportVO> exportAll();
+
     List<TaskExportVO> export(String taskIds);
 
     void importTask(List<TaskExcelVO> taskList);
@@ -79,5 +82,4 @@ public interface ProjectTaskService extends IService<ProjectTask> {
     List<Project> queryProjectsStatus(List<String> projectIds);
 
     List<ProjectTaskProcess> taskProcessList(List<String> taskIds);
-
 }

@@ -11,10 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-/**
- * 内部服务调用验证处理
- *
- */
+/** 内部服务调用验证处理 */
 @Aspect
 @Component
 public class InnerAuthAspect implements Ordered {
@@ -35,9 +32,7 @@ public class InnerAuthAspect implements Ordered {
         return point.proceed();
     }
 
-    /**
-     * 确保在权限认证aop执行前执行
-     */
+    /** 确保在权限认证aop执行前执行 */
     @Override
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE + 1;

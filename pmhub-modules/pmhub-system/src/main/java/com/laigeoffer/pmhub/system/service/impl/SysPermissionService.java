@@ -6,24 +6,18 @@ import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.system.service.ISysMenuService;
 import com.laigeoffer.pmhub.system.service.ISysPermissionService;
 import com.laigeoffer.pmhub.system.service.ISysRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-/**
- * 用户权限处理
- *
- */
+/** 用户权限处理 */
 @Component
 public class SysPermissionService implements ISysPermissionService {
-    @Autowired
-    private ISysRoleService roleService;
+    @Autowired private ISysRoleService roleService;
 
-    @Autowired
-    private ISysMenuService menuService;
+    @Autowired private ISysMenuService menuService;
 
     /**
      * 获取角色数据权限

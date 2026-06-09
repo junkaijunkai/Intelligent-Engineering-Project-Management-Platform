@@ -4,31 +4,24 @@ package com.laigeoffer.pmhub.project.domain.vo.project.file;
  * @date 2022-12-16 09:27
  */
 public class ProjectFileReqVO {
-    /**
-     * 页码
-     */
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
+
+    /** 页数 */
     private Integer pageSize;
 
     private String id;
-    /**
-     * 文件id
-     */
+
+    /** 文件id */
     private String projectFileId;
-    /**
-     * 类型
-     */
+
+    /** 类型 */
     private String type;
-    /**
-     * 传文件名+后缀
-     */
+
+    /** 传文件名+后缀 */
     private String fileName;
-    /**
-     * 传整个路径
-     */
+
+    /** 传整个路径 */
     private String fileUrl;
 
     public Integer getPageNum() {

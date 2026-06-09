@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.base.core.enums;
  * @date 2022-12-22 17:24
  */
 public enum LogTypeEnum {
-
     TRENDS(1, "动态"),
     DELIVERABLE(2, "交付物"),
     COMMENT(3, "评论");

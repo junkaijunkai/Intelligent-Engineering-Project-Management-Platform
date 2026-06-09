@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.system.service;
 
-
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictData;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictType;
-
 import java.util.List;
 
-/**
- * 字典 业务层
- *
- */
+/** 字典 业务层 */
 public interface ISysDictTypeService {
     /**
      * 根据条件分页查询字典类型
@@ -57,19 +52,13 @@ public interface ISysDictTypeService {
      */
     public void deleteDictTypeByIds(Long[] dictIds);
 
-    /**
-     * 加载字典缓存数据
-     */
+    /** 加载字典缓存数据 */
     public void loadingDictCache();
 
-    /**
-     * 清空字典缓存数据
-     */
+    /** 清空字典缓存数据 */
     public void clearDictCache();
 
-    /**
-     * 重置字典缓存数据
-     */
+    /** 重置字典缓存数据 */
     public void resetDictCache();
 
     /**

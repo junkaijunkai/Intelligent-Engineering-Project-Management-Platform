@@ -11,16 +11,17 @@ import java.util.Objects;
 public class FieldUtils {
     /**
      * 获取变更内容
+     *
      * @param <T>
      * @param newBean 更改前的Bean
      * @param oldBean 更改后的Bean
      * @return
      */
-    public static <T> List<LogDataVO> getChangedFields(T newBean, T oldBean){
+    public static <T> List<LogDataVO> getChangedFields(T newBean, T oldBean) {
         List<LogDataVO> data = new ArrayList<>(10);
         Field[] fields = newBean.getClass().getDeclaredFields();
         List<LogContentVO> list = new ArrayList<>();
-        for(Field field : fields) {
+        for (Field field : fields) {
             LogDataVO logDataVO = new LogDataVO();
             field.setAccessible(true);
             if (field.isAnnotationPresent(ForUpdate.class)) {
@@ -59,7 +60,7 @@ public class FieldUtils {
                 try {
                     Object newValue = field.get(newBean);
                     Object oldValue = field.get(oldBean);
-                    if(!Objects.equals(newValue, oldValue)) {
+                    if (!Objects.equals(newValue, oldValue)) {
                         LogContentVO logContentVO = new LogContentVO();
                         logContentVO.setField(field.getName());
                         logContentVO.setFieldName(field.getAnnotation(ForUpdate.class).fieldName());

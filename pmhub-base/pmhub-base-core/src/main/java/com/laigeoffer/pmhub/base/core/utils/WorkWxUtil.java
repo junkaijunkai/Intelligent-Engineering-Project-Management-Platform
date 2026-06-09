@@ -1,21 +1,21 @@
-//package com.laigeoffer.pmhub.base.core.utils;
+// package com.laigeoffer.pmhub.base.core.utils;
 //
-//import cn.hutool.cache.CacheUtil;
-//import cn.hutool.cache.impl.TimedCache;
-//import cn.hutool.core.util.IdUtil;
-//import cn.hutool.http.HttpRequest;
-//import cn.hutool.json.JSONObject;
-//import cn.hutool.json.JSONUtil;
-//import cn.hutool.log.LogFactory;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Component;
+// import cn.hutool.cache.CacheUtil;
+// import cn.hutool.cache.impl.TimedCache;
+// import cn.hutool.core.util.IdUtil;
+// import cn.hutool.http.HttpRequest;
+// import cn.hutool.json.JSONObject;
+// import cn.hutool.json.JSONUtil;
+// import cn.hutool.log.LogFactory;
+// import org.springframework.beans.factory.annotation.Value;
+// import org.springframework.stereotype.Component;
 //
-///**
+/// **
 // * 企业微信工具类
 // * @author canghe
 // */
-//@Component
-//public class WorkWxUtil {
+// @Component
+// public class WorkWxUtil {
 //
 //
 //    /**
@@ -26,26 +26,31 @@
 //    /**
 //     * 企微鉴权接口地址
 //     * */
-//    private static final String WORK_WX_URL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s";
+//    private static final String WORK_WX_URL =
+// "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s";
 //    /**
 //     * 企微IP列表接口地址
 //     * */
-//    private static final String WORK_WX_IP_URL = " https://qyapi.weixin.qq.com/cgi-bin/get_api_domain_ip?access_token=%s";
+//    private static final String WORK_WX_IP_URL = "
+// https://qyapi.weixin.qq.com/cgi-bin/get_api_domain_ip?access_token=%s";
 //
 //    /**
 //     * 企微用户基础信息查询接口地址
 //     * */
-//    private static final String WORK_WX_USER_BASE_INFO = "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=%s&code=%s";
+//    private static final String WORK_WX_USER_BASE_INFO =
+// "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=%s&code=%s";
 //
 //    /**
 //     * 企微用户公开信息查询接口地址
 //     * */
-//    private static final String WORK_WX_USER_PUBLIC_INFO = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s";
+//    private static final String WORK_WX_USER_PUBLIC_INFO =
+// "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s";
 //
 //    /**
 //     * 企微用户敏感信息查询接口地址
 //     * */
-//    private static final String WORK_WX_USER_DETAIL_INFO = "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserdetail?access_token=%s";
+//    private static final String WORK_WX_USER_DETAIL_INFO =
+// "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserdetail?access_token=%s";
 //
 //    /**
 //     * 错误代码的key
@@ -139,7 +144,8 @@
 //    public static String getWorkWxToken(){
 //
 //        // 拉取企微ip地址列表，测试token是否还有效，无效则重新获取企微token
-//        JSONObject ipJson = JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_IP_URL,ACCESS_TOKEN))
+//        JSONObject ipJson =
+// JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_IP_URL,ACCESS_TOKEN))
 //                .execute().body());
 //
 //        if (ipJson.getInt(ERR_CODE_KEY_NAME) != 0){
@@ -166,7 +172,8 @@
 //     * */
 //    public static JSONObject getWxUserBaseInfo(String code){
 //        // 获取用户基础信息
-//        JSONObject ipJson = JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_USER_BASE_INFO,getWorkWxToken(),code))
+//        JSONObject ipJson =
+// JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_USER_BASE_INFO,getWorkWxToken(),code))
 //                .execute().body());
 //
 //        if (ipJson.getInt(ERR_CODE_KEY_NAME) == 0){
@@ -206,7 +213,8 @@
 //     * */
 //    public static JSONObject getWxUserPublicInfo(String userName){
 //        // 获取用户基础信息
-//        JSONObject ipJson = JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_USER_PUBLIC_INFO,getWorkWxToken(),userName))
+//        JSONObject ipJson =
+// JSONUtil.parseObj(HttpRequest.get(String.format(WORK_WX_USER_PUBLIC_INFO,getWorkWxToken(),userName))
 //                .execute().body());
 //        return ipJson;
 //    }
@@ -219,10 +227,11 @@
 //        JSONObject jsonObject = new JSONObject();
 //        jsonObject.set("user_ticket",ticket);
 //        // 获取用户敏感信息
-//        JSONObject userInfo = JSONUtil.parseObj(HttpRequest.post(String.format(WORK_WX_USER_DETAIL_INFO,getWorkWxToken()))
+//        JSONObject userInfo =
+// JSONUtil.parseObj(HttpRequest.post(String.format(WORK_WX_USER_DETAIL_INFO,getWorkWxToken()))
 //                .body(jsonObject.toString())
 //                .execute().body());
 //        return userInfo;
 //    }
 //
-//}
+// }

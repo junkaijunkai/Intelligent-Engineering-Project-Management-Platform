@@ -1,36 +1,22 @@
 package com.laigeoffer.pmhub.system.domain;
 
-
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 
-/**
- * 缓存信息
- *
- */
+/** 缓存信息 */
 public class SysCache {
-    /**
-     * 缓存名称
-     */
+    /** 缓存名称 */
     private String cacheName = "";
 
-    /**
-     * 缓存键名
-     */
+    /** 缓存键名 */
     private String cacheKey = "";
 
-    /**
-     * 缓存内容
-     */
+    /** 缓存内容 */
     private String cacheValue = "";
 
-    /**
-     * 备注
-     */
+    /** 备注 */
     private String remark = "";
 
-    public SysCache() {
-
-    }
+    public SysCache() {}
 
     public SysCache(String cacheName, String remark) {
         this.cacheName = cacheName;

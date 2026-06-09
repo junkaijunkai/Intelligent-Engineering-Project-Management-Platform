@@ -9,25 +9,18 @@ import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.domain.SysNotice;
 import com.laigeoffer.pmhub.system.service.ISysNoticeService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-/**
- * 公告 信息操作处理
- *
- */
+/** 公告 信息操作处理 */
 @RestController
 @RequestMapping("/system/notice")
 public class SysNoticeController extends BaseController {
-    @Autowired
-    private ISysNoticeService noticeService;
+    @Autowired private ISysNoticeService noticeService;
 
-    /**
-     * 获取通知公告列表
-     */
+    /** 获取通知公告列表 */
     @RequiresPermissions("system:notice:list")
     @GetMapping("/list")
     public TableDataInfo list(SysNotice notice) {
@@ -36,18 +29,14 @@ public class SysNoticeController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 根据通知公告编号获取详细信息
-     */
+    /** 根据通知公告编号获取详细信息 */
     @RequiresPermissions("system:notice:query")
     @GetMapping(value = "/{noticeId}")
     public AjaxResult getInfo(@PathVariable Long noticeId) {
         return success(noticeService.selectNoticeById(noticeId));
     }
 
-    /**
-     * 新增通知公告
-     */
+    /** 新增通知公告 */
     @RequiresPermissions("system:notice:add")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping
@@ -56,9 +45,7 @@ public class SysNoticeController extends BaseController {
         return toAjax(noticeService.insertNotice(notice));
     }
 
-    /**
-     * 修改通知公告
-     */
+    /** 修改通知公告 */
     @RequiresPermissions("system:notice:edit")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -67,9 +54,7 @@ public class SysNoticeController extends BaseController {
         return toAjax(noticeService.updateNotice(notice));
     }
 
-    /**
-     * 删除通知公告
-     */
+    /** 删除通知公告 */
     @RequiresPermissions("system:notice:remove")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{noticeIds}")

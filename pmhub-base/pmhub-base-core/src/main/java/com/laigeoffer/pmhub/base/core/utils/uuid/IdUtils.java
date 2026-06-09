@@ -1,9 +1,6 @@
 package com.laigeoffer.pmhub.base.core.utils.uuid;
 
-/**
- * ID生成器工具类
- *
- */
+/** ID生成器工具类 */
 public class IdUtils {
     /**
      * 获取随机UUID

@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.gen.service;
 
-
 import com.laigeoffer.pmhub.gen.domain.GenTable;
-
 import java.util.List;
 import java.util.Map;
 
-/**
- * 业务 服务层
- *
- */
+/** 业务 服务层 */
 public interface IGenTableService {
     /**
      * 查询业务列表

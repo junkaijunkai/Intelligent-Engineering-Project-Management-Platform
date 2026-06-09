@@ -4,17 +4,13 @@ package com.laigeoffer.pmhub.project.domain.vo.project.file;
  * @date 2022-12-16 10:56
  */
 public class FileVO {
-    /**
-     * 文件id
-     */
+    /** 文件id */
     private String projectFileId;
-    /**
-     * 文件地址
-     */
+
+    /** 文件地址 */
     private String fileUrl;
-    /**
-     * 文件名
-     */
+
+    /** 文件名 */
     private String fileName;
 
     public String getProjectFileId() {

@@ -1,13 +1,9 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.system.domain.SysConfig;
-
 import java.util.List;
 
-/**
- * 参数配置 服务层
- *
- */
+/** 参数配置 服务层 */
 public interface ISysConfigService {
     /**
      * 查询参数配置信息
@@ -63,19 +59,13 @@ public interface ISysConfigService {
      */
     void deleteConfigByIds(Long[] configIds);
 
-    /**
-     * 加载参数缓存数据
-     */
+    /** 加载参数缓存数据 */
     void loadingConfigCache();
 
-    /**
-     * 清空参数缓存数据
-     */
+    /** 清空参数缓存数据 */
     void clearConfigCache();
 
-    /**
-     * 重置参数缓存数据
-     */
+    /** 重置参数缓存数据 */
     void resetConfigCache();
 
     /**

@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.gen.mapper;
 
-
 import com.laigeoffer.pmhub.gen.domain.GenTableColumn;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 业务字段 数据层
- *
- */
+/** 业务字段 数据层 */
 @Mapper
 public interface GenTableColumnMapper {
     /**

@@ -1,7 +1,5 @@
 package com.laigeoffer.pmhub.base.core.utils;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
-
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,23 +9,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
-/**
- * 时间工具类
- *
- */
+/** 时间工具类 */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     private static final String[] parsePatterns = {
-            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
-            "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
-            "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
-    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_DEFAULT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSSSSS = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS"));
-    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSS = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmss"));
-    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSS_SSS = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmssSSS"));
-    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDD = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
-    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMM = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM"));
-    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_DEFAULT_WITH_T = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+        "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+        "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
+        "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"
+    };
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_DEFAULT =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSSSSS =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS"));
+    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSS =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmss"));
+    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDDHHMMSS_SSS =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmssSSS"));
+    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMMDD =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+    private static final ThreadLocal<SimpleDateFormat> DATEFORMAT_YYYYMM =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM"));
+    private static final ThreadLocal<SimpleDateFormat> DATE_FORMAT_DEFAULT_WITH_T =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
     public static String YYYY = "yyyy";
     public static String YYYY_MM = "yyyy-MM";
     public static String YYYY_MM_DD = "yyyy-MM-dd";
@@ -80,25 +84,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
     }
 
-    /**
-     * 日期路径 即年/月/日 如2018/08/08
-     */
+    /** 日期路径 即年/月/日 如2018/08/08 */
     public static String datePath() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyy/MM/dd");
     }
 
-    /**
-     * 日期路径 即年/月/日 如20180808
-     */
+    /** 日期路径 即年/月/日 如20180808 */
     public static String dateTime() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyyMMdd");
     }
 
-    /**
-     * 日期型字符串转化为日期 格式
-     */
+    /** 日期型字符串转化为日期 格式 */
     public static Date parseDate(Object str) {
         if (str == null) {
             return null;
@@ -110,24 +108,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
     }
 
-    /**
-     * 获取服务器启动时间
-     */
+    /** 获取服务器启动时间 */
     public static Date getServerStartDate() {
         long time = ManagementFactory.getRuntimeMXBean().getStartTime();
         return new Date(time);
     }
 
-    /**
-     * 计算相差天数
-     */
+    /** 计算相差天数 */
     public static int differentDaysByMillisecond(Date date1, Date date2) {
         return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));
     }
 
-    /**
-     * 计算两个时间差
-     */
+    /** 计算两个时间差 */
     public static String getDatePoor(Date endDate, Date nowDate) {
         long nd = 1000 * 24 * 60 * 60;
         long nh = 1000 * 60 * 60;
@@ -146,22 +138,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return day + "天" + hour + "小时" + min + "分钟";
     }
 
-    /**
-     * 增加 LocalDateTime ==> Date
-     */
+    /** 增加 LocalDateTime ==> Date */
     public static Date toDate(LocalDateTime temporalAccessor) {
         ZonedDateTime zdt = temporalAccessor.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
 
-    /**
-     * 增加 LocalDate ==> Date
-     */
+    /** 增加 LocalDate ==> Date */
     public static Date toDate(LocalDate temporalAccessor) {
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
     /**
      * 获取一个时间区间的日期
      *
@@ -189,9 +178,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         if (distance < 1) {
             return list;
         }
-        Stream.iterate(startDate, d -> d.plusDays(1)).limit(distance + 1).forEach(f -> {
-            list.add(f.toString());
-        });
+        Stream.iterate(startDate, d -> d.plusDays(1))
+                .limit(distance + 1)
+                .forEach(
+                        f -> {
+                            list.add(f.toString());
+                        });
         return list;
     }
 }

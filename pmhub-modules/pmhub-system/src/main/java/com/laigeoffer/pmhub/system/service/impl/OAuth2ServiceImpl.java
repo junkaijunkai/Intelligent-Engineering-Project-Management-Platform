@@ -12,41 +12,31 @@ import com.laigeoffer.pmhub.system.mapper.PmhubOAuth2AgreeMapper;
 import com.laigeoffer.pmhub.system.mapper.PmhubOAuth2ClientMapper;
 import com.laigeoffer.pmhub.system.service.IOAuth2Service;
 import com.laigeoffer.pmhub.system.service.ISysUserService;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class OAuth2ServiceImpl implements IOAuth2Service {
 
-    @Autowired
-    private PmhubOAuth2AgreeMapper pmhubOAuth2AgreeMapper;
+    @Autowired private PmhubOAuth2AgreeMapper pmhubOAuth2AgreeMapper;
 
-    @Autowired
-    private PmhubOAuth2ClientMapper pmhubOAuth2ClientMapper;
+    @Autowired private PmhubOAuth2ClientMapper pmhubOAuth2ClientMapper;
 
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
-    @Autowired
-    private ISysUserService iSysUserService;
+    @Autowired private ISysUserService iSysUserService;
 
-    /**
-     * redis中code作为key的前缀
-     */
+    /** redis中code作为key的前缀 */
     private static final String CODE_TITLE = "auth2_code:";
 
-    /**
-     * redis中token作为key的前缀
-     */
+    /** redis中token作为key的前缀 */
     private static final String TOKEN_TITLE = "auth2_token:";
-
 
     /**
      * 是否已被用户授权登录
      *
-     * @param userId   用户id
+     * @param userId 用户id
      * @param clientId 客户端id
      * @return {@link Boolean}
      */
@@ -65,12 +55,12 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
     /**
      * 允许授权登录
      *
-     * @param userId   用户id
+     * @param userId 用户id
      * @param clientId 客户端id
      */
     @Override
     public void agree(Long userId, String clientId) {
-        if (ObjectUtil.isNotEmpty(clientId)){
+        if (ObjectUtil.isNotEmpty(clientId)) {
             PmhubOAuth2Agree pmhubOAuth2Agree = new PmhubOAuth2Agree();
             pmhubOAuth2Agree.setId(IdUtil.fastUUID());
 
@@ -78,7 +68,7 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
             pmhubOAuth2Agree.setUserId(userId);
 
             pmhubOAuth2AgreeMapper.insert(pmhubOAuth2Agree);
-        }else {
+        } else {
             throw new RuntimeException("ClientID can not null!");
         }
     }
@@ -93,7 +83,7 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
     public String createCode(Long userId) {
         String code = IdUtil.simpleUUID();
         // 授权码1分钟过期
-        redisService.setCacheObject(CODE_TITLE+code,userId,1, TimeUnit.MINUTES);
+        redisService.setCacheObject(CODE_TITLE + code, userId, 1, TimeUnit.MINUTES);
         return code;
     }
 
@@ -105,28 +95,29 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
      */
     @Override
     public String createToken(String code) {
-        Long userId = redisService.getCacheObject(CODE_TITLE+code);
+        Long userId = redisService.getCacheObject(CODE_TITLE + code);
         // 清除code
-        redisService.deleteObject(CODE_TITLE+code);
-        if (ObjectUtil.isNotEmpty(userId)){
+        redisService.deleteObject(CODE_TITLE + code);
+        if (ObjectUtil.isNotEmpty(userId)) {
             String token = IdUtil.randomUUID();
             // token 15分钟过期
-            redisService.setCacheObject(TOKEN_TITLE+token,userId,15, TimeUnit.MINUTES);
+            redisService.setCacheObject(TOKEN_TITLE + token, userId, 15, TimeUnit.MINUTES);
             return token;
-        }else {
+        } else {
             return null;
         }
     }
 
     /**
      * 更加token获取用户信息
+     *
      * @param token token
      * @return {@link PmhubOAuth2User}
      */
     @Override
-    public PmhubOAuth2User getUser(String token){
-        Long userId = redisService.getCacheObject(TOKEN_TITLE+token);
-        if (ObjectUtil.isNotEmpty(userId)){
+    public PmhubOAuth2User getUser(String token) {
+        Long userId = redisService.getCacheObject(TOKEN_TITLE + token);
+        if (ObjectUtil.isNotEmpty(userId)) {
             SysUser sysUser = iSysUserService.selectUserById(userId);
             PmhubOAuth2User pmhubOAuth2User = new PmhubOAuth2User();
             pmhubOAuth2User.setSub(sysUser.getUserName());
@@ -135,7 +126,7 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
             pmhubOAuth2User.setEmail(sysUser.getEmail());
             pmhubOAuth2User.setUpdated_at(sysUser.getCreateTime().toString());
             return pmhubOAuth2User;
-        }else {
+        } else {
             return null;
         }
     }
@@ -151,8 +142,8 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
 
         QueryWrapper<PmhubOAuth2Client> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("client_id", clientId);
-        PmhubOAuth2Client pmhubOAuth2Client =  pmhubOAuth2ClientMapper.selectOne(queryWrapper);
-        if (ObjectUtil.isNotEmpty(pmhubOAuth2Client)){
+        PmhubOAuth2Client pmhubOAuth2Client = pmhubOAuth2ClientMapper.selectOne(queryWrapper);
+        if (ObjectUtil.isNotEmpty(pmhubOAuth2Client)) {
             pmhubOAuth2Client.setClientSecret(null);
         }
         return pmhubOAuth2Client;
@@ -170,7 +161,9 @@ public class OAuth2ServiceImpl implements IOAuth2Service {
 
         QueryWrapper<PmhubOAuth2Client> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("client_id", clientId);
-        return pmhubOAuth2ClientMapper.selectOne(queryWrapper).getClientSecret().equals(clientSecret);
-
+        return pmhubOAuth2ClientMapper
+                .selectOne(queryWrapper)
+                .getClientSecret()
+                .equals(clientSecret);
     }
 }

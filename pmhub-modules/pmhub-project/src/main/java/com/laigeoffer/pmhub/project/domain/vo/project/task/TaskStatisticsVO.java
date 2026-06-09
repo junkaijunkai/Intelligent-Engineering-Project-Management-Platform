@@ -1,19 +1,15 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 /**
  * @date 2022-12-12 10:02
  */
-
 public class TaskStatisticsVO {
-    /**
-     * 状态
-     */
+    /** 状态 */
     private Integer status;
+
     private String statusName;
-    /**
-     * 任务数
-     */
+
+    /** 任务数 */
     private Integer taskNum;
 
     public Integer getStatus() {

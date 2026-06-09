@@ -1,20 +1,13 @@
 package com.laigeoffer.pmhub.base.notice.enums;
 
-/**
- * 模板卡片类型
- */
+/** 模板卡片类型 */
 public enum CardTypeEnum {
 
-    /**
-     * 按钮交互型
-     * */
+    /** 按钮交互型 */
     BUTTON_INTERACTION("button_interaction"),
 
-    /**
-     * 文本通知型
-     * */
+    /** 文本通知型 */
     TEXT_NOTICE("text_notice");
-
 
     private String desc;
 
@@ -23,7 +16,7 @@ public enum CardTypeEnum {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return desc;
     }
 }

@@ -8,18 +8,12 @@ import com.laigeoffer.pmhub.base.core.core.domain.model.LoginUser;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
 import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.servlet.http.HttpServletRequest;
-
-/**
- * 安全服务工具类
- *
- */
+/** 安全服务工具类 */
 public class SecurityUtils {
-    /**
-     * 用户ID
-     **/
+    /** 用户ID */
     public static Long getUserId() {
         try {
             return getLoginUser().getUserId();
@@ -28,9 +22,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * 获取部门ID
-     **/
+    /** 获取部门ID */
     public static Long getDeptId() {
         try {
             return getLoginUser().getDeptId();
@@ -39,9 +31,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * 获取用户账户
-     **/
+    /** 获取用户账户 */
     public static String getUsername() {
         try {
             return getLoginUser().getUsername();
@@ -50,9 +40,7 @@ public class SecurityUtils {
         }
     }
 
-    /**
-     * 获取用户
-     **/
+    /** 获取用户 */
     public static LoginUser getLoginUser() {
         try {
             return SecurityContextHolder.get(SecurityConstants.LOGIN_USER, LoginUser.class);
@@ -60,7 +48,6 @@ public class SecurityUtils {
             throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
         }
     }
-
 
     /**
      * 生成BCryptPasswordEncoder密码
@@ -76,7 +63,7 @@ public class SecurityUtils {
     /**
      * 判断密码是否相同
      *
-     * @param rawPassword     真实密码
+     * @param rawPassword 真实密码
      * @param encodedPassword 加密后字符
      * @return 结果
      */
@@ -95,32 +82,22 @@ public class SecurityUtils {
         return userId != null && 1L == userId;
     }
 
-    /**
-     * 获取请求token
-     */
-    public static String getToken()
-    {
+    /** 获取请求token */
+    public static String getToken() {
         return getToken(ServletUtils.getRequest());
     }
 
-    /**
-     * 根据request获取请求token
-     */
-    public static String getToken(HttpServletRequest request)
-    {
+    /** 根据request获取请求token */
+    public static String getToken(HttpServletRequest request) {
         // 从header获取token标识
         String token = request.getHeader(TokenConstants.AUTHENTICATION);
         return replaceTokenPrefix(token);
     }
 
-    /**
-     * 裁剪token前缀
-     */
-    public static String replaceTokenPrefix(String token)
-    {
+    /** 裁剪token前缀 */
+    public static String replaceTokenPrefix(String token) {
         // 如果前端设置了令牌前缀，则裁剪掉前缀
-        if (StringUtils.isNotEmpty(token) && token.startsWith(TokenConstants.PREFIX))
-        {
+        if (StringUtils.isNotEmpty(token) && token.startsWith(TokenConstants.PREFIX)) {
             token = token.replaceFirst(TokenConstants.PREFIX, "");
         }
         return token;

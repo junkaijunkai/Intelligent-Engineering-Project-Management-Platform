@@ -16,6 +16,14 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-/**
- * token验证处理
- *
- */
+/** token验证处理 */
 @Component
 public class TokenService {
     private static final Logger log = LoggerFactory.getLogger(TokenService.class);
@@ -43,19 +39,21 @@ public class TokenService {
     protected static final long MILLIS_MINUTE = 60 * MILLIS_SECOND;
     private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
 
-    private final static String ACCESS_TOKEN = CacheConstants.LOGIN_TOKEN_KEY;
+    private static final String ACCESS_TOKEN = CacheConstants.LOGIN_TOKEN_KEY;
 
     // 令牌自定义标识
     @Value("${token.header}")
     private String header;
+
     // 令牌秘钥
     @Value("${token.secret}")
     private String secret;
+
     // 令牌有效期（默认30分钟）
     @Value("${token.expireTime}")
     private int expireTime;
-    @Autowired
-    private RedisService redisService;
+
+    @Autowired private RedisService redisService;
 
     /**
      * 生成SecretKey
@@ -90,46 +88,35 @@ public class TokenService {
         return null;
     }
 
-
     /**
      * 获取用户身份信息
      *
      * @return 用户信息
      */
-    public LoginUser getLoginUser(String token)
-    {
+    public LoginUser getLoginUser(String token) {
         LoginUser user = null;
-        try
-        {
-            if (StringUtils.isNotEmpty(token))
-            {
+        try {
+            if (StringUtils.isNotEmpty(token)) {
                 // 将user对象从JSON反序列化为Java
                 String userkey = JwtUtils.getUserKey(token);
                 JSONObject jsonObject = redisService.getCacheObject(getTokenKey(userkey));
                 user = jsonObject.toJavaObject(LoginUser.class);
                 return user;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("获取用户信息异常'{}'", e.getMessage());
         }
         return user;
     }
 
-
-    /**
-     * 设置用户身份信息
-     */
+    /** 设置用户身份信息 */
     public void setLoginUser(LoginUser loginUser) {
         if (StringUtils.isNotNull(loginUser) && StringUtils.isNotEmpty(loginUser.getToken())) {
             refreshToken(loginUser);
         }
     }
 
-    /**
-     * 删除用户身份信息
-     */
+    /** 删除用户身份信息 */
     public void delLoginUser(String token) {
         if (StringUtils.isNotEmpty(token)) {
             String userKey = getTokenKey(token);
@@ -137,11 +124,8 @@ public class TokenService {
         }
     }
 
-    /**
-     * 创建令牌
-     */
-    public String createToken(LoginUser loginUser)
-    {
+    /** 创建令牌 */
+    public String createToken(LoginUser loginUser) {
         String token = IdUtils.fastUUID();
         Long userId = loginUser.getUser().getUserId();
         String userName = loginUser.getUser().getUserName();
@@ -160,7 +144,6 @@ public class TokenService {
         // 接口返回信息
         return JwtUtils.createToken(claimsMap);
     }
-
 
     /**
      * 创建长效令牌
@@ -221,23 +204,23 @@ public class TokenService {
         redisService.setCacheObject(userKey, loginUser, 7 * 1440, TimeUnit.MINUTES);
     }
 
-
     /**
      * 更新用户token信息
      *
      * @param loginUser 登录信息
      */
     public void updateToken(LoginUser loginUser) {
-        Map<String,Object> tokensMap = redisService.getCacheKv("login_tokens:*");
-        tokensMap.forEach((key, value) -> {
-            if (Objects.equals(((JSONObject) value).getLong("userId"), loginUser.getUserId())){
-                String token = key.replace(CacheConstants.LOGIN_TOKEN_KEY,"");
-                loginUser.setToken(token);
-                refreshToken(loginUser);
-            }
-        });
+        Map<String, Object> tokensMap = redisService.getCacheKv("login_tokens:*");
+        tokensMap.forEach(
+                (key, value) -> {
+                    if (Objects.equals(
+                            ((JSONObject) value).getLong("userId"), loginUser.getUserId())) {
+                        String token = key.replace(CacheConstants.LOGIN_TOKEN_KEY, "");
+                        loginUser.setToken(token);
+                        refreshToken(loginUser);
+                    }
+                });
     }
-
 
     /**
      * 设置用户代理信息
@@ -245,7 +228,8 @@ public class TokenService {
      * @param loginUser 登录信息
      */
     public void setUserAgent(LoginUser loginUser) {
-        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
+        UserAgent userAgent =
+                UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
         String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
         loginUser.setIpaddr(ip);
         loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
@@ -260,10 +244,11 @@ public class TokenService {
      * @return 令牌
      */
     private String createToken(Map<String, Object> claims) {
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .signWith(generateKey(secret), SignatureAlgorithm.HS512)
-                .compact();
+        String token =
+                Jwts.builder()
+                        .setClaims(claims)
+                        .signWith(generateKey(secret), SignatureAlgorithm.HS512)
+                        .compact();
         return token;
     }
 
@@ -274,12 +259,13 @@ public class TokenService {
      * @return 令牌
      */
     private String createLongTimeToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + (24*3600*1000));
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(expirationDate)
-                .signWith(generateKey(secret), SignatureAlgorithm.HS512)
-                .compact();
+        Date expirationDate = new Date(System.currentTimeMillis() + (24 * 3600 * 1000));
+        String token =
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setExpiration(expirationDate)
+                        .signWith(generateKey(secret), SignatureAlgorithm.HS512)
+                        .compact();
         return token;
     }
 

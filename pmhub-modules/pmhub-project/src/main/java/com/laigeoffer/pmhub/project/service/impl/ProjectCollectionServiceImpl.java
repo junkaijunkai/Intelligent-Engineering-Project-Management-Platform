@@ -7,20 +7,20 @@ import com.laigeoffer.pmhub.project.domain.ProjectCollection;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.mapper.ProjectCollectionMapper;
 import com.laigeoffer.pmhub.project.service.ProjectCollectionService;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
 
 /**
  * @date 2022-12-15 16:35
  */
 @Service
-public class ProjectCollectionServiceImpl extends ServiceImpl<ProjectCollectionMapper, ProjectCollection> implements ProjectCollectionService {
+public class ProjectCollectionServiceImpl
+        extends ServiceImpl<ProjectCollectionMapper, ProjectCollection>
+        implements ProjectCollectionService {
 
-    @Autowired
-    private ProjectCollectionMapper projectCollectionMapper;
+    @Autowired private ProjectCollectionMapper projectCollectionMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -39,7 +39,9 @@ public class ProjectCollectionServiceImpl extends ServiceImpl<ProjectCollectionM
     @Transactional(rollbackFor = Exception.class)
     public int cancelCollectProject(ProjectVO projectVO) {
         LambdaQueryWrapper<ProjectCollection> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectCollection::getProjectId, projectVO.getProjectId()).eq(ProjectCollection::getUserId, SecurityUtils.getUserId());
+        queryWrapper
+                .eq(ProjectCollection::getProjectId, projectVO.getProjectId())
+                .eq(ProjectCollection::getUserId, SecurityUtils.getUserId());
         return projectCollectionMapper.delete(queryWrapper);
     }
 }

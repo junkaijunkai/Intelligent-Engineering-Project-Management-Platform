@@ -2,28 +2,20 @@ package com.laigeoffer.pmhub.base.security.service;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysRole;
 import com.laigeoffer.pmhub.base.core.core.domain.model.LoginUser;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.security.context.PermissionContextHolder;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Set;
-
-/**
- * canghe首创 自定义权限实现，ss取自SpringSecurity首字母
- *
- */
+/** canghe首创 自定义权限实现，ss取自SpringSecurity首字母 */
 @Service("ss")
 public class PermissionService {
-    /**
-     * 所有权限标识
-     */
+    /** 所有权限标识 */
     private static final String ALL_PERMISSION = "*:*:*";
 
-    /**
-     * 管理员角色权限标识
-     */
+    /** 管理员角色权限标识 */
     private static final String SUPER_ADMIN = "admin";
 
     private static final String ROLE_DELIMETER = ",";
@@ -93,7 +85,8 @@ public class PermissionService {
             return false;
         }
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {
+        if (StringUtils.isNull(loginUser)
+                || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {
             return false;
         }
         for (SysRole sysRole : loginUser.getUser().getRoles()) {
@@ -126,7 +119,8 @@ public class PermissionService {
             return false;
         }
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {
+        if (StringUtils.isNull(loginUser)
+                || CollectionUtils.isEmpty(loginUser.getUser().getRoles())) {
             return false;
         }
         for (String role : roles.split(ROLE_DELIMETER)) {
@@ -141,10 +135,11 @@ public class PermissionService {
      * 判断是否包含权限
      *
      * @param permissions 权限列表
-     * @param permission  权限字符串
+     * @param permission 权限字符串
      * @return 用户是否具备某权限
      */
     private boolean hasPermissions(Set<String> permissions, String permission) {
-        return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
+        return permissions.contains(ALL_PERMISSION)
+                || permissions.contains(StringUtils.trim(permission));
     }
 }

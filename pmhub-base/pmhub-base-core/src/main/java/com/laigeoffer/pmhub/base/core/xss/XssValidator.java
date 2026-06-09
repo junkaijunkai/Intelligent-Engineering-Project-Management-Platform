@@ -1,17 +1,12 @@
 package com.laigeoffer.pmhub.base.core.xss;
 
-
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-/**
- * 自定义xss校验注解实现
- *
- */
+/** 自定义xss校验注解实现 */
 public class XssValidator implements ConstraintValidator<Xss, String> {
     private static final String HTML_PATTERN = "<(\\S*?)[^>]*>.*?|<.*? />";
 

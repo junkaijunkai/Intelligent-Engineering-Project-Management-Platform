@@ -1,33 +1,20 @@
 package com.laigeoffer.pmhub.base.core.core.domain.server;
 
-/**
- * 系统相关信息
- *
- */
+/** 系统相关信息 */
 public class Sys {
-    /**
-     * 服务器名称
-     */
+    /** 服务器名称 */
     private String computerName;
 
-    /**
-     * 服务器Ip
-     */
+    /** 服务器Ip */
     private String computerIp;
 
-    /**
-     * 项目路径
-     */
+    /** 项目路径 */
     private String userDir;
 
-    /**
-     * 操作系统
-     */
+    /** 操作系统 */
     private String osName;
 
-    /**
-     * 系统架构
-     */
+    /** 系统架构 */
     private String osArch;
 
     public String getComputerName() {

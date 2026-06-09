@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysUserPost;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 用户与岗位关联表 数据层
- *
- */
+/** 用户与岗位关联表 数据层 */
 @Mapper
 public interface SysUserPostMapper {
     /**

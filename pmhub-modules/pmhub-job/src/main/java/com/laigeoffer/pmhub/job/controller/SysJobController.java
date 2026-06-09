@@ -15,26 +15,19 @@ import com.laigeoffer.pmhub.job.domain.SysJob;
 import com.laigeoffer.pmhub.job.service.ISysJobService;
 import com.laigeoffer.pmhub.job.util.CronUtils;
 import com.laigeoffer.pmhub.job.util.ScheduleUtils;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-/**
- * 调度任务信息操作处理
- *
- */
+/** 调度任务信息操作处理 */
 @RestController
 @RequestMapping("/schedule/monitor/job")
 public class SysJobController extends BaseController {
-    @Autowired
-    private ISysJobService jobService;
+    @Autowired private ISysJobService jobService;
 
-    /**
-     * 查询定时任务列表
-     */
+    /** 查询定时任务列表 */
     @RequiresPermissions("monitor:job:list")
     @GetMapping("/list")
     public TableDataInfo list(SysJob sysJob) {
@@ -43,9 +36,7 @@ public class SysJobController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 导出定时任务列表
-     */
+    /** 导出定时任务列表 */
     @RequiresPermissions("monitor:job:export")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
@@ -55,18 +46,14 @@ public class SysJobController extends BaseController {
         util.exportExcel(response, list, "定时任务");
     }
 
-    /**
-     * 获取定时任务详细信息
-     */
+    /** 获取定时任务详细信息 */
     @RequiresPermissions("monitor:job:query")
     @GetMapping(value = "/{jobId}")
     public AjaxResult getInfo(@PathVariable("jobId") Long jobId) {
         return success(jobService.selectJobById(jobId));
     }
 
-    /**
-     * 新增定时任务
-     */
+    /** 新增定时任务 */
     @RequiresPermissions("monitor:job:add")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
     @PostMapping
@@ -75,11 +62,15 @@ public class SysJobController extends BaseController {
             return error("新增任务'" + job.getJobName() + "'失败，Cron表达式不正确");
         } else if (StringUtils.containsIgnoreCase(job.getInvokeTarget(), Constants.LOOKUP_RMI)) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'rmi'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), new String[]{Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS})) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(),
+                new String[] {Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS})) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'ldap(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), new String[]{Constants.HTTP, Constants.HTTPS})) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(), new String[] {Constants.HTTP, Constants.HTTPS})) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'http(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串存在违规");
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
@@ -88,9 +79,7 @@ public class SysJobController extends BaseController {
         return toAjax(jobService.insertJob(job));
     }
 
-    /**
-     * 修改定时任务
-     */
+    /** 修改定时任务 */
     @RequiresPermissions("monitor:job:edit")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -99,11 +88,15 @@ public class SysJobController extends BaseController {
             return error("修改任务'" + job.getJobName() + "'失败，Cron表达式不正确");
         } else if (StringUtils.containsIgnoreCase(job.getInvokeTarget(), Constants.LOOKUP_RMI)) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'rmi'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), new String[]{Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS})) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(),
+                new String[] {Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS})) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'ldap(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), new String[]{Constants.HTTP, Constants.HTTPS})) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(), new String[] {Constants.HTTP, Constants.HTTPS})) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'http(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
+        } else if (StringUtils.containsAnyIgnoreCase(
+                job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串存在违规");
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
@@ -112,9 +105,7 @@ public class SysJobController extends BaseController {
         return toAjax(jobService.updateJob(job));
     }
 
-    /**
-     * 定时任务状态修改
-     */
+    /** 定时任务状态修改 */
     @RequiresPermissions("monitor:job:changeStatus")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
@@ -124,9 +115,7 @@ public class SysJobController extends BaseController {
         return toAjax(jobService.changeStatus(newJob));
     }
 
-    /**
-     * 定时任务立即执行一次
-     */
+    /** 定时任务立即执行一次 */
     @RequiresPermissions("monitor:job:changeStatus")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
@@ -135,9 +124,7 @@ public class SysJobController extends BaseController {
         return result ? success() : error("任务不存在或已过期！");
     }
 
-    /**
-     * 删除定时任务
-     */
+    /** 删除定时任务 */
     @RequiresPermissions("monitor:job:remove")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")

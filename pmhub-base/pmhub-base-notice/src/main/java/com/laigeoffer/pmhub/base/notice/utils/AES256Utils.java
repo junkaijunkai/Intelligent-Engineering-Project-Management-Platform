@@ -3,17 +3,17 @@ package com.laigeoffer.pmhub.base.notice.utils;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import com.laigeoffer.pmhub.base.notice.exception.AesException;
-
+import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Arrays;
 
 public class AES256Utils {
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
-    //加密
-    public static byte[] AES_cbc_encrypt(byte[] srcData,byte[] key,byte[] iv) throws Exception {
+
+    // 加密
+    public static byte[] AES_cbc_encrypt(byte[] srcData, byte[] key, byte[] iv) throws Exception {
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
@@ -21,9 +21,8 @@ public class AES256Utils {
         return encData;
     }
 
-    //解密
-    public static byte[] AES_cbc_decrypt(byte[] encData,byte[] key,byte[] iv) throws Exception
-    {
+    // 解密
+    public static byte[] AES_cbc_decrypt(byte[] encData, byte[] key, byte[] iv) throws Exception {
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
@@ -38,11 +37,11 @@ public class AES256Utils {
      * @return 解密得到的明文
      * @throws AesException aes解密失败
      */
-    public static String decrypt(String key,String text) throws AesException {
+    public static String decrypt(String key, String text) throws AesException {
         byte[] original = new byte[0];
         try {
 
-            byte[] aesKey = Base64.decode(key+ "=");
+            byte[] aesKey = Base64.decode(key + "=");
 
             // 设置解密模式为AES的CBC模式
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
@@ -69,19 +68,19 @@ public class AES256Utils {
 
             int xmlLength = recoverNetworkBytesOrder(networkOrder);
 
-            xmlContent = new String(Arrays.copyOfRange(bytes, 20, 20 + xmlLength), CharsetUtil.CHARSET_UTF_8);
+            xmlContent =
+                    new String(
+                            Arrays.copyOfRange(bytes, 20, 20 + xmlLength),
+                            CharsetUtil.CHARSET_UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
             throw new AesException(AesException.IllegalBuffer);
         }
 
         return xmlContent;
-
     }
 
-    /**
-     * 还原4个字节的网络字节序
-     * */
+    /** 还原4个字节的网络字节序 */
     public static int recoverNetworkBytesOrder(byte[] orderBytes) {
         int sourceNumber = 0;
         for (int i = 0; i < 4; i++) {
@@ -90,6 +89,4 @@ public class AES256Utils {
         }
         return sourceNumber;
     }
-
-
 }

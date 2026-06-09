@@ -6,38 +6,30 @@ import java.util.Date;
  * @date 2023-03-16 09:17
  */
 public class TaskNotifyDTO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
+
     private Integer status;
-    /**
-     * 任务id
-     */
+
+    /** 任务id */
     private String taskId;
-    /**
-     * 任务名称
-     */
+
+    /** 任务名称 */
     private String taskName;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Integer userId;
-    /**
-     * 企业微信id
-     */
+
+    /** 企业微信id */
     private String userWxName;
-    /**
-     * 是否逾期提醒
-     */
+
+    /** 是否逾期提醒 */
     private Integer msgNotify;
-    /**
-     * 任务逾期提醒天数
-     */
+
+    /** 任务逾期提醒天数 */
     private Integer notifyDay;
-    /**
-     * 任务截止时间
-     */
+
+    /** 任务截止时间 */
     private Date closeTime;
 
     private String userName;

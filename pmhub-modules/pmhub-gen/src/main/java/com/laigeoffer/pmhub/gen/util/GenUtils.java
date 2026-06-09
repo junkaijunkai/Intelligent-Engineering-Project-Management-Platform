@@ -5,18 +5,12 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.gen.config.GenConfig;
 import com.laigeoffer.pmhub.gen.domain.GenTable;
 import com.laigeoffer.pmhub.gen.domain.GenTableColumn;
+import java.util.Arrays;
 import org.apache.commons.lang3.RegExUtils;
 
-import java.util.Arrays;
-
-/**
- * 代码生成器 工具类
- *
- */
+/** 代码生成器 工具类 */
 public class GenUtils {
-    /**
-     * 初始化表信息
-     */
+    /** 初始化表信息 */
     public static void initTable(GenTable genTable, String operName) {
         genTable.setClassName(convertClassName(genTable.getTableName()));
         genTable.setPackageName(GenConfig.getPackageName());
@@ -27,9 +21,7 @@ public class GenUtils {
         genTable.setCreateBy(operName);
     }
 
-    /**
-     * 初始化列属性字段
-     */
+    /** 初始化列属性字段 */
     public static void initColumnField(GenTableColumn column, GenTable table) {
         String dataType = getDbType(column.getColumnType());
         String columnName = column.getColumnName();
@@ -41,10 +33,14 @@ public class GenUtils {
         column.setJavaType(GenConstants.TYPE_STRING);
         column.setQueryType(GenConstants.QUERY_EQ);
 
-        if (arraysContains(GenConstants.COLUMNTYPE_STR, dataType) || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType)) {
+        if (arraysContains(GenConstants.COLUMNTYPE_STR, dataType)
+                || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType)) {
             // 字符串长度超过500设置为文本域
             Integer columnLength = getColumnLength(column.getColumnType());
-            String htmlType = columnLength >= 500 || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType) ? GenConstants.HTML_TEXTAREA : GenConstants.HTML_INPUT;
+            String htmlType =
+                    columnLength >= 500 || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType)
+                            ? GenConstants.HTML_TEXTAREA
+                            : GenConstants.HTML_INPUT;
             column.setHtmlType(htmlType);
         } else if (arraysContains(GenConstants.COLUMNTYPE_TIME, dataType)) {
             column.setJavaType(GenConstants.TYPE_DATE);
@@ -53,12 +49,15 @@ public class GenUtils {
             column.setHtmlType(GenConstants.HTML_INPUT);
 
             // 如果是浮点型 统一用BigDecimal
-            String[] str = StringUtils.split(StringUtils.substringBetween(column.getColumnType(), "(", ")"), ",");
+            String[] str =
+                    StringUtils.split(
+                            StringUtils.substringBetween(column.getColumnType(), "(", ")"), ",");
             if (str != null && str.length == 2 && Integer.parseInt(str[1]) > 0) {
                 column.setJavaType(GenConstants.TYPE_BIGDECIMAL);
             }
             // 如果是长整形
-            else if ((str != null && str.length == 1 && Integer.parseInt(str[0]) > 10) || (str == null && column.getColumnType().equals("bigint"))) {
+            else if ((str != null && str.length == 1 && Integer.parseInt(str[0]) > 10)
+                    || (str == null && column.getColumnType().equals("bigint"))) {
                 column.setJavaType(GenConstants.TYPE_LONG);
             }
             // 整形
@@ -113,7 +112,7 @@ public class GenUtils {
     /**
      * 校验数组是否包含指定值
      *
-     * @param arr         数组
+     * @param arr 数组
      * @param targetValue 值
      * @return 是否包含
      */
@@ -165,7 +164,7 @@ public class GenUtils {
      * 批量替换前缀
      *
      * @param replacementm 替换值
-     * @param searchList   替换列表
+     * @param searchList 替换列表
      * @return
      */
     public static String replaceFirst(String replacementm, String[] searchList) {

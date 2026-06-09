@@ -1,22 +1,22 @@
-//package com.laigeoffer.pmhub.gen;
+// package com.laigeoffer.pmhub.gen;
 //
-//import com.baomidou.mybatisplus.annotation.FieldFill;
-//import com.baomidou.mybatisplus.core.toolkit.StringPool;
-//import com.baomidou.mybatisplus.gen.AutoGenerator;
-//import com.baomidou.mybatisplus.gen.InjectionConfig;
-//import com.baomidou.mybatisplus.gen.config.*;
-//import com.baomidou.mybatisplus.gen.config.po.TableFill;
-//import com.baomidou.mybatisplus.gen.config.po.TableInfo;
-//import com.baomidou.mybatisplus.gen.config.rules.NamingStrategy;
-//import com.baomidou.mybatisplus.gen.engine.VelocityTemplateEngine;
-//import com.laigeoffer.pmhub.base.core.core.domain.BaseCoreEntity;
+// import com.baomidou.mybatisplus.annotation.FieldFill;
+// import com.baomidou.mybatisplus.core.toolkit.StringPool;
+// import com.baomidou.mybatisplus.gen.AutoGenerator;
+// import com.baomidou.mybatisplus.gen.InjectionConfig;
+// import com.baomidou.mybatisplus.gen.config.*;
+// import com.baomidou.mybatisplus.gen.config.po.TableFill;
+// import com.baomidou.mybatisplus.gen.config.po.TableInfo;
+// import com.baomidou.mybatisplus.gen.config.rules.NamingStrategy;
+// import com.baomidou.mybatisplus.gen.engine.VelocityTemplateEngine;
+// import com.laigeoffer.pmhub.base.core.core.domain.BaseCoreEntity;
 //
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
+// import java.util.ArrayList;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
 //
-///**
+/// **
 // * 直接生成必要的类和自动填充字段
 // * 简易版，不会生成过多其他代码，只会生成具体类
 // * 自动填充字段：create_time,update_time,deleted,create_by,update_by
@@ -25,7 +25,7 @@
 // * @author     ：canghe
 // * @date       ：2023/07/21 15:52
 // */
-//public class GeneratorTest {
+// public class GeneratorTest {
 //
 //
 //    /** ！！！开始》》》》》》》》》以下信息需要你手动更改  */
@@ -33,7 +33,8 @@
 //    /**
 //     * 需要生成的表，多个逗号隔开
 //     * 获取数据库表数组
-//     * mysql -uroot -proot -s  -N -e "select table_name from information_schema.tables where table_schema='security-rbac';"|awk '{print "\""$1"\","}'
+//     * mysql -uroot -proot -s  -N -e "select table_name from information_schema.tables where
+// table_schema='security-rbac';"|awk '{print "\""$1"\","}'
 //     */
 //    final static String[] tables ={
 //            "pmhub_category_code_rule"
@@ -66,7 +67,8 @@
 //
 //    /** 1、数据源配置（开发or测试环境）  */
 //    // url
-//    private final static String DATASOURCE_URL = "jdbc:mysql://47.109.46.103:5506/pmhub-manage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8";
+//    private final static String DATASOURCE_URL =
+// "jdbc:mysql://47.109.46.103:5506/pmhub-manage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8";
 //
 //    // DriverName
 //    private final static String DATASOURCE_DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
@@ -93,7 +95,8 @@
 //    private final static String PARENT = "com.laigeoffer.pmhub." + YOUR_MODULE;
 //
 //    // controller包名
-//    private final static String PACK_CONTROLLER = "com.laigeoffer.pmhub.web.controller." + YOUR_MODULE;
+//    private final static String PACK_CONTROLLER = "com.laigeoffer.pmhub.web.controller." +
+// YOUR_MODULE;
 //
 //    // service包名
 //    private final static String PACK_SERVICE = PARENT + ".service";
@@ -116,13 +119,16 @@
 //
 //    /** 4、文件存储路径  */
 //    // controller存储路径（一般无需配置，用PATH_COMMON，本项目特殊。controller统一在admin下故单独配置）
-//    private final static String PATH_CONTROLLER = PROJECTPATH +  "/pmhub-admin/src/main/java/com/pmhub/web/controller/" + YOUR_MODULE;
+//    private final static String PATH_CONTROLLER = PROJECTPATH +
+// "/pmhub-admin/src/main/java/com/pmhub/web/controller/" + YOUR_MODULE;
 //
 //    // service、serviceImpl、dto、vo、entity、mapper存储路径
-//    private final static String PATH_COMMON = PROJECTPATH + "/"  + MODULE +  "/src/main/java/com/pmhub/" + YOUR_MODULE;
+//    private final static String PATH_COMMON = PROJECTPATH + "/"  + MODULE +
+// "/src/main/java/com/pmhub/" + YOUR_MODULE;
 //
 //    // mapper.xml存储路径
-//    private final static String PATH_XML = PROJECTPATH + "/" + MODULE + "/src/main/resources/mapper/" + YOUR_MODULE;
+//    private final static String PATH_XML = PROJECTPATH + "/" + MODULE +
+// "/src/main/resources/mapper/" + YOUR_MODULE;
 //
 //
 //    /** 5、自定义生成类模板控制（默认在本项目下的templates文件夹下面，如需使用自己的模板，可新建，并在此处引入即可）  */
@@ -242,7 +248,8 @@
 //        focList.add(new FileOutConfig(TEMPLATE_ENTITY) {
 //            @Override
 //            public String outputFile(TableInfo tableInfo) {
-//                return PATH_COMMON + "/domain/entity/" + tableInfo.getEntityName() + StringPool.DOT_JAVA;
+//                return PATH_COMMON + "/domain/entity/" + tableInfo.getEntityName() +
+// StringPool.DOT_JAVA;
 //            }
 //        });
 //
@@ -251,7 +258,8 @@
 //            @Override
 //            public String outputFile(TableInfo tableInfo) {
 //                // 自定义输入文件名称
-//                return PATH_XML + "/"  + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
+//                return PATH_XML + "/"  + tableInfo.getEntityName() + "Mapper" +
+// StringPool.DOT_XML;
 //            }
 //        });
 //
@@ -261,7 +269,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_CONTROLLER) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_CONTROLLER + "/" + tableInfo.getEntityName() + "Controller" + StringPool.DOT_JAVA;
+//                    return PATH_CONTROLLER + "/" + tableInfo.getEntityName() + "Controller" +
+// StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -269,7 +278,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_SERVICE) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_COMMON + "/service/" + tableInfo.getEntityName() + "Service" + StringPool.DOT_JAVA;
+//                    return PATH_COMMON + "/service/" + tableInfo.getEntityName() + "Service" +
+// StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -277,7 +287,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_SERVICE_IMPL) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_COMMON + "/service/impl/" + tableInfo.getEntityName() + "ServiceImpl" + StringPool.DOT_JAVA;
+//                    return PATH_COMMON + "/service/impl/" + tableInfo.getEntityName() +
+// "ServiceImpl" + StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -285,7 +296,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_DTO) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_COMMON + "/domain/dto/"  + tableInfo.getEntityName() + "DTO" + StringPool.DOT_JAVA;
+//                    return PATH_COMMON + "/domain/dto/"  + tableInfo.getEntityName() + "DTO" +
+// StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -294,7 +306,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_VO) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_COMMON + "/domain/vo/"  + tableInfo.getEntityName() + "VO" + StringPool.DOT_JAVA;
+//                    return PATH_COMMON + "/domain/vo/"  + tableInfo.getEntityName() + "VO" +
+// StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -302,7 +315,8 @@
 //            focList.add(new FileOutConfig(TEMPLATE_MAPPER) {
 //                @Override
 //                public String outputFile(TableInfo tableInfo) {
-//                    return PATH_COMMON + "/mapper/"  + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_JAVA;
+//                    return PATH_COMMON + "/mapper/"  + tableInfo.getEntityName() + "Mapper" +
+// StringPool.DOT_JAVA;
 //                }
 //            });
 //
@@ -340,7 +354,8 @@
 //        //根据实际项目名称修改
 //        pc.setParent(null);//不设置的原因是，本项目的controller是统一放在admin包下面的，故每个子包都配置完整包名
 //
-//        // controller、service、serviceImpl、mapper、entity、xml是mybatis-plus默认识别的包名，可直接在这配置，对于其他包名如dto、vo等，需要在自定义配置中配置
+//        //
+// controller、service、serviceImpl、mapper、entity、xml是mybatis-plus默认识别的包名，可直接在这配置，对于其他包名如dto、vo等，需要在自定义配置中配置
 //        pc.setController(PACK_CONTROLLER);
 //        pc.setService(PACK_SERVICE);
 //        pc.setServiceImpl(PACK_SERVICE_IMPL);
@@ -408,4 +423,4 @@
 //        dsc.setPassword(DATASOURCE_PASSWORD);
 //        mpg.setDataSource(dsc);
 //    }
-//}
+// }

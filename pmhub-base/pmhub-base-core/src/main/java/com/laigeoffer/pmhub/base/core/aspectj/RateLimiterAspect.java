@@ -6,6 +6,9 @@ import com.laigeoffer.pmhub.base.core.exception.ServiceException;
 import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.ip.IpUtils;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -17,14 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * 限流处理
- *
- */
+/** 限流处理 */
 @Aspect
 @Component
 public class RateLimiterAspect {
@@ -65,10 +61,7 @@ public class RateLimiterAspect {
         }
     }
 
-    /**
-     * 构造出一个唯一限流标识
-     * Key + IP + 类名 + 方法名
-      */
+    /** 构造出一个唯一限流标识 Key + IP + 类名 + 方法名 */
     public String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
         StringBuffer stringBuffer = new StringBuffer(rateLimiter.key());
         if (rateLimiter.limitType() == LimitType.IP) {

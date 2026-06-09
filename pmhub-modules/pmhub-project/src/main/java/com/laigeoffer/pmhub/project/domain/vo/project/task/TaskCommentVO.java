@@ -1,27 +1,21 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 import java.util.List;
 
 /**
  * @date 2022-12-21 14:44
  */
 public class TaskCommentVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 任务id
-     */
+
+    /** 任务id */
     private String taskId;
-    /**
-     * 评论
-     */
+
+    /** 评论 */
     private String comment;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private List<Long> userIdList;
 
     public String getProjectId() {

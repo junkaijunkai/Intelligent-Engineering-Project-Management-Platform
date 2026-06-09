@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.workflow.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 /**
@@ -14,8 +13,10 @@ public class WfModelResVO {
     private String modelKey;
     private String modelName;
     private String modelId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
+
     private Integer version;
 
     public String getCategory() {

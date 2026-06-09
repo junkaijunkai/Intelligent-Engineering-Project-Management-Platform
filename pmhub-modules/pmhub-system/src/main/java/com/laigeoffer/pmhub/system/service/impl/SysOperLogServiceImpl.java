@@ -3,19 +3,14 @@ package com.laigeoffer.pmhub.system.service.impl;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysOperLog;
 import com.laigeoffer.pmhub.system.mapper.SysOperLogMapper;
 import com.laigeoffer.pmhub.system.service.ISysOperLogService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 操作日志 服务层处理
- *
- */
+/** 操作日志 服务层处理 */
 @Service
 public class SysOperLogServiceImpl implements ISysOperLogService {
-    @Autowired
-    private SysOperLogMapper operLogMapper;
+    @Autowired private SysOperLogMapper operLogMapper;
 
     /**
      * 新增操作日志
@@ -60,9 +55,7 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
         return operLogMapper.selectOperLogById(operId);
     }
 
-    /**
-     * 清空操作日志
-     */
+    /** 清空操作日志 */
     @Override
     public void cleanOperLog() {
         operLogMapper.cleanOperLog();

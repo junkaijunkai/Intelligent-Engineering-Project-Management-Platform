@@ -3,16 +3,13 @@ package com.laigeoffer.pmhub.system.service;
 import com.laigeoffer.pmhub.base.core.core.domain.model.LoginUser;
 import com.laigeoffer.pmhub.system.domain.SysUserOnline;
 
-/**
- * 在线用户 服务层
- *
- */
+/** 在线用户 服务层 */
 public interface ISysUserOnlineService {
     /**
      * 通过登录地址查询信息
      *
      * @param ipaddr 登录地址
-     * @param user   用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     public SysUserOnline selectOnlineByIpaddr(String ipaddr, LoginUser user);
@@ -21,7 +18,7 @@ public interface ISysUserOnlineService {
      * 通过用户名称查询信息
      *
      * @param userName 用户名称
-     * @param user     用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     public SysUserOnline selectOnlineByUserName(String userName, LoginUser user);
@@ -29,9 +26,9 @@ public interface ISysUserOnlineService {
     /**
      * 通过登录地址/用户名称查询信息
      *
-     * @param ipaddr   登录地址
+     * @param ipaddr 登录地址
      * @param userName 用户名称
-     * @param user     用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     public SysUserOnline selectOnlineByInfo(String ipaddr, String userName, LoginUser user);

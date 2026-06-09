@@ -3,9 +3,7 @@ package com.laigeoffer.pmhub.base.notice.domain.entity;
 import cn.hutool.core.date.DateTime;
 import lombok.Data;
 
-/**
- * 微信消息和taskid对应表
- */
+/** 微信消息和taskid对应表 */
 @Data
 public class MessageCode {
 
@@ -15,8 +13,6 @@ public class MessageCode {
 
     String messageCode;
 
-    /**
-     * 消息时间
-     * */
+    /** 消息时间 */
     DateTime createTime;
 }

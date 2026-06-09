@@ -2,9 +2,7 @@ package com.laigeoffer.pmhub.base.notice.domain.entity;
 
 import lombok.Data;
 
-/**
- * 企微返回消息
- */
+/** 企微返回消息 */
 @Data
 public class WxResult {
 
@@ -15,5 +13,4 @@ public class WxResult {
     private String msgid;
 
     private String response_code;
-
 }

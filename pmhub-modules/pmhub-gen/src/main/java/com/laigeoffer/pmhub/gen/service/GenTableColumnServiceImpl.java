@@ -3,19 +3,14 @@ package com.laigeoffer.pmhub.gen.service;
 import com.laigeoffer.pmhub.base.core.core.text.Convert;
 import com.laigeoffer.pmhub.gen.domain.GenTableColumn;
 import com.laigeoffer.pmhub.gen.mapper.GenTableColumnMapper;
+import java.util.List;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.List;
-
-/**
- * 业务字段 服务层实现
- *
- */
+/** 业务字段 服务层实现 */
 @Service
 public class GenTableColumnServiceImpl implements IGenTableColumnService {
-    @Resource
-    private GenTableColumnMapper genTableColumnMapper;
+    @Resource private GenTableColumnMapper genTableColumnMapper;
 
     /**
      * 查询业务字段列表

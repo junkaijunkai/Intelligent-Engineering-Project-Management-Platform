@@ -5,12 +5,10 @@ import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO;
 import com.laigeoffer.pmhub.project.mapper.ProjectMapper;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 
 /**
  * @date 2023-01-09 11:47
@@ -19,8 +17,7 @@ import java.util.List;
 @Service("queryMyProjectExecutor")
 public class QueryMyProjectExecutor extends QueryAbstractExecutor {
 
-    @Autowired
-    private ProjectMapper projectMapper;
+    @Autowired private ProjectMapper projectMapper;
 
     @Override
     public List<ProjectResVO> query(ProjectReqVO projectReqVO) {

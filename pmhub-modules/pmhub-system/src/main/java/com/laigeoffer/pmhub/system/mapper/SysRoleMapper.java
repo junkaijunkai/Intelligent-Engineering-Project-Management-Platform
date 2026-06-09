@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
-
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysRole;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 角色表 数据层
- *
- */
+/** 角色表 数据层 */
 @Mapper
 public interface SysRoleMapper {
     /**

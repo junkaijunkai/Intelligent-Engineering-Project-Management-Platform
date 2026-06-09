@@ -5,9 +5,9 @@ import com.laigeoffer.pmhub.base.core.constant.UserConstants;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysRole;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.spring.SpringUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.domain.SysRoleDept;
 import com.laigeoffer.pmhub.system.domain.SysRoleMenu;
 import com.laigeoffer.pmhub.system.domain.SysUserRole;
@@ -16,29 +16,21 @@ import com.laigeoffer.pmhub.system.mapper.SysRoleMapper;
 import com.laigeoffer.pmhub.system.mapper.SysRoleMenuMapper;
 import com.laigeoffer.pmhub.system.mapper.SysUserRoleMapper;
 import com.laigeoffer.pmhub.system.service.ISysRoleService;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-
-/**
- * 角色 业务层处理
- *
- */
+/** 角色 业务层处理 */
 @Service
 public class SysRoleServiceImpl implements ISysRoleService {
-    @Autowired
-    private SysRoleMapper roleMapper;
+    @Autowired private SysRoleMapper roleMapper;
 
-    @Autowired
-    private SysRoleMenuMapper roleMenuMapper;
+    @Autowired private SysRoleMenuMapper roleMenuMapper;
 
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
+    @Autowired private SysUserRoleMapper userRoleMapper;
 
-    @Autowired
-    private SysRoleDeptMapper roleDeptMapper;
+    @Autowired private SysRoleDeptMapper roleDeptMapper;
 
     /**
      * 根据条件分页查询角色数据
@@ -349,7 +341,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     /**
      * 批量取消授权用户角色
      *
-     * @param roleId  角色ID
+     * @param roleId 角色ID
      * @param userIds 需要取消授权的用户数据ID
      * @return 结果
      */
@@ -361,7 +353,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     /**
      * 批量选择授权用户角色
      *
-     * @param roleId  角色ID
+     * @param roleId 角色ID
      * @param userIds 需要授权的用户数据ID
      * @return 结果
      */

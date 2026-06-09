@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @date 2022-12-19 16:35
  */
-
 @RestController
 @RequestMapping("/project/stage")
 public class ProjectStageController {
-    @Autowired
-    private ProjectStageService projectStageService;
+    @Autowired private ProjectStageService projectStageService;
 
     /**
      * 根据项目id查询项目阶段
+     *
      * @param projectVO
      * @return
      */
@@ -32,6 +31,7 @@ public class ProjectStageController {
 
     /**
      * 添加阶段
+     *
      * @param projectStageVO
      * @return
      */
@@ -41,8 +41,10 @@ public class ProjectStageController {
         projectStageService.add(projectStageVO);
         return AjaxResult.success();
     }
+
     /**
      * 添加阶段
+     *
      * @param projectStageVO
      * @return
      */
@@ -55,6 +57,7 @@ public class ProjectStageController {
 
     /**
      * 删除阶段
+     *
      * @param projectStageVO
      * @return
      */

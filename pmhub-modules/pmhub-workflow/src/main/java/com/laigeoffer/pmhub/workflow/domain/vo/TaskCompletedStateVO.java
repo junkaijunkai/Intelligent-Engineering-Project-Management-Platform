@@ -2,24 +2,16 @@ package com.laigeoffer.pmhub.workflow.domain.vo;
 
 import com.laigeoffer.pmhub.workflow.enums.TaskCompletedStateEnum;
 
-/**
- * 任务状态
- */
+/** 任务状态 */
 public class TaskCompletedStateVO {
 
-    /**
-     * 处理结果类型
-     * */
+    /** 处理结果类型 */
     String taskType;
 
-    /**
-     * 处理结果类型desc
-     * */
+    /** 处理结果类型desc */
     String taskTypeDesc;
 
-    /**
-     * 任务处理意见
-     * */
+    /** 任务处理意见 */
     String taskMessage;
 
     public String getTaskType() {
@@ -31,7 +23,8 @@ public class TaskCompletedStateVO {
     }
 
     public String getTaskTypeDesc() {
-        return TaskCompletedStateEnum.getTaskCompletedStateEnum(Integer.parseInt(taskType)).toString();
+        return TaskCompletedStateEnum.getTaskCompletedStateEnum(Integer.parseInt(taskType))
+                .toString();
     }
 
     public void setTaskTypeDesc(String taskTypeDesc) {

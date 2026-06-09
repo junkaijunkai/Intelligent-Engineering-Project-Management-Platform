@@ -9,19 +9,13 @@ import java.lang.reflect.Field;
  */
 public class SecrecyFieldTypeErrorException extends RuntimeException {
 
-    /**
-     * 保密类的类型
-     */
+    /** 保密类的类型 */
     private final Class<?> objClass;
 
-    /**
-     * 异常的字段
-     */
+    /** 异常的字段 */
     private final Field field;
 
-    /**
-     * 错误消息
-     */
+    /** 错误消息 */
     private final String message;
 
     public SecrecyFieldTypeErrorException(Class<?> objClass, Field field) {
@@ -38,7 +32,8 @@ public class SecrecyFieldTypeErrorException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return String.format("类 %s 的敏感字段 %s 必须是一个可以设置为NULL的类型，当前类型为：%s [%s]",objClass,field.getName(),field.getType(),message);
+        return String.format(
+                "类 %s 的敏感字段 %s 必须是一个可以设置为NULL的类型，当前类型为：%s [%s]",
+                objClass, field.getName(), field.getType(), message);
     }
-
 }

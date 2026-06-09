@@ -1,9 +1,8 @@
 package com.laigeoffer.pmhub.workflow.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 /**
  * 流程批复视图对象
@@ -13,21 +12,13 @@ import java.util.Date;
 @Data
 public class WfCommentVo {
 
-    /**
-     * 审批类别
-     */
+    /** 审批类别 */
     private String type;
 
-    /**
-     * 批复内容
-     */
+    /** 批复内容 */
     private String message;
 
-    /**
-     * 批复时间
-     */
+    /** 批复时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;
-
-
 }

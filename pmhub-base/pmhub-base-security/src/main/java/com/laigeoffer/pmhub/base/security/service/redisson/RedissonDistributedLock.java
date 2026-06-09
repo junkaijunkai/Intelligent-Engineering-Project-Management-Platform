@@ -1,14 +1,13 @@
 package com.laigeoffer.pmhub.base.security.service.redisson;
 
 import com.laigeoffer.pmhub.base.security.pojo.ILock;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @description RedissonDistributedLock 分布式锁实现类
@@ -18,11 +17,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedissonDistributedLock implements IDistributedLock {
 
-    @Resource
-    private RedissonClient redissonClient;
-    /**
-     * 统一前缀
-     */
+    @Resource private RedissonClient redissonClient;
+
+    /** 统一前缀 */
     @Value("${redisson.lock.prefix:bi:distributed:lock}")
     private String prefix;
 

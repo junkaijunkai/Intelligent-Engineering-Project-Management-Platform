@@ -9,36 +9,26 @@ import com.laigeoffer.pmhub.base.security.utils.DictUtils;
 import com.laigeoffer.pmhub.system.mapper.SysDictDataMapper;
 import com.laigeoffer.pmhub.system.mapper.SysDictTypeMapper;
 import com.laigeoffer.pmhub.system.service.ISysDictTypeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 字典 业务层处理
- *
- */
+/** 字典 业务层处理 */
 @Service
 public class SysDictTypeServiceImpl implements ISysDictTypeService {
-    @Autowired
-    private SysDictTypeMapper dictTypeMapper;
+    @Autowired private SysDictTypeMapper dictTypeMapper;
 
-    @Autowired
-    private SysDictDataMapper dictDataMapper;
+    @Autowired private SysDictDataMapper dictDataMapper;
 
-
-    /**
-     * 项目启动时，初始化字典到缓存
-     */
-//    @PostConstruct
-//    public void init() {
-//        loadingDictCache();
-//    }
-
+    /** 项目启动时，初始化字典到缓存 */
+    //    @PostConstruct
+    //    public void init() {
+    //        loadingDictCache();
+    //    }
 
     /**
      * 根据条件分页查询字典类型
@@ -120,30 +110,30 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         }
     }
 
-    /**
-     * 加载字典缓存数据
-     */
+    /** 加载字典缓存数据 */
     @Override
     public void loadingDictCache() {
         SysDictData dictData = new SysDictData();
         dictData.setStatus("0");
-        Map<String, List<SysDictData>> dictDataMap = dictDataMapper.selectDictDataList(dictData).stream().collect(Collectors.groupingBy(SysDictData::getDictType));
+        Map<String, List<SysDictData>> dictDataMap =
+                dictDataMapper.selectDictDataList(dictData).stream()
+                        .collect(Collectors.groupingBy(SysDictData::getDictType));
         for (Map.Entry<String, List<SysDictData>> entry : dictDataMap.entrySet()) {
-            DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            DictUtils.setDictCache(
+                    entry.getKey(),
+                    entry.getValue().stream()
+                            .sorted(Comparator.comparing(SysDictData::getDictSort))
+                            .collect(Collectors.toList()));
         }
     }
 
-    /**
-     * 清空字典缓存数据
-     */
+    /** 清空字典缓存数据 */
     @Override
     public void clearDictCache() {
         DictUtils.clearDictCache();
     }
 
-    /**
-     * 重置字典缓存数据
-     */
+    /** 重置字典缓存数据 */
     @Override
     public void resetDictCache() {
         clearDictCache();
@@ -194,10 +184,10 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     public String checkDictTypeUnique(SysDictType dict) {
         Long dictId = StringUtils.isNull(dict.getDictId()) ? -1L : dict.getDictId();
         SysDictType dictType = dictTypeMapper.checkDictTypeUnique(dict.getDictType());
-        if (StringUtils.isNotNull(dictType) && dictType.getDictId().longValue() != dictId.longValue()) {
+        if (StringUtils.isNotNull(dictType)
+                && dictType.getDictId().longValue() != dictId.longValue()) {
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
     }
-
 }

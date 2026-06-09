@@ -4,7 +4,6 @@ import com.laigeoffer.pmhub.base.core.core.domain.PageQuery;
 import com.laigeoffer.pmhub.base.core.core.page.Table2DataInfo;
 import com.laigeoffer.pmhub.workflow.domain.bo.WfCategoryBo;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfCategoryVo;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -16,18 +15,15 @@ import java.util.List;
 public interface IWfCategoryService {
     /**
      * 查询单个
+     *
      * @return
      */
     WfCategoryVo queryById(Long categoryId);
 
-    /**
-     * 查询列表
-     */
+    /** 查询列表 */
     Table2DataInfo<WfCategoryVo> queryPageList(WfCategoryBo bo, PageQuery pageQuery);
 
-    /**
-     * 查询列表
-     */
+    /** 查询列表 */
     List<WfCategoryVo> queryList(WfCategoryBo categoryBo);
 
     /**
@@ -40,6 +36,7 @@ public interface IWfCategoryService {
 
     /**
      * 编辑流程分类
+     *
      * @param categoryBo 流程分类信息
      * @return 结果
      */
@@ -47,6 +44,7 @@ public interface IWfCategoryService {
 
     /**
      * 校验并删除数据
+     *
      * @param ids 主键集合
      * @param isValid 是否校验,true-删除前校验,false-不校验
      * @return 结果

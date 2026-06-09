@@ -1,41 +1,25 @@
 package com.laigeoffer.pmhub.base.core.core.domain.server;
 
-
 import com.laigeoffer.pmhub.base.core.utils.Arith;
 
-/**
- * CPU相关信息
- *
- */
+/** CPU相关信息 */
 public class Cpu {
-    /**
-     * 核心数
-     */
+    /** 核心数 */
     private int cpuNum;
 
-    /**
-     * CPU总的使用率
-     */
+    /** CPU总的使用率 */
     private double total;
 
-    /**
-     * CPU系统使用率
-     */
+    /** CPU系统使用率 */
     private double sys;
 
-    /**
-     * CPU用户使用率
-     */
+    /** CPU用户使用率 */
     private double used;
 
-    /**
-     * CPU当前等待率
-     */
+    /** CPU当前等待率 */
     private double wait;
 
-    /**
-     * CPU当前空闲率
-     */
+    /** CPU当前空闲率 */
     private double free;
 
     public int getCpuNum() {

@@ -8,5 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2022-12-12 14:28
  */
 @Mapper
-public interface ProjectCollectionMapper extends BaseMapper<ProjectCollection> {
-}
+public interface ProjectCollectionMapper extends BaseMapper<ProjectCollection> {}

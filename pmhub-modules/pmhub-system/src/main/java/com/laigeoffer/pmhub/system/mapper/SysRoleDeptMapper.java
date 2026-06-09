@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysRoleDept;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 角色与部门关联表 数据层
- *
- */
+/** 角色与部门关联表 数据层 */
 @Mapper
 public interface SysRoleDeptMapper {
     /**

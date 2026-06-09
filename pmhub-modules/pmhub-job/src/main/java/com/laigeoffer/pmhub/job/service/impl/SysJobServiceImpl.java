@@ -7,6 +7,8 @@ import com.laigeoffer.pmhub.job.mapper.SysJobMapper;
 import com.laigeoffer.pmhub.job.service.ISysJobService;
 import com.laigeoffer.pmhub.job.util.CronUtils;
 import com.laigeoffer.pmhub.job.util.ScheduleUtils;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -15,24 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
-
-/**
- * 定时任务调度信息 服务层
- *
- */
+/** 定时任务调度信息 服务层 */
 @Service
 public class SysJobServiceImpl implements ISysJobService {
-    @Autowired
-    private Scheduler scheduler;
+    @Autowired private Scheduler scheduler;
 
-    @Autowired
-    private SysJobMapper jobMapper;
+    @Autowired private SysJobMapper jobMapper;
 
-    /**
-     * 项目启动时，初始化定时器 主要是防止手动修改数据库导致未同步到定时任务处理（注：不能手动修改数据库ID和任务组名，否则会导致脏数据）
-     */
+    /** 项目启动时，初始化定时器 主要是防止手动修改数据库导致未同步到定时任务处理（注：不能手动修改数据库ID和任务组名，否则会导致脏数据） */
     @PostConstruct
     public void init() throws SchedulerException, TaskException {
         scheduler.clear();
@@ -208,10 +200,11 @@ public class SysJobServiceImpl implements ISysJobService {
     /**
      * 更新任务
      *
-     * @param job      任务对象
+     * @param job 任务对象
      * @param jobGroup 任务组名
      */
-    public void updateSchedulerJob(SysJob job, String jobGroup) throws SchedulerException, TaskException {
+    public void updateSchedulerJob(SysJob job, String jobGroup)
+            throws SchedulerException, TaskException {
         Long jobId = job.getJobId();
         // 判断是否存在
         JobKey jobKey = ScheduleUtils.getJobKey(jobId, jobGroup);

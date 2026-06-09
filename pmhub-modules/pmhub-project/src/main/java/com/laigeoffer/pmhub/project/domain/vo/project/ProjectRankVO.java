@@ -6,17 +6,13 @@ import java.math.BigDecimal;
  * @date 2022-12-12 10:00
  */
 public class ProjectRankVO extends ProjectVO {
-    /**
-     * 进度
-     */
+    /** 进度 */
     private BigDecimal process;
-    /**
-     * 账号
-     */
+
+    /** 账号 */
     private String userName;
-    /**
-     * 昵称
-     */
+
+    /** 昵称 */
     private String nickName;
 
     public BigDecimal getProcess() {

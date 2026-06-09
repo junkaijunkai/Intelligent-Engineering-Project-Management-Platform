@@ -8,5 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2022-12-12 14:34
  */
 @Mapper
-public interface ProjectTaskWorkTimeMapper extends BaseMapper<ProjectTaskWorkTime> {
-}
+public interface ProjectTaskWorkTimeMapper extends BaseMapper<ProjectTaskWorkTime> {}

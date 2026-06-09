@@ -11,13 +11,20 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface WfTaskProcessMapper extends BaseMapper<WfTaskProcess> {
     Integer selectStatusByTaskId(@Param("taskId") String taskId);
-    Integer selectStatusByTaskId2(@Param("taskId") String taskId);
-    int updateTaskStatus(@Param("taskId") String taskId);
-    int updateTaskStatus2(@Param("taskId") String taskId);
-    int updateTaskStatus3(@Param("taskId") String taskId);
-    int updateProcessState(@Param("dataId") String dataId);
-    int updateProcessState2(@Param("dataId") String dataId);
-    int updateProviderStatus(@Param("providerId") String providerId);
-    String selectLinkRecordsId(@Param("materialId") String materialId);
 
+    Integer selectStatusByTaskId2(@Param("taskId") String taskId);
+
+    int updateTaskStatus(@Param("taskId") String taskId);
+
+    int updateTaskStatus2(@Param("taskId") String taskId);
+
+    int updateTaskStatus3(@Param("taskId") String taskId);
+
+    int updateProcessState(@Param("dataId") String dataId);
+
+    int updateProcessState2(@Param("dataId") String dataId);
+
+    int updateProviderStatus(@Param("providerId") String providerId);
+
+    String selectLinkRecordsId(@Param("materialId") String materialId);
 }

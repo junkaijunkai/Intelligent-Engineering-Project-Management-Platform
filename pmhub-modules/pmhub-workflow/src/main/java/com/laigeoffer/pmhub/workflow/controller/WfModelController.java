@@ -20,18 +20,17 @@ import com.laigeoffer.pmhub.workflow.domain.vo.WfModelResVO;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfModelVo;
 import com.laigeoffer.pmhub.workflow.service.IWfCategoryService;
 import com.laigeoffer.pmhub.workflow.service.IWfModelService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 工作流流程模型管理
@@ -78,7 +77,8 @@ public class WfModelController extends BaseController {
      */
     @RequiresPermissions("workflow:model:query")
     @GetMapping(value = "/{modelId}")
-    public R<WfModelVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable("modelId") String modelId) {
+    public R<WfModelVo> getInfo(
+            @NotNull(message = "主键不能为空") @PathVariable("modelId") String modelId) {
         return R.ok(modelService.getModel(modelId));
     }
 
@@ -89,13 +89,12 @@ public class WfModelController extends BaseController {
      */
     @RequiresPermissions("workflow:model:query")
     @GetMapping(value = "/bpmnXml/{modelId}")
-    public R<String> getBpmnXml(@NotNull(message = "主键不能为空") @PathVariable("modelId") String modelId) {
+    public R<String> getBpmnXml(
+            @NotNull(message = "主键不能为空") @PathVariable("modelId") String modelId) {
         return R.ok("操作成功", modelService.queryBpmnXmlById(modelId));
     }
 
-    /**
-     * 新增流程模型
-     */
+    /** 新增流程模型 */
     @RequiresPermissions("workflow:model:add")
     @Log(title = "流程模型", businessType = BusinessType.INSERT)
     @PostMapping
@@ -103,9 +102,7 @@ public class WfModelController extends BaseController {
         return R.ok(modelService.insertModel(modelBo));
     }
 
-    /**
-     * 修改流程模型
-     */
+    /** 修改流程模型 */
     @RequiresPermissions("workflow:model:edit")
     @Log(title = "流程模型", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -114,9 +111,7 @@ public class WfModelController extends BaseController {
         return R.ok();
     }
 
-    /**
-     * 保存流程模型
-     */
+    /** 保存流程模型 */
     @RequiresPermissions("workflow:model:save")
     @Log(title = "保存流程模型", businessType = BusinessType.INSERT)
     @RepeatSubmit()
@@ -128,6 +123,7 @@ public class WfModelController extends BaseController {
 
     /**
      * 设为最新流程模型
+     *
      * @param modelId
      * @return
      */
@@ -166,18 +162,19 @@ public class WfModelController extends BaseController {
         return toAjax3(modelService.deployModel(modelId));
     }
 
-    /**
-     * 导出流程模型数据
-     */
+    /** 导出流程模型数据 */
     @Log(title = "导出流程模型数据", businessType = BusinessType.EXPORT)
     @RequiresPermissions("workflow:model:export")
     @PostMapping("/export")
     public void export(WfModelBo modelBo, HttpServletResponse response) {
-        List<WfModelVo> list =  modelService.list(modelBo);
+        List<WfModelVo> list = modelService.list(modelBo);
         List<WfModelExportVo> listVo = BeanUtil.copyToList(list, WfModelExportVo.class);
         List<WfCategoryVo> categoryVos = categoryService.queryList(new WfCategoryBo());
-        Map<String, String> categoryMap = categoryVos.stream()
-            .collect(Collectors.toMap(WfCategoryVo::getCode, WfCategoryVo::getCategoryName));
+        Map<String, String> categoryMap =
+                categoryVos.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        WfCategoryVo::getCode, WfCategoryVo::getCategoryName));
         for (WfModelExportVo exportVo : listVo) {
             exportVo.setCategoryName(categoryMap.get(exportVo.getCategory()));
         }

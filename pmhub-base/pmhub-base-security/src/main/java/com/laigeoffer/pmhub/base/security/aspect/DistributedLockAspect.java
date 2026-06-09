@@ -5,6 +5,9 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.security.annotation.DistributedLock;
 import com.laigeoffer.pmhub.base.security.pojo.ILock;
 import com.laigeoffer.pmhub.base.security.service.redisson.IDistributedLock;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -20,10 +23,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.lang.reflect.Method;
-import java.util.Objects;
-
 /**
  * @description DistributedLockAspect
  * @create 2024-06-17-10:20
@@ -33,25 +32,17 @@ import java.util.Objects;
 @Component
 public class DistributedLockAspect {
 
-    @Resource
-    private IDistributedLock distributedLock;
+    @Resource private IDistributedLock distributedLock;
 
-    /**
-     * SpEL表达式解析
-     */
+    /** SpEL表达式解析 */
     private SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
 
-    /**
-     * 用于获取方法参数名字
-     */
+    /** 用于获取方法参数名字 */
     private DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
-    /**
-     * 切点定义
-     */
+    /** 切点定义 */
     @Pointcut("@annotation(com.laigeoffer.pmhub.base.security.annotation.DistributedLock)")
-    public void distributorLock() {
-    }
+    public void distributorLock() {}
 
     @Around("distributorLock()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
@@ -63,13 +54,24 @@ public class DistributedLockAspect {
         try {
             // 加锁，tryLok = true,并且tryTime > 0时，尝试获取锁，获取不到超时异常
             if (distributedLock.tryLok()) {
-                if(distributedLock.tryTime() <= 0){
+                if (distributedLock.tryTime() <= 0) {
                     throw new UtilException("tryTime must be greater than 0");
                 }
-                lockObj = this.distributedLock.tryLock(lockKey, distributedLock.tryTime(), distributedLock.lockTime(), distributedLock.unit(), distributedLock.fair());
+                lockObj =
+                        this.distributedLock.tryLock(
+                                lockKey,
+                                distributedLock.tryTime(),
+                                distributedLock.lockTime(),
+                                distributedLock.unit(),
+                                distributedLock.fair());
             } else {
                 // 阻塞型加锁
-                lockObj = this.distributedLock.lock(lockKey, distributedLock.lockTime(), distributedLock.unit(), distributedLock.fair());
+                lockObj =
+                        this.distributedLock.lock(
+                                lockKey,
+                                distributedLock.lockTime(),
+                                distributedLock.unit(),
+                                distributedLock.fair());
             }
 
             if (Objects.isNull(lockObj)) {
@@ -90,7 +92,8 @@ public class DistributedLockAspect {
      * @return
      * @throws NoSuchMethodException
      */
-    private DistributedLock getDistributedLock(ProceedingJoinPoint pjp) throws NoSuchMethodException {
+    private DistributedLock getDistributedLock(ProceedingJoinPoint pjp)
+            throws NoSuchMethodException {
         String methodName = pjp.getSignature().getName();
         Class clazz = pjp.getTarget().getClass();
         Class<?>[] par = ((MethodSignature) pjp.getSignature()).getParameterTypes();

@@ -2,24 +2,16 @@ package com.laigeoffer.pmhub.base.core.utils;
 
 import com.laigeoffer.pmhub.base.core.constant.Constants;
 import com.laigeoffer.pmhub.base.core.core.text.StrFormatter;
-import org.springframework.util.AntPathMatcher;
-
 import java.math.BigDecimal;
 import java.util.*;
+import org.springframework.util.AntPathMatcher;
 
-/**
- * 字符串工具类
- *
- */
+/** 字符串工具类 */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
-    /**
-     * 空字符串
-     */
+    /** 空字符串 */
     private static final String NULLSTR = "";
 
-    /**
-     * 下划线
-     */
+    /** 下划线 */
     private static final char SEPARATOR = '_';
 
     /**
@@ -55,8 +47,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * * 判断一个对象数组是否为空
      *
-     * @param objects 要判断的对象数组
-     *                * @return true：为空 false：非空
+     * @param objects 要判断的对象数组 * @return true：为空 false：非空
      */
     public static boolean isEmpty(Object[] objects) {
         return isNull(objects) || (objects.length == 0);
@@ -142,9 +133,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return isNotNull(object) && object.getClass().isArray();
     }
 
-    /**
-     * 去空格
-     */
+    /** 去空格 */
     public static String trim(String str) {
         return (str == null ? "" : str.trim());
     }
@@ -152,7 +141,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 截取字符串
      *
-     * @param str   字符串
+     * @param str 字符串
      * @param start 开始
      * @return 结果
      */
@@ -178,9 +167,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 截取字符串
      *
-     * @param str   字符串
+     * @param str 字符串
      * @param start 开始
-     * @param end   结束
+     * @param end 结束
      * @return 结果
      */
     public static String substring(final String str, int start, int end) {
@@ -223,7 +212,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 转义\： format("this is \\\\{} for {}", "a", "b") -> this is \a for b<br>
      *
      * @param template 文本模板，被替换的部分用 {} 表示
-     * @param params   参数值
+     * @param params 参数值
      * @return 格式化后的文本
      */
     public static String format(String template, Object... params) {
@@ -257,13 +246,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 字符串转list
      *
-     * @param str         字符串
-     * @param sep         分隔符
+     * @param str 字符串
+     * @param sep 分隔符
      * @param filterBlank 过滤纯空白
-     * @param trim        去掉首尾空白
+     * @param trim 去掉首尾空白
      * @return list集合
      */
-    public static final List<String> str2List(String str, String sep, boolean filterBlank, boolean trim) {
+    public static final List<String> str2List(
+            String str, String sep, boolean filterBlank, boolean trim) {
         List<String> list = new ArrayList<String>();
         if (StringUtils.isEmpty(str)) {
             return list;
@@ -290,7 +280,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 判断给定的set列表中是否包含数组array 判断给定的数组array中是否包含给定的元素value
      *
-     * @param set   给定的集合
+     * @param set 给定的集合
      * @param array 给定的数组
      * @return boolean 结果
      */
@@ -310,11 +300,12 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 查找指定字符串是否包含指定字符串列表中的任意一个字符串同时串忽略大小写
      *
-     * @param cs                  指定字符串
+     * @param cs 指定字符串
      * @param searchCharSequences 需要检查的字符串数组
      * @return 是否包含任意一个字符串
      */
-    public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences) {
+    public static boolean containsAnyIgnoreCase(
+            CharSequence cs, CharSequence... searchCharSequences) {
         if (isEmpty(cs) || isEmpty(searchCharSequences)) {
             return false;
         }
@@ -326,9 +317,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return false;
     }
 
-    /**
-     * 驼峰转下划线命名
-     */
+    /** 驼峰转下划线命名 */
     public static String toUnderScoreCase(String str) {
         if (str == null) {
             return null;
@@ -368,7 +357,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 是否包含字符串
      *
-     * @param str  验证字符串
+     * @param str 验证字符串
      * @param strs 字符串组
      * @return 包含返回true
      */
@@ -413,9 +402,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return result.toString();
     }
 
-    /**
-     * 驼峰式命名法 例如：user_name->userName
-     */
+    /** 驼峰式命名法 例如：user_name->userName */
     public static String toCamelCase(String s) {
         if (s == null) {
             return null;
@@ -441,7 +428,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 查找指定字符串是否匹配指定字符串列表中的任意一个字符串
      *
-     * @param str  指定字符串
+     * @param str 指定字符串
      * @param strs 需要检查的字符串数组
      * @return 是否匹配
      */
@@ -458,13 +445,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * 判断url是否与规则配置:
-     * ? 表示单个字符;
-     * * 表示一层路径内的任意字符串，不可跨层级;
-     * ** 表示任意层路径;
+     * 判断url是否与规则配置: ? 表示单个字符; * 表示一层路径内的任意字符串，不可跨层级; ** 表示任意层路径;
      *
      * @param pattern 匹配规则
-     * @param url     需要匹配的url
+     * @param url 需要匹配的url
      * @return
      */
     public static boolean isMatch(String pattern, String url) {
@@ -480,7 +464,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 数字左边补齐0，使之达到指定长度。注意，如果数字转换为字符串后，长度大于size，则只保留 最后size个字符。
      *
-     * @param num  数字对象
+     * @param num 数字对象
      * @param size 字符串指定长度
      * @return 返回数字的字符串格式，该字符串为指定长度。
      */
@@ -491,9 +475,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 字符串左补齐。如果原始字符串s长度大于size，则只保留最后size个字符。
      *
-     * @param s    原始字符串
+     * @param s 原始字符串
      * @param size 字符串指定长度
-     * @param c    用于补齐的字符
+     * @param c 用于补齐的字符
      * @return 返回指定长度的字符串，由原字符串左补齐或截取得到。
      */
     public static final String padl(final String s, final int size, final char c) {
@@ -522,10 +506,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param old 老字符串
      * @return {@link String}
      */
-    public static String getCleanNumber(String old){
-        try{
+    public static String getCleanNumber(String old) {
+        try {
             return (new BigDecimal(old)).stripTrailingZeros().toPlainString();
-        }catch (Exception i){
+        } catch (Exception i) {
             return old;
         }
     }
@@ -536,18 +520,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param str 要判断的value
      * @return 结果
      */
-    public static boolean hasText(String str)
-    {
+    public static boolean hasText(String str) {
         return (str != null && !str.isEmpty() && containsText(str));
     }
 
-    private static boolean containsText(CharSequence str)
-    {
+    private static boolean containsText(CharSequence str) {
         int strLen = str.length();
-        for (int i = 0; i < strLen; i++)
-        {
-            if (!Character.isWhitespace(str.charAt(i)))
-            {
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
                 return true;
             }
         }

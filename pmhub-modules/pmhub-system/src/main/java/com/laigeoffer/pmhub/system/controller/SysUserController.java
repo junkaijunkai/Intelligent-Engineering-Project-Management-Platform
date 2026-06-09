@@ -21,6 +21,13 @@ import com.laigeoffer.pmhub.base.security.service.TokenService;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.service.*;
 import com.laigeoffer.pmhub.system.service.impl.SysPermissionService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,45 +35,25 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-/**
- * 用户信息
- *
- */
+/** 用户信息 */
 @RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
-    @Autowired
-    private ISysUserService userService;
+    @Autowired private ISysUserService userService;
 
-    @Autowired
-    private ISysRoleService roleService;
+    @Autowired private ISysRoleService roleService;
 
-    @Autowired
-    private ISysDeptService deptService;
+    @Autowired private ISysDeptService deptService;
 
-    @Autowired
-    private ISysPostService postService;
+    @Autowired private ISysPostService postService;
 
-    @Resource
-    private TokenService tokenService;
+    @Resource private TokenService tokenService;
 
-    @Autowired
-    private SysPermissionService permissionService;
+    @Autowired private SysPermissionService permissionService;
 
-    @Autowired
-    private ISysConfigService configService;
+    @Autowired private ISysConfigService configService;
 
-    /**
-     * 获取用户列表
-     */
+    /** 获取用户列表 */
     @RequiresPermissions("system:user:list")
     @GetMapping("/list")
     public TableDataInfo list(SysUser user) {
@@ -75,10 +62,7 @@ public class SysUserController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 获取用户列表
-     * 内部服务调用
-     */
+    /** 获取用户列表 内部服务调用 */
     @InnerAuth
     @PostMapping("/listOfInner")
     public R<List<SysUserVO>> listOfInner(@Validated @RequestBody SysUserDTO sysUserDTO) {
@@ -112,32 +96,38 @@ public class SysUserController extends BaseController {
         util.importTemplateExcel(response, "用户数据");
     }
 
-    /**
-     * 根据用户编号获取详细信息
-     */
+    /** 根据用户编号获取详细信息 */
     @RequiresPermissions("system:user:query")
     @GetMapping(value = {"/", "/{userId}"})
     public AjaxResult getInfo(@PathVariable(value = "userId", required = false) Long userId) {
         userService.checkUserDataScope(userId);
         AjaxResult ajax = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put(
+                "roles",
+                SysUser.isAdmin(userId)
+                        ? roles
+                        : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         ajax.put("posts", postService.selectPostAll());
         if (StringUtils.isNotNull(userId)) {
             SysUser sysUser = userService.selectUserById(userId);
             if (StringUtils.isNotBlank(sysUser.getLeaderId())) {
                 List<String> userIds = Arrays.asList(sysUser.getLeaderId().split(","));
                 List<String> names = new ArrayList<>();
-                userIds.forEach(id -> {
-                    names.add(userService.selectUserById(Long.valueOf(id)).getNickName());
-
-                });
+                userIds.forEach(
+                        id -> {
+                            names.add(userService.selectUserById(Long.valueOf(id)).getNickName());
+                        });
                 sysUser.setLeaderIds(userIds);
                 sysUser.setLeaderNames(names);
             }
             ajax.put(AjaxResult.DATA_TAG, sysUser);
             ajax.put("postIds", postService.selectPostListByUserId(userId));
-            ajax.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
+            ajax.put(
+                    "roleIds",
+                    sysUser.getRoles().stream()
+                            .map(SysRole::getRoleId)
+                            .collect(Collectors.toList()));
         }
         return ajax;
     }
@@ -162,10 +152,7 @@ public class SysUserController extends BaseController {
         return ajax;
     }
 
-
-    /**
-     * 新增用户
-     */
+    /** 新增用户 */
     @RequiresPermissions("system:user:add")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -187,9 +174,7 @@ public class SysUserController extends BaseController {
         return toAjax(userService.insertUser(user));
     }
 
-    /**
-     * 修改用户
-     */
+    /** 修改用户 */
     @RequiresPermissions("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -213,19 +198,19 @@ public class SysUserController extends BaseController {
         }
         int count = userService.updateUser(user);
         // 如果完成用户信息修改，就刷新用户缓存
-        if (count>0){
+        if (count > 0) {
             SysUser newUser = userService.selectUserById(user.getUserId());
-            tokenService.updateToken(new LoginUser(newUser.getUserId()
-                    , newUser.getDeptId()
-                    , newUser
-                    , permissionService.getMenuPermission(newUser)));
+            tokenService.updateToken(
+                    new LoginUser(
+                            newUser.getUserId(),
+                            newUser.getDeptId(),
+                            newUser,
+                            permissionService.getMenuPermission(newUser)));
         }
         return toAjax(count);
     }
 
-    /**
-     * 删除用户
-     */
+    /** 删除用户 */
     @RequiresPermissions("system:user:remove")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
@@ -236,9 +221,7 @@ public class SysUserController extends BaseController {
         return toAjax(userService.deleteUserByIds(userIds));
     }
 
-    /**
-     * 重置密码
-     */
+    /** 重置密码 */
     @RequiresPermissions("system:user:resetPwd")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/resetPwd")
@@ -250,9 +233,7 @@ public class SysUserController extends BaseController {
         return toAjax(userService.resetPwd(user));
     }
 
-    /**
-     * 状态修改
-     */
+    /** 状态修改 */
     @RequiresPermissions("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
@@ -263,9 +244,7 @@ public class SysUserController extends BaseController {
         return toAjax(userService.updateUserStatus(user));
     }
 
-    /**
-     * 根据用户编号获取授权角色
-     */
+    /** 根据用户编号获取授权角色 */
     @RequiresPermissions("system:user:query")
     @GetMapping("/authRole/{userId}")
     public AjaxResult authRole(@PathVariable("userId") Long userId) {
@@ -273,13 +252,15 @@ public class SysUserController extends BaseController {
         SysUser user = userService.selectUserById(userId);
         List<SysRole> roles = roleService.selectRolesByUserId(userId);
         ajax.put("user", user);
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put(
+                "roles",
+                SysUser.isAdmin(userId)
+                        ? roles
+                        : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         return ajax;
     }
 
-    /**
-     * 用户授权角色
-     */
+    /** 用户授权角色 */
     @RequiresPermissions("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PutMapping("/authRole")
@@ -289,21 +270,18 @@ public class SysUserController extends BaseController {
         return success();
     }
 
-    /**
-     * 获取部门树列表
-     */
+    /** 获取部门树列表 */
     @RequiresPermissions("system:user:list")
     @GetMapping("/deptTree")
     public AjaxResult deptTree(SysDept dept) {
         return success(deptService.selectDeptTreeList(dept));
     }
 
-    /**
-     * 根据用户名获取当前用户信息
-     */
+    /** 根据用户名获取当前用户信息 */
     @InnerAuth
     @GetMapping("/info/{username}")
-    //@SentinelResource(value = "infoSentinelResource",blockHandler = "handlerBlockHandler", fallback = "doActionFallback") // 演示SentinelResource细粒度管控服务流控和降级
+    // @SentinelResource(value = "infoSentinelResource",blockHandler = "handlerBlockHandler",
+    // fallback = "doActionFallback") // 演示SentinelResource细粒度管控服务流控和降级
     public R<LoginUser> info(@PathVariable("username") String username) {
         SysUser sysUser = userService.selectUserByUserName(username);
         if (StringUtils.isNull(sysUser)) {
@@ -321,13 +299,10 @@ public class SysUserController extends BaseController {
         loginUser.setDeptId(sysUser.getDeptId());
         loginUser.setNickName(sysUser.getNickName());
 
-
         return R.ok(loginUser);
     }
 
-    /**
-     * 注册用户信息
-     */
+    /** 注册用户信息 */
     @InnerAuth
     @PostMapping("/register")
     public R<Boolean> register(@RequestBody SysUser sysUser) {
@@ -341,9 +316,7 @@ public class SysUserController extends BaseController {
         return R.ok(userService.registerUser(sysUser));
     }
 
-    /**
-     * 根据用户编号获取详细信息（仅限内部服务调用）
-     */
+    /** 根据用户编号获取详细信息（仅限内部服务调用） */
     @InnerAuth
     @GetMapping("/getInfoByUserId/{userId}")
     public R<LoginUser> getInfoByUserId(@PathVariable("userId") Long userId) {
@@ -354,10 +327,10 @@ public class SysUserController extends BaseController {
         if (StringUtils.isNotBlank(sysUser.getLeaderId())) {
             List<String> userIds = Arrays.asList(sysUser.getLeaderId().split(","));
             List<String> names = new ArrayList<>();
-            userIds.forEach(id -> {
-                names.add(userService.selectUserById(Long.valueOf(id)).getNickName());
-
-            });
+            userIds.forEach(
+                    id -> {
+                        names.add(userService.selectUserById(Long.valueOf(id)).getNickName());
+                    });
             sysUser.setLeaderIds(userIds);
             sysUser.setLeaderNames(names);
         }
@@ -376,5 +349,4 @@ public class SysUserController extends BaseController {
 
         return R.ok(loginUser);
     }
-
 }

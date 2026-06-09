@@ -1,34 +1,56 @@
 package com.laigeoffer.pmhub.workflow.config;
 
-import org.flowable.bpmn.model.AssociationDirection;
-import org.flowable.image.impl.DefaultProcessDiagramCanvas;
-
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.RoundRectangle2D;
+import org.flowable.bpmn.model.AssociationDirection;
+import org.flowable.image.impl.DefaultProcessDiagramCanvas;
 
 /**
  * @date 2021-04-03
  */
 public class MyDefaultProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
-    //设置高亮线的颜色  这里我设置成绿色
+    // 设置高亮线的颜色  这里我设置成绿色
     protected static Color HIGHLIGHT_SEQUENCEFLOW_COLOR = Color.GREEN;
 
-    public MyDefaultProcessDiagramCanvas(int width, int height, int minX, int minY, String imageType, String activityFontName, String labelFontName, String annotationFontName, ClassLoader customClassLoader) {
-        super(width, height, minX, minY, imageType, activityFontName, labelFontName, annotationFontName, customClassLoader);
+    public MyDefaultProcessDiagramCanvas(
+            int width,
+            int height,
+            int minX,
+            int minY,
+            String imageType,
+            String activityFontName,
+            String labelFontName,
+            String annotationFontName,
+            ClassLoader customClassLoader) {
+        super(
+                width,
+                height,
+                minX,
+                minY,
+                imageType,
+                activityFontName,
+                labelFontName,
+                annotationFontName,
+                customClassLoader);
     }
 
-    public MyDefaultProcessDiagramCanvas(int width, int height, int minX, int minY, String imageType) {
+    public MyDefaultProcessDiagramCanvas(
+            int width, int height, int minX, int minY, String imageType) {
         super(width, height, minX, minY, imageType);
     }
 
-
-    /**
-     * 画线颜色设置
-     */
+    /** 画线颜色设置 */
     @Override
-    public void drawConnection(int[] xPoints, int[] yPoints, boolean conditional, boolean isDefault, String connectionType,
-                               AssociationDirection associationDirection, boolean highLighted, double scaleFactor) {
+    public void drawConnection(
+            int[] xPoints,
+            int[] yPoints,
+            boolean conditional,
+            boolean isDefault,
+            String connectionType,
+            AssociationDirection associationDirection,
+            boolean highLighted,
+            double scaleFactor) {
 
         Paint originalPaint = g.getPaint();
         Stroke originalStroke = g.getStroke();
@@ -37,7 +59,7 @@ public class MyDefaultProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
         if (connectionType.equals("association")) {
             g.setStroke(ASSOCIATION_STROKE);
         } else if (highLighted) {
-            //设置线的颜色
+            // 设置线的颜色
             g.setPaint(originalPaint);
             g.setStroke(HIGHLIGHT_FLOW_STROKE);
         }
@@ -61,8 +83,14 @@ public class MyDefaultProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
             drawConditionalSequenceFlowIndicator(line, scaleFactor);
         }
 
-        if (associationDirection == AssociationDirection.ONE || associationDirection == AssociationDirection.BOTH) {
-            Line2D.Double line = new Line2D.Double(xPoints[xPoints.length - 2], yPoints[xPoints.length - 2], xPoints[xPoints.length - 1], yPoints[xPoints.length - 1]);
+        if (associationDirection == AssociationDirection.ONE
+                || associationDirection == AssociationDirection.BOTH) {
+            Line2D.Double line =
+                    new Line2D.Double(
+                            xPoints[xPoints.length - 2],
+                            yPoints[xPoints.length - 2],
+                            xPoints[xPoints.length - 1],
+                            yPoints[xPoints.length - 1]);
             drawArrowHead(line, scaleFactor);
         }
         if (associationDirection == AssociationDirection.BOTH) {
@@ -73,14 +101,12 @@ public class MyDefaultProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
         g.setStroke(originalStroke);
     }
 
-    /**
-     * 高亮节点设置
-     */
+    /** 高亮节点设置 */
     @Override
     public void drawHighLight(int x, int y, int width, int height) {
         Paint originalPaint = g.getPaint();
         Stroke originalStroke = g.getStroke();
-        //设置高亮节点的颜色
+        // 设置高亮节点的颜色
         g.setPaint(HIGHLIGHT_COLOR);
         g.setStroke(THICK_TASK_BORDER_STROKE);
 

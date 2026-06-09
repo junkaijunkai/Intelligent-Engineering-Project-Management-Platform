@@ -15,15 +15,20 @@ public class ApprovalSetDTO {
 
     private String type;
 
-
     // 构造函数
-    public ApprovalSetDTO(String extraId, String type, String approved, String definitionId, String deploymentId) {
+    public ApprovalSetDTO(
+            String extraId,
+            String type,
+            String approved,
+            String definitionId,
+            String deploymentId) {
         this.extraId = extraId;
         this.type = type;
         this.approved = approved;
         this.definitionId = definitionId;
         this.deploymentId = deploymentId;
     }
+
     // jackson反序列化构造函数
     public ApprovalSetDTO() {}
 

@@ -11,6 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @createTime 2022/3/7 22:07
  */
 @Mapper
-public interface WfDeployFormMapper extends BaseMapperPlus<WfDeployFormMapper, WfDeployForm, WfDeployFormVo> {
-
-}
+public interface WfDeployFormMapper
+        extends BaseMapperPlus<WfDeployFormMapper, WfDeployForm, WfDeployFormVo> {}

@@ -1,26 +1,19 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.log;
 
-
 /**
  * @date 2022-12-22 15:11
  */
-
 public class LogContentVO {
-    /**
-     * 文件id
-     */
+    /** 文件id */
     private String field;
-    /**
-     * 文件名
-     */
+
+    /** 文件名 */
     private String fieldName;
-    /**
-     * 旧值
-     */
+
+    /** 旧值 */
     private String oldValue;
-    /**
-     * 新值
-     */
+
+    /** 新值 */
     private String newValue;
 
     public String getField() {

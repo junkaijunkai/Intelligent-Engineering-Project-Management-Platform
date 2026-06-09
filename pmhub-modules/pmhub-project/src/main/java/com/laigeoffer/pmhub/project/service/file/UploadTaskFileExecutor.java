@@ -14,15 +14,14 @@ import com.laigeoffer.pmhub.project.mapper.ProjectFileMapper;
 import com.laigeoffer.pmhub.project.mapper.ProjectTaskMapper;
 import com.laigeoffer.pmhub.project.service.ProjectLogService;
 import com.laigeoffer.pmhub.project.utils.ProjectFileUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
 
 /**
  * @date 2023-01-09 09:37
@@ -31,22 +30,23 @@ import java.util.Date;
 @Slf4j
 public class UploadTaskFileExecutor extends UploadAbstractExecutor {
 
-    @Autowired
-    private ProjectTaskMapper projectTaskMapper;
-    @Autowired
-    private ProjectFileMapper projectFileMapper;
-    @Autowired
-    private ProjectLogService projectLogService;
+    @Autowired private ProjectTaskMapper projectTaskMapper;
+    @Autowired private ProjectFileMapper projectFileMapper;
+    @Autowired private ProjectLogService projectLogService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FileVO upload(LoginUser user, MultipartFile file, String id) throws Exception {
         log.info("任务文件上传的任务id:{}", id);
-        String taskPath = ProjectFileUtil.uploadTaskFile(PmhubConfig.getTaskPath(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+        String taskPath =
+                ProjectFileUtil.uploadTaskFile(
+                        PmhubConfig.getTaskPath(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         String pn = ProjectFileUtil.getPathName(PmhubConfig.getTaskPath(), file);
         String projectId = projectTaskMapper.selectById(id).getProjectId();
         ProjectFile projectFile = new ProjectFile();
-        projectFile.setFileSize(new BigDecimal(String.valueOf(file.getSize())).divide(new BigDecimal("1024"), 2, RoundingMode.HALF_UP));
+        projectFile.setFileSize(
+                new BigDecimal(String.valueOf(file.getSize()))
+                        .divide(new BigDecimal("1024"), 2, RoundingMode.HALF_UP));
         projectFile.setFileName(file.getOriginalFilename());
         projectFile.setFileUrl(taskPath);
         projectFile.setUserId(user.getUserId());

@@ -1,13 +1,10 @@
 package com.laigeoffer.pmhub.base.core.utils.uuid;
 
-
 import com.laigeoffer.pmhub.base.core.utils.DateUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- */
+/** */
 public class Seq {
     // 通用序列类型
     public static final String commSeqType = "COMMON";
@@ -50,7 +47,7 @@ public class Seq {
      * 通用接口序列号 yyMMddHHmmss + 一位机器标识 + length长度循环递增字符串
      *
      * @param atomicInt 序列数
-     * @param length    数值长度
+     * @param length 数值长度
      * @return 序列值
      */
     public static String getId(AtomicInteger atomicInt, int length) {
@@ -65,7 +62,7 @@ public class Seq {
      *
      * @return 序列值
      */
-    private synchronized static String getSeq(AtomicInteger atomicInt, int length) {
+    private static synchronized String getSeq(AtomicInteger atomicInt, int length) {
         // 先取值再+1
         int value = atomicInt.getAndIncrement();
 

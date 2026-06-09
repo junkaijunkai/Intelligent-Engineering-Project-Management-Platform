@@ -5,19 +5,14 @@ import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictData;
 import com.laigeoffer.pmhub.base.security.utils.DictUtils;
 import com.laigeoffer.pmhub.system.mapper.SysDictDataMapper;
 import com.laigeoffer.pmhub.system.service.ISysDictDataService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 字典 业务层处理
- *
- */
+/** 字典 业务层处理 */
 @Service
 public class SysDictDataServiceImpl implements ISysDictDataService {
-    @Autowired
-    private SysDictDataMapper dictDataMapper;
+    @Autowired private SysDictDataMapper dictDataMapper;
 
     /**
      * 根据条件分页查询字典数据
@@ -33,7 +28,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     /**
      * 根据字典类型和字典键值查询字典数据信息
      *
-     * @param dictType  字典类型
+     * @param dictType 字典类型
      * @param dictValue 字典键值
      * @return 字典标签
      */

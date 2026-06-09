@@ -1,6 +1,6 @@
 package com.laigeoffer.pmhub.base.security.config;
 
-//import com.laigeoffer.pmhub.base.framework.interceptor.RepeatSubmitInterceptor;
+// import com.laigeoffer.pmhub.base.framework.interceptor.RepeatSubmitInterceptor;
 
 import com.laigeoffer.pmhub.base.security.interceptor.HeaderInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -11,48 +11,38 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * 通用配置
- *
- */
+/** 通用配置 */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-//    @Autowired
-//    private RepeatSubmitInterceptor repeatSubmitInterceptor;
-//
-//
-//    /**
-//     * 自定义拦截规则
-//     */
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
-//    }
-
+    //    @Autowired
+    //    private RepeatSubmitInterceptor repeatSubmitInterceptor;
+    //
+    //
+    //    /**
+    //     * 自定义拦截规则
+    //     */
+    //    @Override
+    //    public void addInterceptors(InterceptorRegistry registry) {
+    //        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+    //    }
 
     /** 不需要拦截地址 */
-    public static final String[] excludeUrls = { "/login", "/logout", "/refresh" };
+    public static final String[] excludeUrls = {"/login", "/logout", "/refresh"};
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry)
-    {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getHeaderInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(excludeUrls)
                 .order(-10);
     }
 
-    /**
-     * 自定义请求头拦截器
-     */
-    public HeaderInterceptor getHeaderInterceptor()
-    {
+    /** 自定义请求头拦截器 */
+    public HeaderInterceptor getHeaderInterceptor() {
         return new HeaderInterceptor();
     }
 
-    /**
-     * 跨域配置
-     */
+    /** 跨域配置 */
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();

@@ -13,16 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @date 2022-12-21 14:28
  */
-
 @RestController
 @RequestMapping("/project/log")
 public class ProjectLogController {
 
-    @Autowired
-    private ProjectLogService projectLogService;
+    @Autowired private ProjectLogService projectLogService;
 
     /**
      * 项目动态
+     *
      * @param projectVO
      * @return
      */
@@ -31,5 +30,4 @@ public class ProjectLogController {
     public AjaxResult list(@RequestBody ProjectVO projectVO) {
         return AjaxResult.success(projectLogService.list(projectVO));
     }
-
 }

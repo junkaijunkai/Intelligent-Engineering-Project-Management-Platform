@@ -11,22 +11,17 @@ import com.laigeoffer.pmhub.base.core.utils.poi.ExcelUtil;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.service.ISysDictTypeService;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-/**
- * 数据字典信息
- *
- */
+/** 数据字典信息 */
 @RestController
 @RequestMapping("/system/dict/type")
 public class SysDictTypeController extends BaseController {
-    @Autowired
-    private ISysDictTypeService dictTypeService;
+    @Autowired private ISysDictTypeService dictTypeService;
 
     @RequiresPermissions("system:dict:list")
     @GetMapping("/list")
@@ -45,18 +40,14 @@ public class SysDictTypeController extends BaseController {
         util.exportExcel(response, list, "字典类型");
     }
 
-    /**
-     * 查询字典类型详细
-     */
+    /** 查询字典类型详细 */
     @RequiresPermissions("system:dict:query")
     @GetMapping(value = "/{dictId}")
     public AjaxResult getInfo(@PathVariable Long dictId) {
         return success(dictTypeService.selectDictTypeById(dictId));
     }
 
-    /**
-     * 新增字典类型
-     */
+    /** 新增字典类型 */
     @RequiresPermissions("system:dict:add")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
@@ -68,9 +59,7 @@ public class SysDictTypeController extends BaseController {
         return toAjax(dictTypeService.insertDictType(dict));
     }
 
-    /**
-     * 修改字典类型
-     */
+    /** 修改字典类型 */
     @RequiresPermissions("system:dict:edit")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -82,9 +71,7 @@ public class SysDictTypeController extends BaseController {
         return toAjax(dictTypeService.updateDictType(dict));
     }
 
-    /**
-     * 删除字典类型
-     */
+    /** 删除字典类型 */
     @RequiresPermissions("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
@@ -93,9 +80,7 @@ public class SysDictTypeController extends BaseController {
         return success();
     }
 
-    /**
-     * 刷新字典缓存
-     */
+    /** 刷新字典缓存 */
     @RequiresPermissions("system:dict:remove")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
@@ -104,9 +89,7 @@ public class SysDictTypeController extends BaseController {
         return success();
     }
 
-    /**
-     * 获取字典选择框列表
-     */
+    /** 获取字典选择框列表 */
     @GetMapping("/optionselect")
     public AjaxResult optionselect() {
         List<SysDictType> dictTypes = dictTypeService.selectDictTypeAll();

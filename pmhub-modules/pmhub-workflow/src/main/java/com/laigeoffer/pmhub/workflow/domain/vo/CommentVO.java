@@ -2,10 +2,9 @@ package com.laigeoffer.pmhub.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Date;
 import lombok.Data;
 import org.flowable.engine.task.Comment;
-
-import java.util.Date;
 
 /**
  * @date 2023-02-24 11:23
@@ -16,12 +15,14 @@ public class CommentVO implements Comment {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date time;
+
     private String id;
     private String userId;
     private String taskId;
     private String processInstanceId;
     private String type;
     private String fullMessage;
+
     @Override
     public String getId() {
         return id;

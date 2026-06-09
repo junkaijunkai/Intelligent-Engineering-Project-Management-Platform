@@ -1,43 +1,32 @@
 package com.laigeoffer.pmhub.project.domain.vo.project;
 
-
 import java.math.BigDecimal;
 
 /**
  * @date 2022-12-16 15:57
  */
 
-/**
- *
- */
+/** */
 public class DoingProjectVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 进度
-     */
+
+    /** 进度 */
     private BigDecimal process;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Long userId;
-    /**
-     * 昵称
-     */
+
+    /** 昵称 */
     private String nickName;
-    /**
-     * 封面
-     */
+
+    /** 封面 */
     private String cover;
-    /**
-     * 头像
-     */
+
+    /** 头像 */
     private String avatar;
 
     public String getCover() {

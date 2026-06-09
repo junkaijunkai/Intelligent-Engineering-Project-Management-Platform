@@ -7,31 +7,21 @@ import com.laigeoffer.pmhub.base.core.utils.DateUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.gen.domain.GenTable;
 import com.laigeoffer.pmhub.gen.domain.GenTableColumn;
-import org.apache.velocity.VelocityContext;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.velocity.VelocityContext;
 
-/**
- * 模板处理工具类
- *
- */
+/** 模板处理工具类 */
 public class VelocityUtils {
-    /**
-     * 项目空间路径
-     */
+    /** 项目空间路径 */
     private static final String PROJECT_PATH = "main/java";
 
-    /**
-     * mybatis空间路径
-     */
+    /** mybatis空间路径 */
     private static final String MYBATIS_PATH = "main/resources/mapper";
 
-    /**
-     * 默认上级菜单，系统工具
-     */
+    /** 默认上级菜单，系统工具 */
     private static final String DEFAULT_PARENT_MENU_ID = "3";
 
     /**
@@ -49,7 +39,8 @@ public class VelocityUtils {
         VelocityContext velocityContext = new VelocityContext();
         velocityContext.put("tplCategory", genTable.getTplCategory());
         velocityContext.put("tableName", genTable.getTableName());
-        velocityContext.put("functionName", StringUtils.isNotEmpty(functionName) ? functionName : "【请填写功能名称】");
+        velocityContext.put(
+                "functionName", StringUtils.isNotEmpty(functionName) ? functionName : "【请填写功能名称】");
         velocityContext.put("ClassName", genTable.getClassName());
         velocityContext.put("className", StringUtils.uncapitalize(genTable.getClassName()));
         velocityContext.put("moduleName", genTable.getModuleName());
@@ -144,9 +135,7 @@ public class VelocityUtils {
         return templates;
     }
 
-    /**
-     * 获取文件名
-     */
+    /** 获取文件名 */
     public static String getFileName(String template, GenTable genTable) {
         // 文件名称
         String fileName = "";
@@ -166,14 +155,18 @@ public class VelocityUtils {
         if (template.contains("domain.java.vm")) {
             fileName = StringUtils.format("{}/domain/{}.java", javaPath, className);
         }
-        if (template.contains("sub-domain.java.vm") && StringUtils.equals(GenConstants.TPL_SUB, genTable.getTplCategory())) {
-            fileName = StringUtils.format("{}/domain/{}.java", javaPath, genTable.getSubTable().getClassName());
+        if (template.contains("sub-domain.java.vm")
+                && StringUtils.equals(GenConstants.TPL_SUB, genTable.getTplCategory())) {
+            fileName =
+                    StringUtils.format(
+                            "{}/domain/{}.java", javaPath, genTable.getSubTable().getClassName());
         } else if (template.contains("mapper.java.vm")) {
             fileName = StringUtils.format("{}/mapper/{}Mapper.java", javaPath, className);
         } else if (template.contains("service.java.vm")) {
             fileName = StringUtils.format("{}/service/I{}Service.java", javaPath, className);
         } else if (template.contains("serviceImpl.java.vm")) {
-            fileName = StringUtils.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
+            fileName =
+                    StringUtils.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
         } else if (template.contains("controller.java.vm")) {
             fileName = StringUtils.format("{}/controller/{}Controller.java", javaPath, className);
         } else if (template.contains("mapper.xml.vm")) {
@@ -183,9 +176,13 @@ public class VelocityUtils {
         } else if (template.contains("api.js.vm")) {
             fileName = StringUtils.format("{}/api/{}/{}.js", vuePath, moduleName, businessName);
         } else if (template.contains("index.vue.vm")) {
-            fileName = StringUtils.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+            fileName =
+                    StringUtils.format(
+                            "{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
         } else if (template.contains("index-tree.vue.vm")) {
-            fileName = StringUtils.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+            fileName =
+                    StringUtils.format(
+                            "{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
         }
         return fileName;
     }
@@ -218,7 +215,8 @@ public class VelocityUtils {
             if (!column.isSuperColumn() && GenConstants.TYPE_DATE.equals(column.getJavaType())) {
                 importList.add("java.util.Date");
                 importList.add("com.fasterxml.jackson.annotation.JsonFormat");
-            } else if (!column.isSuperColumn() && GenConstants.TYPE_BIGDECIMAL.equals(column.getJavaType())) {
+            } else if (!column.isSuperColumn()
+                    && GenConstants.TYPE_BIGDECIMAL.equals(column.getJavaType())) {
                 importList.add("java.math.BigDecimal");
             }
         }
@@ -245,14 +243,20 @@ public class VelocityUtils {
     /**
      * 添加字典列表
      *
-     * @param dicts   字典列表
+     * @param dicts 字典列表
      * @param columns 列集合
      */
     public static void addDicts(Set<String> dicts, List<GenTableColumn> columns) {
         for (GenTableColumn column : columns) {
-            if (!column.isSuperColumn() && StringUtils.isNotEmpty(column.getDictType()) && StringUtils.equalsAny(
-                    column.getHtmlType(),
-                    new String[]{GenConstants.HTML_SELECT, GenConstants.HTML_RADIO, GenConstants.HTML_CHECKBOX})) {
+            if (!column.isSuperColumn()
+                    && StringUtils.isNotEmpty(column.getDictType())
+                    && StringUtils.equalsAny(
+                            column.getHtmlType(),
+                            new String[] {
+                                GenConstants.HTML_SELECT,
+                                GenConstants.HTML_RADIO,
+                                GenConstants.HTML_CHECKBOX
+                            })) {
                 dicts.add("'" + column.getDictType() + "'");
             }
         }
@@ -261,7 +265,7 @@ public class VelocityUtils {
     /**
      * 获取权限前缀
      *
-     * @param moduleName   模块名称
+     * @param moduleName 模块名称
      * @param businessName 业务名称
      * @return 返回权限前缀
      */
@@ -276,7 +280,8 @@ public class VelocityUtils {
      * @return 上级菜单ID字段
      */
     public static String getParentMenuId(JSONObject paramsObj) {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.PARENT_MENU_ID)
+        if (StringUtils.isNotEmpty(paramsObj)
+                && paramsObj.containsKey(GenConstants.PARENT_MENU_ID)
                 && StringUtils.isNotEmpty(paramsObj.getString(GenConstants.PARENT_MENU_ID))) {
             return paramsObj.getString(GenConstants.PARENT_MENU_ID);
         }

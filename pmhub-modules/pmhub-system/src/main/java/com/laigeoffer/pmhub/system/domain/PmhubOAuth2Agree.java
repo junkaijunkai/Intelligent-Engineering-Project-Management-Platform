@@ -5,6 +5,7 @@ import lombok.Data;
 
 /**
  * OAuth2 用户已统一登陆客户端
+ *
  * @date 2024/01/08
  */
 @Data
@@ -13,14 +14,9 @@ public class PmhubOAuth2Agree {
 
     String id;
 
-    /**
-     * 客户端名称
-     */
+    /** 客户端名称 */
     Long userId;
 
-    /**
-     * 客户端id
-     */
+    /** 客户端id */
     String clientId;
-
 }

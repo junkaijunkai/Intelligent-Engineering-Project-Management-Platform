@@ -2,14 +2,10 @@ package com.laigeoffer.pmhub.job.service;
 
 import com.laigeoffer.pmhub.base.core.exception.job.TaskException;
 import com.laigeoffer.pmhub.job.domain.SysJob;
+import java.util.List;
 import org.quartz.SchedulerException;
 
-import java.util.List;
-
-/**
- * 定时任务调度信息信息 服务层
- *
- */
+/** 定时任务调度信息信息 服务层 */
 public interface ISysJobService {
     /**
      * 获取quartz调度器的计划任务

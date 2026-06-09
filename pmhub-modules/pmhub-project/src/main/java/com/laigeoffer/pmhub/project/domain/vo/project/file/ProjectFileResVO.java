@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.file;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,34 +8,30 @@ import java.util.Date;
  * @date 2022-12-16 09:28
  */
 public class ProjectFileResVO {
-    /**
-     * 文件id
-     */
+    /** 文件id */
     private String projectFileId;
-    /**
-     * 文件名
-     */
+
+    /** 文件名 */
     private String fileName;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 阶段名
-     */
+
+    /** 阶段名 */
     private String stageName;
-    /**
-     * 项目名或者文件名
-     */
+
+    /** 项目名或者文件名 */
     private String name;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Long userId;
+
     private String nickName;
     private BigDecimal fileSize;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
+
     private String type;
     private String TypeName;
     private String ptId;

@@ -9,45 +9,38 @@ import com.laigeoffer.pmhub.base.core.constant.SecurityConstants;
 import com.laigeoffer.pmhub.base.core.core.domain.R;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.core.domain.vo.SysUserVO;
-import com.laigeoffer.pmhub.base.core.enums.ProjectTaskPriorityEnum;
-import com.laigeoffer.pmhub.base.core.enums.ProjectTaskStatusEnum;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
 import com.laigeoffer.pmhub.project.domain.Project;
 import com.laigeoffer.pmhub.project.domain.ProjectLog;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.LogVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.ProjectLogVO;
-import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskExportVO;
 import com.laigeoffer.pmhub.project.mapper.ProjectLogMapper;
 import com.laigeoffer.pmhub.project.mapper.ProjectMapper;
 import com.laigeoffer.pmhub.project.mapper.ProjectMemberMapper;
 import com.laigeoffer.pmhub.project.service.ProjectLogService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @date 2022-12-21 11:41
  */
 @Service
-public class ProjectLogServiceImpl extends ServiceImpl<ProjectLogMapper, ProjectLog> implements ProjectLogService {
+public class ProjectLogServiceImpl extends ServiceImpl<ProjectLogMapper, ProjectLog>
+        implements ProjectLogService {
 
-    @Autowired
-    private ProjectMapper projectMapper;
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
-    @Autowired
-    private ProjectLogMapper projectLogMapper;
-    @Resource
-    private UserFeignService userFeignService;
+    @Autowired private ProjectMapper projectMapper;
+    @Autowired private ProjectMemberMapper projectMemberMapper;
+    @Autowired private ProjectLogMapper projectLogMapper;
+    @Resource private UserFeignService userFeignService;
 
     @Transactional(rollbackFor = Exception.class)
     public void run(LogVO logVO) {
@@ -73,7 +66,8 @@ public class ProjectLogServiceImpl extends ServiceImpl<ProjectLogMapper, Project
             // 根据 userIds 查询用户列表
             SysUserDTO sysUserDTO = new SysUserDTO();
             sysUserDTO.setUserIds(Collections.singletonList(projectLog.getToUserId()));
-            R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+            R<List<SysUserVO>> userResult =
+                    userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
             if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
                 throw new ServiceException("远程调用查询用户列表：" + projectLog.getToUserId() + " 失败");
@@ -133,12 +127,15 @@ public class ProjectLogServiceImpl extends ServiceImpl<ProjectLogMapper, Project
             return new PageInfo<>();
         }
         // 拿到userids
-        List<Long> userIds = projectLogVOS.stream().map(ProjectLogVO::getUserId)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Long> userIds =
+                projectLogVOS.stream()
+                        .map(ProjectLogVO::getUserId)
+                        .distinct()
+                        .collect(Collectors.toList());
         SysUserDTO sysUserDTO = new SysUserDTO();
         sysUserDTO.setUserIds(userIds);
-        R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+        R<List<SysUserVO>> userResult =
+                userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
             throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
@@ -146,17 +143,19 @@ public class ProjectLogServiceImpl extends ServiceImpl<ProjectLogMapper, Project
         List<SysUserVO> userVOList = userResult.getData();
 
         // 匹配设置值
-        Map<Long, SysUserVO> userMap = userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
-        projectLogVOS.forEach(a -> {
+        Map<Long, SysUserVO> userMap =
+                userVOList.stream().collect(Collectors.toMap(SysUserVO::getUserId, a -> a));
+        projectLogVOS.forEach(
+                a -> {
 
-            // 设置用户信息
-            SysUserVO sysUserVO = userMap.get(a.getUserId());
-            if (Objects.nonNull(sysUserVO)) {
-                a.setUserName(sysUserVO.getUserName());
-                a.setNickName(sysUserVO.getNickName());
-                a.setAvatar(sysUserVO.getAvatar());
-            }
-        });
+                    // 设置用户信息
+                    SysUserVO sysUserVO = userMap.get(a.getUserId());
+                    if (Objects.nonNull(sysUserVO)) {
+                        a.setUserName(sysUserVO.getUserName());
+                        a.setNickName(sysUserVO.getNickName());
+                        a.setAvatar(sysUserVO.getAvatar());
+                    }
+                });
         return new PageInfo<>(projectLogVOS);
     }
 }

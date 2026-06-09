@@ -6,10 +6,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * 通用配置
- *
- */
+/** 通用配置 */
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer {
 
@@ -20,18 +17,14 @@ public class ResourcesConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + PmhubConfig.getProfile() + "/");
     }
 
-    /**
-     * 开启跨域
-     */
+    /** 开启跨域 */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         // 设置允许跨域的路由
-        registry.addMapping(PmhubConfig.getProfile()  + "/**")
+        registry.addMapping(PmhubConfig.getProfile() + "/**")
                 // 设置允许跨域请求的域名
                 .allowedOrigins("*")
                 // 设置允许的方法
                 .allowedMethods("GET");
     }
-
-
 }

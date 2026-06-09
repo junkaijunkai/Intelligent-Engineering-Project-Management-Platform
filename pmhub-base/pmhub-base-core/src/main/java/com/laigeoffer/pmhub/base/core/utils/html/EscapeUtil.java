@@ -1,10 +1,8 @@
 package com.laigeoffer.pmhub.base.core.utils.html;
 
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-/**
- * 转义和反转义工具类
- *
- */
+
+/** 转义和反转义工具类 */
 public class EscapeUtil {
     public static final String RE_HTML_MARK = "(<[^<]*?>)|(<[\\s]*?/[^<]*?>)|(<[^<]*?/[\\s]*?>)";
 
@@ -12,7 +10,7 @@ public class EscapeUtil {
 
     static {
         for (int i = 0; i < 64; i++) {
-            TEXT[i] = new char[]{(char) i};
+            TEXT[i] = new char[] {(char) i};
         }
 
         // special HTML characters

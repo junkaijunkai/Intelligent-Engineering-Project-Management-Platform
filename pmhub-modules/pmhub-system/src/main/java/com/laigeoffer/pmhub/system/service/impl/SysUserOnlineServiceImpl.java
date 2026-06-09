@@ -6,17 +6,14 @@ import com.laigeoffer.pmhub.system.domain.SysUserOnline;
 import com.laigeoffer.pmhub.system.service.ISysUserOnlineService;
 import org.springframework.stereotype.Service;
 
-/**
- * 在线用户 服务层处理
- *
- */
+/** 在线用户 服务层处理 */
 @Service
 public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
     /**
      * 通过登录地址查询信息
      *
      * @param ipaddr 登录地址
-     * @param user   用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     @Override
@@ -31,7 +28,7 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
      * 通过用户名称查询信息
      *
      * @param userName 用户名称
-     * @param user     用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     @Override
@@ -45,14 +42,15 @@ public class SysUserOnlineServiceImpl implements ISysUserOnlineService {
     /**
      * 通过登录地址/用户名称查询信息
      *
-     * @param ipaddr   登录地址
+     * @param ipaddr 登录地址
      * @param userName 用户名称
-     * @param user     用户信息
+     * @param user 用户信息
      * @return 在线用户信息
      */
     @Override
     public SysUserOnline selectOnlineByInfo(String ipaddr, String userName, LoginUser user) {
-        if (StringUtils.equals(ipaddr, user.getIpaddr()) && StringUtils.equals(userName, user.getUsername())) {
+        if (StringUtils.equals(ipaddr, user.getIpaddr())
+                && StringUtils.equals(userName, user.getUsername())) {
             return loginUserToUserOnline(user);
         }
         return null;

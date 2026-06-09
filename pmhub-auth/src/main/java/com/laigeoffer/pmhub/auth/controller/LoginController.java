@@ -1,5 +1,7 @@
 package com.laigeoffer.pmhub.auth.controller;
 
+import static com.laigeoffer.pmhub.base.core.core.domain.AjaxResult.success;
+
 import com.laigeoffer.pmhub.auth.service.SysLoginService;
 import com.laigeoffer.pmhub.base.core.annotation.RateLimiter;
 import com.laigeoffer.pmhub.base.core.config.redis.RedisService;
@@ -14,34 +16,23 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.security.auth.AuthUtil;
 import com.laigeoffer.pmhub.base.security.service.TokenService;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static com.laigeoffer.pmhub.base.core.core.domain.AjaxResult.success;
-
-/**
- * 登录验证
- *
- */
+/** 登录验证 */
 @RestController
 public class LoginController {
 
+    @Autowired private TokenService tokenService;
 
-    @Autowired
-    private TokenService tokenService;
+    @Autowired private SysLoginService sysLoginService;
 
-    @Autowired
-    private SysLoginService sysLoginService;
-
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
     /**
-     * 登录接口，因为登录接口无token，所以不走网关鉴权，且安全级别极高
-     * 需要自定义Redis限流逻辑
-     * 这里配置了 30 秒内仅允许访问 10 次
+     * 登录接口，因为登录接口无token，所以不走网关鉴权，且安全级别极高 需要自定义Redis限流逻辑 这里配置了 30 秒内仅允许访问 10 次
+     *
      * @param form
      * @return
      */
@@ -88,9 +79,9 @@ public class LoginController {
         return R.ok();
     }
 
-
     /**
      * 刷新 redis
+     *
      * @return
      */
     @PostMapping("refreshRedis")
@@ -99,14 +90,11 @@ public class LoginController {
         return R.ok();
     }
 
-    /**
-     * 限流压测接口
-     */
+    /** 限流压测接口 */
     @RateLimiter(key = "limitTest", time = 10, count = 2)
     @PostMapping(value = "/limitTest")
     public Long limitTest() {
         System.out.println("limitTest");
         return 1L;
     }
-
 }

@@ -2,11 +2,9 @@ package com.laigeoffer.pmhub.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
-import com.laigeoffer.pmhub.project.domain.vo.project.*;
 import com.laigeoffer.pmhub.project.domain.Project;
 import com.laigeoffer.pmhub.project.domain.vo.project.*;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskStatisticsByDateVO;
-
 import java.util.List;
 
 /**
@@ -57,5 +55,4 @@ public interface ProjectService extends IService<Project> {
     List<ProjectVO> queryAllProject();
 
     Long countProjectNum();
-
 }

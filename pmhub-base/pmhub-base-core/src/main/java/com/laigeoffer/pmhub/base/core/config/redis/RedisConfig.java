@@ -11,15 +11,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-/**
- * redis配置
- * 
- */
+/** redis配置 */
 @Configuration
 @EnableCaching
 @AutoConfigureBefore(RedisAutoConfiguration.class)
-public class RedisConfig extends CachingConfigurerSupport
-{
+public class RedisConfig extends CachingConfigurerSupport {
     @Bean
     @SuppressWarnings(value = {"unchecked", "rawtypes"})
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -48,24 +44,24 @@ public class RedisConfig extends CachingConfigurerSupport
         return redisScript;
     }
 
-    /**
-     * 限流脚本
-     */
+    /** 限流脚本 */
     private String limitScriptText() {
-        return "local key = KEYS[1]\n" +
-                "local count = tonumber(ARGV[1])\n" +
-                "local time = tonumber(ARGV[2])\n" +
-                "local current = redis.call('get', key);\n" +
-                "if current and tonumber(current) > count then\n" +
-                "    return tonumber(current);\n" +
-                "end\n" +
+        return "local key = KEYS[1]\n"
+                + "local count = tonumber(ARGV[1])\n"
+                + "local time = tonumber(ARGV[2])\n"
+                + "local current = redis.call('get', key);\n"
+                + "if current and tonumber(current) > count then\n"
+                + "    return tonumber(current);\n"
+                + "end\n"
+                +
                 // 原子自增
-                "current = redis.call('incr', key)\n" +
+                "current = redis.call('incr', key)\n"
+                +
                 // 仅当第一次访问时设置过期时间
                 // 保证窗口固定
-                "if tonumber(current) == 1 then\n" +
-                "    redis.call('expire', key, time)\n" +
-                "end\n" +
-                "return tonumber(current);";
+                "if tonumber(current) == 1 then\n"
+                + "    redis.call('expire', key, time)\n"
+                + "end\n"
+                + "return tonumber(current);";
     }
 }

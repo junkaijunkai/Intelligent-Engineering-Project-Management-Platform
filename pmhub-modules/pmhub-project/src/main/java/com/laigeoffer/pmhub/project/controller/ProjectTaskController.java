@@ -20,17 +20,15 @@ import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.LogReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.*;
 import com.laigeoffer.pmhub.project.service.ProjectTaskService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @date 2022-12-09 17:50
@@ -39,26 +37,25 @@ import java.util.stream.Collectors;
 @RequestMapping("/project")
 public class ProjectTaskController {
 
-    @Autowired
-    private ProjectTaskService projectTaskService;
-    @Autowired
-    private ProcessFeignService processService;
-    @Autowired
-    private DeployFeignService wfDeployService;
+    @Autowired private ProjectTaskService projectTaskService;
+    @Autowired private ProcessFeignService processService;
+    @Autowired private DeployFeignService wfDeployService;
 
     /**
      * 首页-我的任务
+     *
      * @param taskReqVO
      * @return
      */
     @PostMapping("/queryMyTaskList")
-//    @RequiresPermissions("project:task:queryMyTaskList")
+    //    @RequiresPermissions("project:task:queryMyTaskList")
     public AjaxResult queryMyTaskList(@RequestBody TaskReqVO taskReqVO) {
         return AjaxResult.success(projectTaskService.queryMyTaskList(taskReqVO));
     }
 
     /**
      * 概况-任务概况
+     *
      * @param projectVO
      * @return
      */
@@ -67,8 +64,10 @@ public class ProjectTaskController {
     public AjaxResult queryTaskStatusStats(@RequestBody ProjectVO projectVO) {
         return AjaxResult.success(projectTaskService.queryTaskStatusStats(projectVO));
     }
+
     /**
      * 删除任务
+     *
      * @param taskIdsVO
      * @return
      */
@@ -76,40 +75,55 @@ public class ProjectTaskController {
     @RequiresPermissions("project:task:delete")
     public AjaxResult deleteTask(@RequestBody TaskIdsVO taskIdsVO) {
         List<ProjectTask> projectTasks = projectTaskService.listByIds(taskIdsVO.getTaskIdList());
-        List<String> projectIds = projectTasks.stream().map(ProjectTask::getProjectId).distinct().collect(Collectors.toList());
+        List<String> projectIds =
+                projectTasks.stream()
+                        .map(ProjectTask::getProjectId)
+                        .distinct()
+                        .collect(Collectors.toList());
         List<Project> projects = projectTaskService.queryProjectsStatus(projectIds);
-        Map<String, List<Project>> map = projects.stream().collect(Collectors.groupingBy(Project::getId));
+        Map<String, List<Project>> map =
+                projects.stream().collect(Collectors.groupingBy(Project::getId));
         StringBuilder projectMsg = new StringBuilder();
-        projectTasks.forEach(projectTask -> {
-            List<Project> list = map.get(projectTask.getProjectId());
-            if (ProjectStatusEnum.PAUSE.getStatus().equals(list.get(0).getStatus())) {
-                projectMsg.append(projectTask.getTaskName()).append(",");
-            }
-        });
+        projectTasks.forEach(
+                projectTask -> {
+                    List<Project> list = map.get(projectTask.getProjectId());
+                    if (ProjectStatusEnum.PAUSE.getStatus().equals(list.get(0).getStatus())) {
+                        projectMsg.append(projectTask.getTaskName()).append(",");
+                    }
+                });
         if (StringUtils.isNotBlank(projectMsg.toString())) {
-            throw new ServiceException("[" + projectMsg.substring(0, projectMsg.toString().length() - 1) + "]" + "归属项目已暂停，无法删除任务");
+            throw new ServiceException(
+                    "["
+                            + projectMsg.substring(0, projectMsg.toString().length() - 1)
+                            + "]"
+                            + "归属项目已暂停，无法删除任务");
         }
-        Map<String, List<ProjectTask>> collect = projectTasks.stream().collect(Collectors.groupingBy(ProjectTask::getId));
+        Map<String, List<ProjectTask>> collect =
+                projectTasks.stream().collect(Collectors.groupingBy(ProjectTask::getId));
 
         // 判断是否有审批流程，如果有则不允许删除
-        List<ProjectTaskProcess> wfTaskProcesses = projectTaskService.taskProcessList(taskIdsVO.getTaskIdList());
+        List<ProjectTaskProcess> wfTaskProcesses =
+                projectTaskService.taskProcessList(taskIdsVO.getTaskIdList());
         if (CollectionUtils.isNotEmpty(wfTaskProcesses)) {
             StringBuilder msg = new StringBuilder();
             for (ProjectTaskProcess projectTaskProcess : wfTaskProcesses) {
                 if (StringUtils.isNotBlank(projectTaskProcess.getInstanceId())) {
-                    msg.append(collect.get(projectTaskProcess.getExtraId()).get(0).getTaskName()).append(",");
+                    msg.append(collect.get(projectTaskProcess.getExtraId()).get(0).getTaskName())
+                            .append(",");
                 }
             }
             if (StringUtils.isNotBlank(msg.toString())) {
-                throw new ServiceException("[" + msg.substring(0, msg.toString().length() - 1) + "]" + "存在审批流程，不允许删除");
+                throw new ServiceException(
+                        "[" + msg.substring(0, msg.toString().length() - 1) + "]" + "存在审批流程，不允许删除");
             }
-
         }
         projectTaskService.deleteTask(taskIdsVO);
         return AjaxResult.success();
     }
+
     /**
      * 概况-任务详情
+     *
      * @param taskReqVO
      * @return
      */
@@ -121,6 +135,7 @@ public class ProjectTaskController {
 
     /**
      * 任务详情-查询执行人
+     *
      * @param taskReqVO
      * @return
      */
@@ -132,6 +147,7 @@ public class ProjectTaskController {
 
     /**
      * 添加任务
+     *
      * @param taskReqVO
      * @return
      */
@@ -140,8 +156,10 @@ public class ProjectTaskController {
     public AjaxResult add(@RequestBody TaskReqVO taskReqVO) {
         return AjaxResult.success(projectTaskService.add(taskReqVO));
     }
+
     /**
      * 添加子任务
+     *
      * @param taskReqVO
      * @return
      */
@@ -153,6 +171,7 @@ public class ProjectTaskController {
 
     /**
      * 修改任务
+     *
      * @param taskReqVO
      * @return
      */
@@ -165,6 +184,7 @@ public class ProjectTaskController {
 
     /**
      * 我的任务列表
+     *
      * @param taskReqVO
      * @return
      */
@@ -173,8 +193,10 @@ public class ProjectTaskController {
     public AjaxResult list(@RequestBody TaskReqVO taskReqVO) {
         return AjaxResult.success(projectTaskService.list(taskReqVO));
     }
+
     /**
      * 查询子任务
+     *
      * @param taskReqVO
      * @return
      */
@@ -186,14 +208,19 @@ public class ProjectTaskController {
 
     /**
      * 任务交付物模板下载
+     *
      * @throws IOException
      */
     @PostMapping("/task/file/downloadTemplate")
-    public void downloadTemplate(@RequestParam("taskId") String taskId, HttpServletResponse response) throws IOException {
+    public void downloadTemplate(
+            @RequestParam("taskId") String taskId, HttpServletResponse response)
+            throws IOException {
         projectTaskService.downloadTemplate(taskId, response);
     }
+
     /**
      * 任务模板下载
+     *
      * @throws IOException
      */
     @PostMapping("/task/downloadTaskTemplate")
@@ -203,6 +230,7 @@ public class ProjectTaskController {
 
     /**
      * 概况-任务燃尽图
+     *
      * @param projectVO
      * @return
      */
@@ -210,8 +238,10 @@ public class ProjectTaskController {
     public AjaxResult burnDownChart(@RequestBody ProjectVO projectVO) {
         return AjaxResult.success(projectTaskService.burnDownChart(projectVO));
     }
+
     /**
      * 添加评论
+     *
      * @param taskCommentVO
      * @return
      */
@@ -221,8 +251,10 @@ public class ProjectTaskController {
         projectTaskService.addComment(taskCommentVO);
         return AjaxResult.success();
     }
+
     /**
      * 查询任务成员
+     *
      * @param projectTaskReqVO
      * @return
      */
@@ -233,6 +265,7 @@ public class ProjectTaskController {
 
     /**
      * 任务动态
+     *
      * @param logReqVO
      * @return
      */
@@ -244,6 +277,7 @@ public class ProjectTaskController {
 
     /**
      * 导出全部任务
+     *
      * @param response
      * @return
      */
@@ -253,8 +287,10 @@ public class ProjectTaskController {
         ExcelUtil<TaskExportVO> util = new ExcelUtil<>(TaskExportVO.class);
         util.exportExcel(response, list, "全部任务数据");
     }
+
     /**
      * 导出任务
+     *
      * @param response
      * @return
      */
@@ -267,6 +303,7 @@ public class ProjectTaskController {
 
     /**
      * 导入任务
+     *
      * @param file
      * @return
      */
@@ -281,6 +318,7 @@ public class ProjectTaskController {
 
     /**
      * 审批设置
+     *
      * @param approvalSetDTO
      * @return
      */
@@ -289,13 +327,13 @@ public class ProjectTaskController {
     public AjaxResult updateApprovalSet(@RequestBody ApprovalSetDTO approvalSetDTO) {
         // 审批相关流程远程调用
         R<?> result = wfDeployService.updateApprovalSet2(approvalSetDTO, SecurityConstants.INNER);
-        if (StringUtils.isNull(result) || StringUtils.isNull(result.getData())
+        if (StringUtils.isNull(result)
+                || StringUtils.isNull(result.getData())
                 || R.fail().equals(result.getData())) {
             return AjaxResult.error("远程调用审批服务失败");
         }
         return AjaxResult.success();
     }
-
 
     /**
      * 任务审批根据流程定义id启动流程实例
@@ -305,31 +343,36 @@ public class ProjectTaskController {
      */
     @RequiresPermissions("project:task:approve")
     @PostMapping("/startTaskApprove/{taskId}/{processDefId}")
-    public AjaxResult startProjectApproveDefId(@PathVariable(value = "taskId") String taskId, @PathVariable(value = "processDefId") String processDefId, @RequestParam("url") String url, @RequestBody Map<String, Object> variables) {
+    public AjaxResult startProjectApproveDefId(
+            @PathVariable(value = "taskId") String taskId,
+            @PathVariable(value = "processDefId") String processDefId,
+            @RequestParam("url") String url,
+            @RequestBody Map<String, Object> variables) {
         ProjectProcessDTO request = new ProjectProcessDTO(taskId, processDefId, url, variables);
         // 掉流程相关远程调用
-        R<?> result = processService.startTaskProcessByDefId(request,SecurityConstants.INNER);
-        if (StringUtils.isNull(result) || StringUtils.isNull(result.getData())
+        R<?> result = processService.startTaskProcessByDefId(request, SecurityConstants.INNER);
+        if (StringUtils.isNull(result)
+                || StringUtils.isNull(result.getData())
                 || R.fail().equals(result.getData())) {
             return AjaxResult.error("远程调用审批服务失败");
         }
         return AjaxResult.success("流程启动成功");
-
     }
 
     /**
      * 优化审批设置
+     *
      * @return
      */
     @PostMapping("/task/insertApprovalSet")
     @Anonymous
     public AjaxResult updateApprovalSet() {
         R<?> result = wfDeployService.insertApprovalSet(SecurityConstants.INNER);
-        if (StringUtils.isNull(result) || StringUtils.isNull(result.getData())
+        if (StringUtils.isNull(result)
+                || StringUtils.isNull(result.getData())
                 || R.fail().equals(result.getData())) {
             return AjaxResult.error("远程调用审批服务失败");
         }
         return AjaxResult.success();
     }
-
 }

@@ -1,42 +1,31 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 /**
  * @date 2022-12-20 09:19
  */
-
 public class TaskStatusStatsVO {
-    /**
-     * 总数
-     */
+    /** 总数 */
     private Integer total;
-    /**
-     * 逾期
-     */
+
+    /** 逾期 */
     private Integer overdue;
-    /**
-     * 今日到期
-     */
+
+    /** 今日到期 */
     private Integer expireToday;
-    /**
-     * 待认领
-     */
+
+    /** 待认领 */
     private Integer toBeAssign;
-    /**
-     * 逾期完成
-     */
+
+    /** 逾期完成 */
     private Integer doneOverdue;
-    /**
-     * 完成
-     */
+
+    /** 完成 */
     private Integer done;
-    /**
-     * 未完成
-     */
+
+    /** 未完成 */
     private Integer unDone;
-    /**
-     * 时间待定
-     */
+
+    /** 时间待定 */
     private Integer timeUndetermined;
 
     public Integer getTotal() {

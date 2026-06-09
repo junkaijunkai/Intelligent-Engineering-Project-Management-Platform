@@ -1,36 +1,28 @@
 package com.laigeoffer.pmhub.project.domain.vo.project;
 
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskStatisticsVO;
-
 import java.util.List;
 
 /**
  * @date 2022-12-14 14:16
  */
 public class ProjectStatisticsResVO {
-    /**
-     * 项目数
-     */
+    /** 项目数 */
     private Long projectNum;
-    /**
-     * 任务数
-     */
+
+    /** 任务数 */
     private Long taskNum;
-    /**
-     * 今日任务数
-     */
+
+    /** 今日任务数 */
     private Long todayTaskNum;
-    /**
-     * 逾期任务数
-     */
+
+    /** 逾期任务数 */
     private Long overdueTaskNum;
-    /**
-     * 项目排行
-     */
+
+    /** 项目排行 */
     private List<ProjectRankVO> projectRankVOList;
-    /**
-     * 任务统计
-     */
+
+    /** 任务统计 */
     private List<TaskStatisticsVO> taskStatisticsVOList;
 
     public Long getProjectNum() {

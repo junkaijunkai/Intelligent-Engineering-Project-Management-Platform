@@ -1,25 +1,19 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 /**
  * @date 2022-12-21 09:45
  */
 public class BurnDownChartVO {
-    /**
-     * 时间
-     */
+    /** 时间 */
     private String date;
-    /**
-     * 基础线
-     */
+
+    /** 基础线 */
     private Integer baseLineNum;
-    /**
-     * 任务数
-     */
+
+    /** 任务数 */
     private Integer taskNum;
-    /**
-     * 未完成
-     */
+
+    /** 未完成 */
     private Integer unDoneTaskNum;
 
     public String getDate() {

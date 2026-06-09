@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysPost;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 岗位信息 数据层
- *
- */
+/** 岗位信息 数据层 */
 @Mapper
 public interface SysPostMapper {
     /**

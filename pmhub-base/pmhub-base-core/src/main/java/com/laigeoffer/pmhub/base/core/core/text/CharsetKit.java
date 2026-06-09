@@ -1,40 +1,27 @@
 package com.laigeoffer.pmhub.base.core.core.text;
 
-
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-/**
- * 字符集工具类
- *
- */
+/** 字符集工具类 */
 public class CharsetKit {
-    /**
-     * ISO-8859-1
-     */
+    /** ISO-8859-1 */
     public static final String ISO_8859_1 = "ISO-8859-1";
-    /**
-     * UTF-8
-     */
+
+    /** UTF-8 */
     public static final String UTF_8 = "UTF-8";
-    /**
-     * GBK
-     */
+
+    /** GBK */
     public static final String GBK = "GBK";
 
-    /**
-     * ISO-8859-1
-     */
+    /** ISO-8859-1 */
     public static final Charset CHARSET_ISO_8859_1 = Charset.forName(ISO_8859_1);
-    /**
-     * UTF-8
-     */
+
+    /** UTF-8 */
     public static final Charset CHARSET_UTF_8 = Charset.forName(UTF_8);
-    /**
-     * GBK
-     */
+
+    /** GBK */
     public static final Charset CHARSET_GBK = Charset.forName(GBK);
 
     /**
@@ -50,8 +37,8 @@ public class CharsetKit {
     /**
      * 转换字符串的字符集编码
      *
-     * @param source      字符串
-     * @param srcCharset  源字符集，默认ISO-8859-1
+     * @param source 字符串
+     * @param srcCharset 源字符集，默认ISO-8859-1
      * @param destCharset 目标字符集，默认UTF-8
      * @return 转换后的字符集
      */
@@ -62,8 +49,8 @@ public class CharsetKit {
     /**
      * 转换字符串的字符集编码
      *
-     * @param source      字符串
-     * @param srcCharset  源字符集，默认ISO-8859-1
+     * @param source 字符串
+     * @param srcCharset 源字符集，默认ISO-8859-1
      * @param destCharset 目标字符集，默认UTF-8
      * @return 转换后的字符集
      */

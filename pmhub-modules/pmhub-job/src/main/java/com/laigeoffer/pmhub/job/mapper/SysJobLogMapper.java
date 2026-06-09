@@ -1,15 +1,10 @@
 package com.laigeoffer.pmhub.job.mapper;
 
-
 import com.laigeoffer.pmhub.job.domain.SysJobLog;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
-/**
- * 调度任务日志信息 数据层
- *
- */
+/** 调度任务日志信息 数据层 */
 @Mapper
 public interface SysJobLogMapper {
     /**
@@ -59,8 +54,6 @@ public interface SysJobLogMapper {
      */
     public int deleteJobLogById(Long jobId);
 
-    /**
-     * 清空任务日志
-     */
+    /** 清空任务日志 */
     public void cleanJobLog();
 }

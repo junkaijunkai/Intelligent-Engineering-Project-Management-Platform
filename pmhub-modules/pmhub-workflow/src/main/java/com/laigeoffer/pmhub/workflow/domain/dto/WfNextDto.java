@@ -2,13 +2,13 @@ package com.laigeoffer.pmhub.workflow.domain.dto;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysRole;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.Data;
 
 /**
  * 动态人员、组
+ *
  * @createTime 2022/3/10 00:12
  */
 @Data

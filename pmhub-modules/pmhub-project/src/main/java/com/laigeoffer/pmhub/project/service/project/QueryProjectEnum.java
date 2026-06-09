@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.project.service.project;
  * @date 2023-01-09 11:37
  */
 public enum QueryProjectEnum {
-
     MY("my", "queryMyProjectExecutor"),
     COLLECT("collect", "queryMyCollectProjectExecutor"),
     RECYCLE("recycle", "queryRecycleProjectExecutor");

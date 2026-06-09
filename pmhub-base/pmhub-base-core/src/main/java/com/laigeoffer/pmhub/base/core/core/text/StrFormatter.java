@@ -1,12 +1,8 @@
 package com.laigeoffer.pmhub.base.core.core.text;
 
-
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 
-/**
- * 字符串格式化
- *
- */
+/** 字符串格式化 */
 public class StrFormatter {
     public static final String EMPTY_JSON = "{}";
     public static final char C_BACKSLASH = '\\';
@@ -23,7 +19,7 @@ public class StrFormatter {
      * 转义\： format("this is \\\\{} for {}", "a", "b") -> this is \a for b<br>
      *
      * @param strPattern 字符串模板
-     * @param argArray   参数列表
+     * @param argArray 参数列表
      * @return 结果
      */
     public static String format(final String strPattern, final Object... argArray) {
@@ -36,7 +32,7 @@ public class StrFormatter {
         StringBuilder sbuf = new StringBuilder(strPatternLength + 50);
 
         int handledPosition = 0;
-        int delimIndex;// 占位符所在位置
+        int delimIndex; // 占位符所在位置
         for (int argIndex = 0; argIndex < argArray.length; argIndex++) {
             delimIndex = strPattern.indexOf(EMPTY_JSON, handledPosition);
             if (delimIndex == -1) {

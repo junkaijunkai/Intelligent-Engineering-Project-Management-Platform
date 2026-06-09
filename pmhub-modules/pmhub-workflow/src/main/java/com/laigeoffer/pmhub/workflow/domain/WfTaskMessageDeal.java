@@ -13,6 +13,7 @@ import lombok.Data;
 public class WfTaskMessageDeal {
     @TableId(type = IdType.ASSIGN_UUID)
     private String id;
+
     private String taskId;
     private String instanceId;
     private String assignee;

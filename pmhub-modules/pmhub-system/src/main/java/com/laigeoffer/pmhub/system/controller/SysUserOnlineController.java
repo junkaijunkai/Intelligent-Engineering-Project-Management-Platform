@@ -13,26 +13,20 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.security.annotation.RequiresPermissions;
 import com.laigeoffer.pmhub.system.domain.SysUserOnline;
 import com.laigeoffer.pmhub.system.service.ISysUserOnlineService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * 在线用户监控
- *
- */
+/** 在线用户监控 */
 @RestController
 @RequestMapping("/system/monitor/online")
 public class SysUserOnlineController extends BaseController {
-    @Autowired
-    private ISysUserOnlineService userOnlineService;
+    @Autowired private ISysUserOnlineService userOnlineService;
 
-    @Autowired
-    private RedisService redisService;
+    @Autowired private RedisService redisService;
 
     @RequiresPermissions("monitor:online:list")
     @GetMapping("/list")
@@ -43,8 +37,10 @@ public class SysUserOnlineController extends BaseController {
             JSONObject jsonObject = redisService.getCacheObject(key);
             LoginUser user = jsonObject.toJavaObject(LoginUser.class);
             if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {
-                if (StringUtils.equals(ipaddr, user.getIpaddr()) && StringUtils.equals(userName, user.getUsername())) {
-                    userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
+                if (StringUtils.equals(ipaddr, user.getIpaddr())
+                        && StringUtils.equals(userName, user.getUsername())) {
+                    userOnlineList.add(
+                            userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
                 }
             } else if (StringUtils.isNotEmpty(ipaddr)) {
                 if (StringUtils.equals(ipaddr, user.getIpaddr())) {
@@ -63,9 +59,7 @@ public class SysUserOnlineController extends BaseController {
         return getDataTable(userOnlineList);
     }
 
-    /**
-     * 强退用户
-     */
+    /** 强退用户 */
     @RequiresPermissions("monitor:online:forceLogout")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")

@@ -1,14 +1,10 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.system.domain.PmhubAsync;
-
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
-/**
- * 异步任务管理 服务层
- *
- */
+/** 异步任务管理 服务层 */
 public interface IPmhubAsyncService {
 
     /**
@@ -16,20 +12,21 @@ public interface IPmhubAsyncService {
      *
      * @param asyncName 异步任务名
      * @param asyncType 异步任务类型
-     * @param createBy  创建者
+     * @param createBy 创建者
      * @return id
      */
     PmhubAsync addAsyncJob(String asyncName, String asyncType, String createBy);
 
     /**
      * 更新任务状态
+     *
      * @param pmhubAsync 任务信息
      */
     void updateAsyncJob(PmhubAsync pmhubAsync);
 
-
     /**
      * 查询异步任务信息
+     *
      * @param pmhubAsync
      * @return {@link List}<{@link PmhubAsync}>
      */
@@ -37,6 +34,7 @@ public interface IPmhubAsyncService {
 
     /**
      * 查询单条异步任务信息
+     *
      * @param id id
      * @return {@link List}<{@link PmhubAsync}>
      */
@@ -44,11 +42,10 @@ public interface IPmhubAsyncService {
 
     /**
      * 删除
+     *
      * @param ids ids
      */
     void delete(String[] ids);
-
-
 
     void downloadFile(String id, String user, HttpServletResponse response);
 }

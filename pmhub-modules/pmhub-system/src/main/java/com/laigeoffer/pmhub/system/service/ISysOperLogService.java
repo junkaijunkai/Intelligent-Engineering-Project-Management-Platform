@@ -1,13 +1,9 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysOperLog;
-
 import java.util.List;
 
-/**
- * 操作日志 服务层
- *
- */
+/** 操作日志 服务层 */
 public interface ISysOperLogService {
     /**
      * 新增操作日志
@@ -40,8 +36,6 @@ public interface ISysOperLogService {
      */
     public SysOperLog selectOperLogById(Long operId);
 
-    /**
-     * 清空操作日志
-     */
+    /** 清空操作日志 */
     public void cleanOperLog();
 }

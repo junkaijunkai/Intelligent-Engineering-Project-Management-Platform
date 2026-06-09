@@ -21,6 +21,7 @@ public class RedissonConfig {
 
     @Value("${spring.redis.password:}") // 如果没有密码，默认值为空
     private String redisPassword;
+
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();

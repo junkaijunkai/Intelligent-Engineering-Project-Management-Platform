@@ -3,14 +3,13 @@ package com.laigeoffer.pmhub.workflow.utils;
 import com.laigeoffer.pmhub.base.core.utils.DateUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.workflow.core.domain.ProcessQuery;
+import java.util.Map;
 import org.flowable.common.engine.api.query.Query;
 import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
-
-import java.util.Map;
 
 /**
  * 流程工具类
@@ -19,10 +18,7 @@ import java.util.Map;
  */
 public class ProcessUtils {
 
-
-    /**
-     * 任务详情url的key
-     * */
+    /** 任务详情url的key */
     public static final String TASK_DETAIL_URL_KEY = "taskDetailUrl";
 
     public static final String LEADER_LIST = "startUserLeaderList";
@@ -49,10 +45,9 @@ public class ProcessUtils {
         }
     }
 
-    /**
-     * 构建流程定义搜索
-     */
-    public static void buildProcessDefinitionSearch(ProcessDefinitionQuery query, ProcessQuery process) {
+    /** 构建流程定义搜索 */
+    public static void buildProcessDefinitionSearch(
+            ProcessDefinitionQuery query, ProcessQuery process) {
         // 流程标识
         if (StringUtils.isNotBlank(process.getProcessKey())) {
             query.processDefinitionKeyLike("%" + process.getProcessKey() + "%");
@@ -75,9 +70,7 @@ public class ProcessUtils {
         }
     }
 
-    /**
-     * 构建任务搜索
-     */
+    /** 构建任务搜索 */
     public static void buildTaskSearch(TaskQuery query, ProcessQuery process) {
         Map<String, Object> params = process.getParams();
         if (StringUtils.isNotBlank(process.getProcessKey())) {
@@ -92,7 +85,8 @@ public class ProcessUtils {
         }
     }
 
-    private static void buildHistoricTaskInstanceSearch(HistoricTaskInstanceQuery query, ProcessQuery process) {
+    private static void buildHistoricTaskInstanceSearch(
+            HistoricTaskInstanceQuery query, ProcessQuery process) {
         Map<String, Object> params = process.getParams();
         if (StringUtils.isNotBlank(process.getProcessKey())) {
             query.processDefinitionKeyLike("%" + process.getProcessKey() + "%");
@@ -106,10 +100,9 @@ public class ProcessUtils {
         }
     }
 
-    /**
-     * 构建历史流程实例搜索
-     */
-    public static void buildHistoricProcessInstanceSearch(HistoricProcessInstanceQuery query, ProcessQuery process) {
+    /** 构建历史流程实例搜索 */
+    public static void buildHistoricProcessInstanceSearch(
+            HistoricProcessInstanceQuery query, ProcessQuery process) {
         Map<String, Object> params = process.getParams();
         // 流程标识
         if (StringUtils.isNotBlank(process.getProcessKey())) {
@@ -128,5 +121,4 @@ public class ProcessUtils {
             query.startedBefore(DateUtils.parseDate(params.get("endTime")));
         }
     }
-
 }

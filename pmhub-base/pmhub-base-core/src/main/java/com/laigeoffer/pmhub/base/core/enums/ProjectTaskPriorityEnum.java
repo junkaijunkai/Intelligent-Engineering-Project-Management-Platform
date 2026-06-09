@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.base.core.enums;
  * @date 2022-12-19 17:04
  */
 public enum ProjectTaskPriorityEnum {
-
     STAGE_0(0, "最高"),
     STAGE_1(1, "较高"),
     STAGE_2(2, "普通"),

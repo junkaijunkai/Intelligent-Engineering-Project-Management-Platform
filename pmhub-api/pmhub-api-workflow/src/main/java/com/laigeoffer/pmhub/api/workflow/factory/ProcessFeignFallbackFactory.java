@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * 用户服务降级处理
- *
- */
+/** 用户服务降级处理 */
 @Component
 public class ProcessFeignFallbackFactory implements FallbackFactory<ProcessFeignService> {
     private static final Logger log = LoggerFactory.getLogger(ProcessFeignFallbackFactory.class);
@@ -20,7 +17,6 @@ public class ProcessFeignFallbackFactory implements FallbackFactory<ProcessFeign
     public ProcessFeignService create(Throwable throwable) {
         log.error("流程设计服务调用失败:{}", throwable.getMessage());
         return new ProcessFeignService() {
-
 
             @Override
             public R<Integer> startProjectProcess(ProjectProcessDTO request, String source) {

@@ -1,15 +1,11 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysUserRole;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
-/**
- * 用户与角色关联表 数据层
- *
- */
+/** 用户与角色关联表 数据层 */
 @Mapper
 public interface SysUserRoleMapper {
     /**
@@ -55,7 +51,7 @@ public interface SysUserRoleMapper {
     /**
      * 批量取消授权用户角色
      *
-     * @param roleId  角色ID
+     * @param roleId 角色ID
      * @param userIds 需要删除的用户数据ID
      * @return 结果
      */

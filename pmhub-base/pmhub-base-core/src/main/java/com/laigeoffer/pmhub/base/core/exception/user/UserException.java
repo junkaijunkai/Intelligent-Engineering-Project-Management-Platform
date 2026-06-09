@@ -1,12 +1,8 @@
 package com.laigeoffer.pmhub.base.core.exception.user;
 
-
 import com.laigeoffer.pmhub.base.core.exception.base.BaseException;
 
-/**
- * 用户信息异常类
- *
- */
+/** 用户信息异常类 */
 public class UserException extends BaseException {
     private static final long serialVersionUID = 1L;
 

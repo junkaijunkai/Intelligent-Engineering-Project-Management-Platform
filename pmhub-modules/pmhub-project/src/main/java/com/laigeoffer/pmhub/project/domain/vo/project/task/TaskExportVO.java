@@ -1,8 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 import com.laigeoffer.pmhub.base.core.annotation.Excel;
-
 import java.util.Date;
 
 /**
@@ -12,23 +10,32 @@ public class TaskExportVO {
 
     @Excel(name = "任务名称")
     private String taskName;
+
     @Excel(name = "所属项目")
     private String projectName;
+
     @Excel(name = "所处阶段")
     private String stageName;
+
     @Excel(name = "执行人")
     private String executor;
+
     private Integer status;
     private Integer executeStatus;
     private Integer taskPriority;
+
     @Excel(name = "执行状态")
     private String executeStatusName;
+
     @Excel(name = "任务状态")
     private String statusName;
+
     @Excel(name = "优先级")
     private String taskPriorityName;
+
     @Excel(name = "创建人")
     private String createdBy;
+
     @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
     private Date createdTime;
 
@@ -41,10 +48,6 @@ public class TaskExportVO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-
-
-
-
 
     public String getTaskName() {
         return taskName;

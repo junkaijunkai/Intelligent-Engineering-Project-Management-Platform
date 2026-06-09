@@ -6,29 +6,22 @@ import java.util.List;
  * @date 2022-12-12 10:27
  */
 public class ProjectVO {
-    /**
-     * 页码
-     */
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
+
+    /** 页数 */
     private Integer pageSize;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 封面
-     */
+
+    /** 封面 */
     private String cover;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private List<Long> userIdList;
 
     private Integer status;

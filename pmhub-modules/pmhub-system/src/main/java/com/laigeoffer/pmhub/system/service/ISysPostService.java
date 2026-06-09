@@ -1,13 +1,9 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.system.domain.SysPost;
-
 import java.util.List;
 
-/**
- * 岗位信息 服务层
- *
- */
+/** 岗位信息 服务层 */
 public interface ISysPostService {
     /**
      * 查询岗位信息集合

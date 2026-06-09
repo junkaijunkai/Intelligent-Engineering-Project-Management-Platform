@@ -15,13 +15,12 @@ import com.laigeoffer.pmhub.workflow.domain.vo.WfDeployVo;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfFormVo;
 import com.laigeoffer.pmhub.workflow.service.IWfDeployFormService;
 import com.laigeoffer.pmhub.workflow.service.IWfDeployService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 流程部署
@@ -37,21 +36,18 @@ public class WfDeployController extends BaseController {
     private final IWfDeployService deployService;
     private final IWfDeployFormService deployFormService;
 
-    /**
-     * 查询流程部署列表
-     */
+    /** 查询流程部署列表 */
     @RequiresPermissions("'workflow:deploy:list")
     @GetMapping("/list")
     public Table2DataInfo<WfDeployVo> list(ProcessQuery processQuery, PageQuery pageQuery) {
         return deployService.queryPageList(processQuery, pageQuery);
     }
 
-    /**
-     * 查询流程部署版本列表
-     */
+    /** 查询流程部署版本列表 */
     @RequiresPermissions("workflow:deploy:list")
     @GetMapping("/publishList")
-    public Table2DataInfo<WfDeployVo> publishList(@RequestParam String processKey, PageQuery pageQuery) {
+    public Table2DataInfo<WfDeployVo> publishList(
+            @RequestParam String processKey, PageQuery pageQuery) {
         return deployService.queryPublishList(processKey, pageQuery);
     }
 
@@ -70,6 +66,7 @@ public class WfDeployController extends BaseController {
 
     /**
      * 读取xml文件
+     *
      * @param definitionId 流程定义ID
      * @return
      */
@@ -79,17 +76,17 @@ public class WfDeployController extends BaseController {
         return R.ok(null, deployService.queryBpmnXmlById(definitionId));
     }
 
-//    /**
-//     * 删除流程模型
-//     * @param deployIds 流程部署ids
-//     */
-//    @PreAuthorize("@ss.hasPermi('workflow:deploy:remove')")
-//    @Log(title = "删除流程部署", businessType = BusinessType.DELETE)
-//    @DeleteMapping("/{deployIds}")
-//    public R<String> remove(@NotEmpty(message = "主键不能为空") @PathVariable String[] deployIds) {
-//        deployService.deleteByIds(Arrays.asList(deployIds));
-//        return R.ok();
-//    }
+    //    /**
+    //     * 删除流程模型
+    //     * @param deployIds 流程部署ids
+    //     */
+    //    @PreAuthorize("@ss.hasPermi('workflow:deploy:remove')")
+    //    @Log(title = "删除流程部署", businessType = BusinessType.DELETE)
+    //    @DeleteMapping("/{deployIds}")
+    //    public R<String> remove(@NotEmpty(message = "主键不能为空") @PathVariable String[] deployIds) {
+    //        deployService.deleteByIds(Arrays.asList(deployIds));
+    //        return R.ok();
+    //    }
 
     /**
      * 查询流程部署关联表单信息
@@ -111,35 +108,47 @@ public class WfDeployController extends BaseController {
      * @param type 审批类型
      */
     @GetMapping("/refApproval/{type}")
-    public R<?> findApprovalByType(@PathVariable(value = "type") String type, @RequestParam(value = "taskId", required = false) String taskId) {
+    public R<?> findApprovalByType(
+            @PathVariable(value = "type") String type,
+            @RequestParam(value = "taskId", required = false) String taskId) {
         return R.ok(deployService.queryApprovalSet(type, taskId));
     }
 
     /**
      * 更新审批设置
+     *
      * @param approvalSetDTO
      * @return
      */
     @InnerAuth
     @PostMapping("/updateApprovalSet")
-    @DistributedLock(key = "#approvalSetDTO.approved", lockTime = 10L, keyPrefix = "workflow-approve-")
+    @DistributedLock(
+            key = "#approvalSetDTO.approved",
+            lockTime = 10L,
+            keyPrefix = "workflow-approve-")
     public R<?> updateApprovalSet(@RequestBody ApprovalSetDTO approvalSetDTO) {
-        return R.ok(deployService.updateApprovalSet(approvalSetDTO, ProjectStatusEnum.PROJECT.getStatusName()));
+        return R.ok(
+                deployService.updateApprovalSet(
+                        approvalSetDTO, ProjectStatusEnum.PROJECT.getStatusName()));
     }
 
     /**
      * 更新审批设置2
+     *
      * @param approvalSetDTO
      * @return
      */
     @InnerAuth
     @PostMapping("/updateApprovalSet2")
     public R<?> updateApprovalSet2(@RequestBody ApprovalSetDTO approvalSetDTO) {
-        return R.ok(deployService.updateApprovalSet2(approvalSetDTO, ProjectStatusEnum.PROJECT.getStatusName()));
+        return R.ok(
+                deployService.updateApprovalSet2(
+                        approvalSetDTO, ProjectStatusEnum.PROJECT.getStatusName()));
     }
 
     /**
      * 查询流程部署关联表单信息
+     *
      * @param taskId
      * @return
      */
@@ -151,17 +160,25 @@ public class WfDeployController extends BaseController {
 
     /**
      * 添加&更新审批设置
+     *
      * @param approvalSetDTO
      * @return
      */
     @InnerAuth
     @PostMapping("/insertOrUpdateApprovalSet")
     public R<Boolean> insertOrUpdateApprovalSet(@RequestBody ApprovalSetDTO approvalSetDTO) {
-        return R.ok(deployService.insertOrUpdateApprovalSet(approvalSetDTO.getExtraId(), approvalSetDTO.getType(), approvalSetDTO.getApproved(), approvalSetDTO.getDefinitionId(), approvalSetDTO.getDeploymentId()));
+        return R.ok(
+                deployService.insertOrUpdateApprovalSet(
+                        approvalSetDTO.getExtraId(),
+                        approvalSetDTO.getType(),
+                        approvalSetDTO.getApproved(),
+                        approvalSetDTO.getDefinitionId(),
+                        approvalSetDTO.getDeploymentId()));
     }
 
     /**
      * 添加审批设置
+     *
      * @return
      */
     @InnerAuth
@@ -169,5 +186,4 @@ public class WfDeployController extends BaseController {
     public R<?> insertApprovalSet() {
         return R.ok(deployService.insertApprovalSet());
     }
-
 }

@@ -1,15 +1,11 @@
 package com.laigeoffer.pmhub.base.core.utils.sign;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-
-/**
- * Md5加密方法
- *
- */
+/** Md5加密方法 */
 public class Md5Utils {
     private static final Logger log = LoggerFactory.getLogger(Md5Utils.class);
 
@@ -44,7 +40,8 @@ public class Md5Utils {
 
     public static String hash(String s) {
         try {
-            return new String(toHex(md5(s)).getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            return new String(
+                    toHex(md5(s)).getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.error("not supported charset...{}", e);
             return s;

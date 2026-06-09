@@ -4,24 +4,23 @@ import com.laigeoffer.pmhub.base.core.config.PmhubConfig;
 import com.laigeoffer.pmhub.base.core.core.domain.model.LoginUser;
 import com.laigeoffer.pmhub.base.core.enums.LogTypeEnum;
 import com.laigeoffer.pmhub.base.core.enums.ProjectStatusEnum;
+import com.laigeoffer.pmhub.base.core.utils.file.FileUploadUtils;
 import com.laigeoffer.pmhub.base.core.utils.file.MimeTypeUtils;
 import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
-import com.laigeoffer.pmhub.base.core.utils.file.FileUploadUtils;
 import com.laigeoffer.pmhub.project.domain.ProjectFile;
 import com.laigeoffer.pmhub.project.domain.vo.project.file.FileVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.LogVO;
 import com.laigeoffer.pmhub.project.mapper.ProjectFileMapper;
 import com.laigeoffer.pmhub.project.service.ProjectLogService;
 import com.laigeoffer.pmhub.project.utils.ProjectFileUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
 
 /**
  * @date 2023-01-09 09:36
@@ -29,19 +28,24 @@ import java.util.Date;
 @Service("uploadProjectFileExecutor")
 @Slf4j
 public class UploadProjectFileExecutor extends UploadAbstractExecutor {
-    @Autowired
-    private ProjectLogService projectLogService;
-    @Autowired
-    private ProjectFileMapper projectFileMapper;
+    @Autowired private ProjectLogService projectLogService;
+    @Autowired private ProjectFileMapper projectFileMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FileVO upload(LoginUser user, MultipartFile file, String id) throws Exception {
         log.info("项目文件上传的项目id:{}", id);
-        String filePath = ProjectFileUtil.uploadProjectFile(PmhubConfig.getProjectPath(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+        String filePath =
+                ProjectFileUtil.uploadProjectFile(
+                        PmhubConfig.getProjectPath(),
+                        file,
+                        MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         String pathName = ProjectFileUtil.getPathName(PmhubConfig.getProjectPath(), file);
         ProjectFile projectFile = new ProjectFile();
         projectFile.setProjectId(id);
-        projectFile.setFileSize(new BigDecimal(String.valueOf(file.getSize())).divide(new BigDecimal("1024"), 2, RoundingMode.HALF_UP));
+        projectFile.setFileSize(
+                new BigDecimal(String.valueOf(file.getSize()))
+                        .divide(new BigDecimal("1024"), 2, RoundingMode.HALF_UP));
         projectFile.setFileName(file.getOriginalFilename());
         projectFile.setFileUrl(filePath);
         projectFile.setUserId(user.getUserId());

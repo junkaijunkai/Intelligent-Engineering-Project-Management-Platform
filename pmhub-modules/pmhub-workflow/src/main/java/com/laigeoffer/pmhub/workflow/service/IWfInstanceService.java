@@ -1,9 +1,8 @@
 package com.laigeoffer.pmhub.workflow.service;
 
 import com.laigeoffer.pmhub.workflow.domain.bo.WfTaskBo;
-import org.flowable.engine.history.HistoricProcessInstance;
-
 import java.util.Map;
+import org.flowable.engine.history.HistoricProcessInstance;
 
 /**
  * @createTime 2022/3/10 00:12
@@ -20,7 +19,7 @@ public interface IWfInstanceService {
     /**
      * 激活或挂起流程实例
      *
-     * @param state      状态
+     * @param state 状态
      * @param instanceId 流程实例ID
      */
     void updateState(Integer state, String instanceId);
@@ -28,7 +27,7 @@ public interface IWfInstanceService {
     /**
      * 删除流程实例ID
      *
-     * @param instanceId   流程实例ID
+     * @param instanceId 流程实例ID
      * @param deleteReason 删除原因
      */
     void delete(String instanceId, String deleteReason);
@@ -41,9 +40,9 @@ public interface IWfInstanceService {
      */
     HistoricProcessInstance getHistoricProcessInstanceById(String processInstanceId);
 
-
     /**
      * 查询流程详情信息
+     *
      * @param procInsId 流程实例ID
      * @param deployId 流程部署ID
      */

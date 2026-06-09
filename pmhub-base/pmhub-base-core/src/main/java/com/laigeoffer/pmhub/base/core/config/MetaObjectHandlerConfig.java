@@ -1,10 +1,9 @@
 package com.laigeoffer.pmhub.base.core.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import java.time.LocalDateTime;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 /**
  * @description MetaObjectHandlerConfig
@@ -16,7 +15,6 @@ public class MetaObjectHandlerConfig implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
 
-
         Object createTime = getFieldValByName("createdTime", metaObject);
         Object updateTime = getFieldValByName("updatedTime", metaObject);
         Object deleted = getFieldValByName("deleted", metaObject);
@@ -24,10 +22,12 @@ public class MetaObjectHandlerConfig implements MetaObjectHandler {
         Object updatedBy = getFieldValByName("updatedBy", metaObject);
 
         if (createTime == null) {
-            this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
+            this.strictInsertFill(
+                    metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
         }
         if (updateTime == null) {
-            this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
+            this.strictInsertFill(
+                    metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
         }
         if (deleted == null) {
             this.strictInsertFill(metaObject, "deleted", Integer.class, 0);
@@ -38,10 +38,8 @@ public class MetaObjectHandlerConfig implements MetaObjectHandler {
         }
         if (updatedBy == null) {
             // TODO: 2024.05.11 拿到用户信息
-            this.strictInsertFill(metaObject, "updateBy", String.class,null);
+            this.strictInsertFill(metaObject, "updateBy", String.class, null);
         }
-
-
     }
 
     @Override
@@ -50,7 +48,8 @@ public class MetaObjectHandlerConfig implements MetaObjectHandler {
         Object updatedBy = getFieldValByName("updatedBy", metaObject);
 
         if (updateTime == null) {
-            this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
+            this.strictInsertFill(
+                    metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
         }
         if (updatedBy == null) {
             // TODO: 2024.05.11 拿到用户信息

@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,84 +8,72 @@ import java.util.Date;
  * @date 2022-12-12 10:36
  */
 public class TaskResVO {
-    /**
-     * 项目id
-     */
+    /** 项目id */
     private String projectId;
-    /**
-     * 阶段id
-     */
+
+    /** 阶段id */
     private String projectStageId;
-    /**
-     * 项目名
-     */
+
+    /** 项目名 */
     private String projectName;
-    /**
-     * 任务id
-     */
+
+    /** 任务id */
     private String taskId;
-    /**
-     * 任务名
-     */
+
+    /** 任务名 */
     private String taskName;
-    /**
-     * 状态
-     */
+
+    /** 状态 */
     private Integer status;
+
     private String statusName;
-    /**
-     * 执行人
-     */
+
+    /** 执行人 */
     private String executor;
-    /**
-     * 执行状态
-     */
+
+    /** 执行状态 */
     private Integer executeStatus;
+
     private String executeStatusName;
-    /**
-     * 优先级
-     */
+
+    /** 优先级 */
     private Integer taskPriority;
+
     private String taskPriorityName;
-    /**
-     * 阶段名
-     */
+
+    /** 阶段名 */
     private String stageName;
+
     private String createdBy;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updatedTime;
-    /**
-     * 进度
-     */
+
+    /** 进度 */
     private BigDecimal taskProcess;
-    /**
-     * 所属流程
-     */
+
+    /** 所属流程 */
     private String taskFlow;
-    /**
-     * 描述
-     */
+
+    /** 描述 */
     private String description;
-    /**
-     * 开始时间
-     */
+
+    /** 开始时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date beginTime;
-    /**
-     * 结束时间
-     */
+
+    /** 结束时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
-    /**
-     * 截止时间
-     */
+
+    /** 截止时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date closeTime;
-    /**
-     * 用户id
-     */
+
+    /** 用户id */
     private Long userId;
 
     private String approved;

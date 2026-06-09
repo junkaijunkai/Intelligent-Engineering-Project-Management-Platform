@@ -1,15 +1,12 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
-
 import java.util.List;
 
 /**
  * @date 2022-12-23 17:31
  */
 public class TaskIdsVO {
-    /**
-     * 任务id
-     */
+    /** 任务id */
     private List<String> taskIdList;
 
     public List<String> getTaskIdList() {

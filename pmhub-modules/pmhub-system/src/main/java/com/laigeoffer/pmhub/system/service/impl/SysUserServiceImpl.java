@@ -7,16 +7,20 @@ import com.laigeoffer.pmhub.base.core.core.domain.entity.SysRole;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
 import com.laigeoffer.pmhub.base.core.core.domain.vo.SysUserVO;
 import com.laigeoffer.pmhub.base.core.exception.ServiceException;
-import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import com.laigeoffer.pmhub.base.core.utils.bean.BeanValidators;
 import com.laigeoffer.pmhub.base.core.utils.spring.SpringUtils;
+import com.laigeoffer.pmhub.base.security.utils.SecurityUtils;
 import com.laigeoffer.pmhub.system.domain.SysPost;
 import com.laigeoffer.pmhub.system.domain.SysUserPost;
 import com.laigeoffer.pmhub.system.domain.SysUserRole;
 import com.laigeoffer.pmhub.system.mapper.*;
 import com.laigeoffer.pmhub.system.service.ISysConfigService;
 import com.laigeoffer.pmhub.system.service.ISysUserService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,32 +28,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.Validator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * 用户 业务层处理
- *
- */
+/** 用户 业务层处理 */
 @Service
 public class SysUserServiceImpl implements ISysUserService {
     private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
-    @Autowired
-    protected Validator validator;
-    @Autowired
-    private SysUserMapper userMapper;
-    @Autowired
-    private SysRoleMapper roleMapper;
-    @Autowired
-    private SysPostMapper postMapper;
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
-    @Autowired
-    private SysUserPostMapper userPostMapper;
-    @Autowired
-    private ISysConfigService configService;
+    @Autowired protected Validator validator;
+    @Autowired private SysUserMapper userMapper;
+    @Autowired private SysRoleMapper roleMapper;
+    @Autowired private SysPostMapper postMapper;
+    @Autowired private SysUserRoleMapper userRoleMapper;
+    @Autowired private SysUserPostMapper userPostMapper;
+    @Autowired private ISysConfigService configService;
 
     /**
      * 根据条件分页查询用户列表
@@ -64,8 +53,7 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     /**
-     * 根据条件查询用户列表
-     * 内部服务调用
+     * 根据条件查询用户列表 内部服务调用
      *
      * @param sysUserDTO 用户信息
      * @return 用户信息集合信息
@@ -128,7 +116,7 @@ public class SysUserServiceImpl implements ISysUserService {
      * @return 用户对象信息
      */
     @Override
-    public SysUser selectUserByWxName(String userWxName){
+    public SysUser selectUserByWxName(String userWxName) {
         return userMapper.selectUserByWxName(userWxName);
     }
 
@@ -292,7 +280,7 @@ public class SysUserServiceImpl implements ISysUserService {
     /**
      * 用户授权角色
      *
-     * @param userId  用户ID
+     * @param userId 用户ID
      * @param roleIds 角色组
      */
     @Override
@@ -328,7 +316,7 @@ public class SysUserServiceImpl implements ISysUserService {
      * 修改用户头像
      *
      * @param userName 用户名
-     * @param avatar   头像地址
+     * @param avatar 头像地址
      * @return 结果
      */
     @Override
@@ -391,7 +379,7 @@ public class SysUserServiceImpl implements ISysUserService {
     /**
      * 新增用户角色信息
      *
-     * @param userId  用户ID
+     * @param userId 用户ID
      * @param roleIds 角色组
      */
     public void insertUserRole(Long userId, Long[] roleIds) {
@@ -447,9 +435,9 @@ public class SysUserServiceImpl implements ISysUserService {
     /**
      * 导入用户数据
      *
-     * @param userList        用户数据列表
+     * @param userList 用户数据列表
      * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
-     * @param operName        操作用户
+     * @param operName 操作用户
      * @return 结果
      */
     @Override

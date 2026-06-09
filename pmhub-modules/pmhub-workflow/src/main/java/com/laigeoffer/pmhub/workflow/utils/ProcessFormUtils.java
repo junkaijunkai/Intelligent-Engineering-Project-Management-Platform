@@ -2,7 +2,6 @@ package com.laigeoffer.pmhub.workflow.utils;
 
 import cn.hutool.core.convert.Convert;
 import com.laigeoffer.pmhub.workflow.core.FormConf;
-
 import java.util.List;
 import java.util.Map;
 
@@ -29,13 +28,15 @@ public class ProcessFormUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static void recursiveFillField(final Map<String, Object> field, final Map<String, Object> data) {
+    private static void recursiveFillField(
+            final Map<String, Object> field, final Map<String, Object> data) {
         if (!field.containsKey(CONFIG)) {
             return;
         }
         Map<String, Object> configMap = (Map<String, Object>) field.get(CONFIG);
         if (configMap.containsKey("children")) {
-            List<Map<String, Object>> childrens = (List<Map<String, Object>>) configMap.get("children");
+            List<Map<String, Object>> childrens =
+                    (List<Map<String, Object>>) configMap.get("children");
             for (Map<String, Object> children : childrens) {
                 recursiveFillField(children, data);
             }

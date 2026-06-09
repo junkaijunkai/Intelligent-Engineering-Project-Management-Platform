@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.system.service;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysUser;
-
 import java.util.Set;
 
 /**
@@ -18,7 +17,6 @@ public interface ISysPermissionService {
      */
     Set<String> getRolePermission(SysUser user);
 
-
     /**
      * 获取菜单数据权限
      *
@@ -26,5 +24,4 @@ public interface ISysPermissionService {
      * @return 菜单权限信息
      */
     Set<String> getMenuPermission(SysUser user);
-
 }

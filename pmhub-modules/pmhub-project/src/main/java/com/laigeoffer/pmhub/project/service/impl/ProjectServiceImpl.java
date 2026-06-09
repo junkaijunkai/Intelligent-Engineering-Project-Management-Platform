@@ -27,38 +27,30 @@ import com.laigeoffer.pmhub.project.mapper.*;
 import com.laigeoffer.pmhub.project.service.ProjectLogService;
 import com.laigeoffer.pmhub.project.service.ProjectService;
 import com.laigeoffer.pmhub.project.service.project.QueryProjectFactory;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * @date 2022-12-13 10:08
  */
 @Service
-public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> implements ProjectService {
-    @Autowired
-    private ProjectMapper projectMapper;
-    @Autowired
-    private ProjectTaskMapper projectTaskMapper;
-    @Autowired
-    private ProjectMemberMapper projectMemberMapper;
-    @Autowired
-    private ProjectStageMapper projectStageMapper;
-    @Autowired
-    private ProjectLogService projectLogService;
-    @Autowired
-    private ProjectCollectionMapper projectCollectionMapper;
-    @Autowired
-    private QueryProjectFactory queryProjectFactory;
+public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
+        implements ProjectService {
+    @Autowired private ProjectMapper projectMapper;
+    @Autowired private ProjectTaskMapper projectTaskMapper;
+    @Autowired private ProjectMemberMapper projectMemberMapper;
+    @Autowired private ProjectStageMapper projectStageMapper;
+    @Autowired private ProjectLogService projectLogService;
+    @Autowired private ProjectCollectionMapper projectCollectionMapper;
+    @Autowired private QueryProjectFactory queryProjectFactory;
 
-    @Resource
-    private UserFeignService userFeignService;
+    @Resource private UserFeignService userFeignService;
 
     private final String NO_PUBLISHED_NAME = "未发布";
     private final String PUBLISHED_NAME = "已发布";
@@ -76,26 +68,31 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             return projectRankVOList;
         }
         // 对项目进度降序
-        List<Project> collect = list.stream().sorted(Comparator.comparing(Project::getProjectProcess).reversed())
-                .collect(Collectors.toList());
-        collect.forEach(project -> {
-            ProjectRankVO projectRankVO = new ProjectRankVO();
-            projectRankVO.setProjectId(project.getId());
-            projectRankVO.setProjectName(project.getProjectName());
-            projectRankVO.setProcess(project.getProjectProcess());
-            projectRankVO.setUserName(loginUser.getUsername());
-            projectRankVO.setNickName(loginUser.getUser().getNickName());
-            projectRankVOList.add(projectRankVO);
-        });
+        List<Project> collect =
+                list.stream()
+                        .sorted(Comparator.comparing(Project::getProjectProcess).reversed())
+                        .collect(Collectors.toList());
+        collect.forEach(
+                project -> {
+                    ProjectRankVO projectRankVO = new ProjectRankVO();
+                    projectRankVO.setProjectId(project.getId());
+                    projectRankVO.setProjectName(project.getProjectName());
+                    projectRankVO.setProcess(project.getProjectProcess());
+                    projectRankVO.setUserName(loginUser.getUsername());
+                    projectRankVO.setNickName(loginUser.getUser().getNickName());
+                    projectRankVOList.add(projectRankVO);
+                });
         return projectRankVOList;
     }
 
     @Override
     public List<ProjectVO> queryMyProjectList() {
         List<ProjectVO> projects = projectMapper.queryMyProjectList(SecurityUtils.getUserId());
-        projects.forEach( project -> {
-            project.setStatusName(ProjectStatusEnum.getStatusNameByStatus(project.getStatus()));
-        });
+        projects.forEach(
+                project -> {
+                    project.setStatusName(
+                            ProjectStatusEnum.getStatusNameByStatus(project.getStatus()));
+                });
         return projects;
     }
 
@@ -140,23 +137,26 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         if (detail.getProjectType() == 1) {
             Long userId = SecurityUtils.getUserId();
             LambdaQueryWrapper<ProjectMember> qw = new LambdaQueryWrapper<>();
-            qw.eq(ProjectMember::getUserId, userId).eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName())
+            qw.eq(ProjectMember::getUserId, userId)
+                    .eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName())
                     .eq(ProjectMember::getPtId, projectId);
             List<ProjectMember> projectMembers = projectMemberMapper.selectList(qw);
-            if(CollectionUtils.isEmpty(projectMembers)) {
+            if (CollectionUtils.isEmpty(projectMembers)) {
                 throw new ServiceException("该项目为私有项目，你不是项目成员无法查看");
             }
-
         }
         detail.setProjectTypeName(detail.getProjectType() == 0 ? PUBLIC : PRIVATE);
         LambdaQueryWrapper<ProjectCollection> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectCollection::getUserId, detail.getUserId()).eq(ProjectCollection::getProjectId, detail.getProjectId());
+        queryWrapper
+                .eq(ProjectCollection::getUserId, detail.getUserId())
+                .eq(ProjectCollection::getProjectId, detail.getProjectId());
         ProjectCollection projectCollection = projectCollectionMapper.selectOne(queryWrapper);
         detail.setCollected(projectCollection != null);
         detail.setPublishedName(detail.getPublished() == 0 ? NO_PUBLISHED_NAME : PUBLISHED_NAME);
 
         // 根据userid远程查询用户信息
-        R<LoginUser> userResult = userFeignService.getInfoByUserId(detail.getUserId(), SecurityConstants.INNER);
+        R<LoginUser> userResult =
+                userFeignService.getInfoByUserId(detail.getUserId(), SecurityConstants.INNER);
 
         if (Objects.isNull(userResult) || Objects.isNull(userResult.getData())) {
             throw new ServiceException("远程调用查询用户：" + detail.getUserId() + " 不存在");
@@ -170,48 +170,56 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public List<DoingProjectVO> queryDoingProject() {
         List<DoingProjectVO> list = new ArrayList<>(10);
         LambdaQueryWrapper<Project> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Project::getStatus, ProjectStatusEnum.DOING.getStatus()).eq(Project::getDeleted, 0)
+        queryWrapper
+                .eq(Project::getStatus, ProjectStatusEnum.DOING.getStatus())
+                .eq(Project::getDeleted, 0)
                 .orderByDesc(Project::getProjectProcess);
         List<Project> projects = projectMapper.selectList(queryWrapper);
 
         if (CollectionUtils.isNotEmpty(projects)) {
             // 根据 userIds 查询用户列表
-            List<Long> userIds = projects.stream().map(Project::getUserId).distinct().collect(Collectors.toList());
+            List<Long> userIds =
+                    projects.stream()
+                            .map(Project::getUserId)
+                            .distinct()
+                            .collect(Collectors.toList());
             SysUserDTO sysUserDTO = new SysUserDTO();
             sysUserDTO.setUserIds(userIds);
-            R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+            R<List<SysUserVO>> userResult =
+                    userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
             if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
                 throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
             }
             List<SysUserVO> userVOList = userResult.getData();
-            List<SysUser> sysUsers = userVOList.stream()
-                    .map(userVO -> (SysUser) userVO)
-                    .collect(Collectors.toList());
-            Map<Long, List<SysUser>> map = sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
-            projects.forEach(a -> {
-                DoingProjectVO doingProjectVO = new DoingProjectVO();
-                doingProjectVO.setProjectId(a.getId());
-                doingProjectVO.setProjectName(a.getProjectName());
-                doingProjectVO.setCover(a.getCover());
-                doingProjectVO.setProcess(a.getProjectProcess());
-                doingProjectVO.setUserId(a.getUserId());
-                doingProjectVO.setNickName(map.get(a.getUserId()).get(0).getNickName());
-                list.add(doingProjectVO);
-            });
-
+            List<SysUser> sysUsers =
+                    userVOList.stream()
+                            .map(userVO -> (SysUser) userVO)
+                            .collect(Collectors.toList());
+            Map<Long, List<SysUser>> map =
+                    sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
+            projects.forEach(
+                    a -> {
+                        DoingProjectVO doingProjectVO = new DoingProjectVO();
+                        doingProjectVO.setProjectId(a.getId());
+                        doingProjectVO.setProjectName(a.getProjectName());
+                        doingProjectVO.setCover(a.getCover());
+                        doingProjectVO.setProcess(a.getProjectProcess());
+                        doingProjectVO.setUserId(a.getUserId());
+                        doingProjectVO.setNickName(map.get(a.getUserId()).get(0).getNickName());
+                        list.add(doingProjectVO);
+                    });
         }
         return list;
     }
 
     /**
-     *
      * @param project
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveProject(Project project) {
-       project.setProjectCode("P" + Seq.getId());
+        project.setProjectCode("P" + Seq.getId());
         project.setUserId(SecurityUtils.getUserId());
         project.setCreatedBy(SecurityUtils.getUsername());
         project.setCreatedTime(new Date());
@@ -232,8 +240,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         }
         //
         LambdaQueryWrapper<ProjectStage> qw = new LambdaQueryWrapper<>();
-        qw.eq(ProjectStage::getProjectId, project.getId()).eq(ProjectStage::getStageCode, ProjectStageEnum.STAGE_0.getStatus());
-        project.setProjectStageId( projectStageMapper.selectOne(qw).getId());
+        qw.eq(ProjectStage::getProjectId, project.getId())
+                .eq(ProjectStage::getStageCode, ProjectStageEnum.STAGE_0.getStatus());
+        project.setProjectStageId(projectStageMapper.selectOne(qw).getId());
         projectMapper.updateById(project);
         // 新增项目成员
         ProjectMember projectMember = new ProjectMember();
@@ -256,6 +265,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     /**
      * 添加日志
+     *
      * @param operateType
      * @param projectId
      * @param userId
@@ -279,7 +289,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     /**
-     *
      * @param projectReqVO
      * @return
      */
@@ -290,34 +299,46 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         List<ProjectResVO> list = queryProjectFactory.execute(projectReqVO);
         if (CollectionUtils.isNotEmpty(list)) {
             // 查询用户信息
-            List<Long> userIds =  list.stream().map(ProjectResVO::getUserId).distinct().collect(Collectors.toList());
+            List<Long> userIds =
+                    list.stream()
+                            .map(ProjectResVO::getUserId)
+                            .distinct()
+                            .collect(Collectors.toList());
             SysUserDTO sysUserDTO = new SysUserDTO();
             sysUserDTO.setUserIds(userIds);
-            R<List<SysUserVO>> userResult = userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
+            R<List<SysUserVO>> userResult =
+                    userFeignService.listOfInner(sysUserDTO, SecurityConstants.INNER);
 
             if (Objects.isNull(userResult) || CollectionUtils.isEmpty(userResult.getData())) {
                 throw new ServiceException("远程调用查询用户列表：" + userIds + " 失败");
             }
             List<SysUserVO> userVOList = userResult.getData();
-            List<SysUser> sysUsers = userVOList.stream()
-                    .map(userVO -> (SysUser) userVO)
-                    .collect(Collectors.toList());
-            Map<Long, List<SysUser>> map = sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
+            List<SysUser> sysUsers =
+                    userVOList.stream()
+                            .map(userVO -> (SysUser) userVO)
+                            .collect(Collectors.toList());
+            Map<Long, List<SysUser>> map =
+                    sysUsers.stream().collect(Collectors.groupingBy(SysUser::getUserId));
 
-            list.forEach(a -> {
-                if (StringUtils.isNotBlank(a.getPrefix())) {
-                    a.setProjectCode(a.getPrefix());
-                }
-                a.setStatusName(ProjectStatusEnum.getStatusNameByStatus(a.getStatus()));
-                a.setPublishedName(a.getPublished() == 0 ? NO_PUBLISHED_NAME : PUBLISHED_NAME);
-                a.setProjectTypeName(a.getProjectType() == 0 ? PUBLIC : PRIVATE);
-                a.setNickName(map.get(a.getUserId()).get(0).getNickName());
-                LambdaQueryWrapper<ProjectCollection> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(ProjectCollection::getUserId, SecurityUtils.getUserId()).eq(ProjectCollection::getProjectId, a.getProjectId());
-                ProjectCollection projectCollection = projectCollectionMapper.selectOne(queryWrapper);
-                a.setCollected(projectCollection != null);
-
-            });
+            list.forEach(
+                    a -> {
+                        if (StringUtils.isNotBlank(a.getPrefix())) {
+                            a.setProjectCode(a.getPrefix());
+                        }
+                        a.setStatusName(ProjectStatusEnum.getStatusNameByStatus(a.getStatus()));
+                        a.setPublishedName(
+                                a.getPublished() == 0 ? NO_PUBLISHED_NAME : PUBLISHED_NAME);
+                        a.setProjectTypeName(a.getProjectType() == 0 ? PUBLIC : PRIVATE);
+                        a.setNickName(map.get(a.getUserId()).get(0).getNickName());
+                        LambdaQueryWrapper<ProjectCollection> queryWrapper =
+                                new LambdaQueryWrapper<>();
+                        queryWrapper
+                                .eq(ProjectCollection::getUserId, SecurityUtils.getUserId())
+                                .eq(ProjectCollection::getProjectId, a.getProjectId());
+                        ProjectCollection projectCollection =
+                                projectCollectionMapper.selectOne(queryWrapper);
+                        a.setCollected(projectCollection != null);
+                    });
         }
 
         return new PageInfo<>(list);
@@ -332,7 +353,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             throw new ServiceException("项目未发布不允许归档");
         }
         LambdaUpdateChainWrapper<Project> luw = lambdaUpdate().eq(Project::getId, projectId);
-        luw.set(Project::getArchived, 1).set(Project::getArchivedTime, new Date()).set(Project::getStatus, ProjectStatusEnum.ARCHIVED.getStatus());
+        luw.set(Project::getArchived, 1)
+                .set(Project::getArchivedTime, new Date())
+                .set(Project::getStatus, ProjectStatusEnum.ARCHIVED.getStatus());
         luw.update();
         // 添加项目日志
         LogVO logVO = new LogVO();
@@ -353,7 +376,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Transactional(rollbackFor = Exception.class)
     public void cancelArchived(String projectId) {
         LambdaUpdateChainWrapper<Project> luw = lambdaUpdate().eq(Project::getId, projectId);
-        luw.set(Project::getArchived, 0).set(Project::getArchivedTime, null).set(Project::getStatus, ProjectStatusEnum.DOING.getStatus());
+        luw.set(Project::getArchived, 0)
+                .set(Project::getArchivedTime, null)
+                .set(Project::getStatus, ProjectStatusEnum.DOING.getStatus());
         luw.update();
     }
 
@@ -365,7 +390,9 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             throw new ServiceException("项目创建人不能退出");
         }
         LambdaQueryWrapper<ProjectMember> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectMember::getPtId, projectId).eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName())
+        queryWrapper
+                .eq(ProjectMember::getPtId, projectId)
+                .eq(ProjectMember::getType, ProjectStatusEnum.PROJECT.getStatusName())
                 .eq(ProjectMember::getUserId, SecurityUtils.getUserId());
         projectMemberMapper.delete(queryWrapper);
     }
@@ -375,7 +402,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public void editProject(Project project) {
         // 根据项目 id 和 stageCode 查询阶段
         LambdaQueryWrapper<ProjectStage> qw = new LambdaQueryWrapper<>();
-        qw.eq(ProjectStage::getProjectId, project.getProjectId()).eq(ProjectStage::getStageCode, project.getStageCode());
+        qw.eq(ProjectStage::getProjectId, project.getProjectId())
+                .eq(ProjectStage::getStageCode, project.getStageCode());
         project.setProjectStageId(projectStageMapper.selectOne(qw).getId());
         project.setId(project.getProjectId());
         project.setType(project.getProjectType());
@@ -405,28 +433,39 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         logVO.setUpdatedBy(SecurityUtils.getUsername());
         logVO.setUpdatedTime(new Date());
         projectLogService.run(logVO);
-
     }
 
     @Override
     public List<TaskStatisticsByDateVO> taskStatisticsByDate(String projectId) {
         List<TaskStatisticsByDateVO> list = new ArrayList<>(10);
         LambdaQueryWrapper<ProjectTask> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectTask::getProjectId, projectId).orderByAsc(ProjectTask::getCreatedTime);
+        queryWrapper
+                .eq(ProjectTask::getProjectId, projectId)
+                .orderByAsc(ProjectTask::getCreatedTime);
         List<ProjectTask> projectTasks = projectTaskMapper.selectList(queryWrapper);
         if (CollectionUtils.isNotEmpty(projectTasks)) {
-            projectTasks.forEach(projectTask -> projectTask.setCreatedDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, projectTask.getCreatedTime())));
-            Map<String, List<ProjectTask>> map = projectTasks.stream().collect(Collectors.groupingBy(ProjectTask::getCreatedDate));
+            projectTasks.forEach(
+                    projectTask ->
+                            projectTask.setCreatedDate(
+                                    DateUtils.parseDateToStr(
+                                            DateUtils.YYYY_MM_DD, projectTask.getCreatedTime())));
+            Map<String, List<ProjectTask>> map =
+                    projectTasks.stream()
+                            .collect(Collectors.groupingBy(ProjectTask::getCreatedDate));
             Date createdTime = projectTasks.get(0).getCreatedTime();
             String beginDate = DateUtils.dateTime(createdTime);
             String endDate = DateUtils.dateTime(new Date());
             List<String> betweenDate = DateUtils.getBetweenDate(beginDate, endDate);
-            betweenDate.forEach(date -> {
-                TaskStatisticsByDateVO statistics = new TaskStatisticsByDateVO();
-                statistics.setDate(date);
-                statistics.setTotal(CollectionUtils.isNotEmpty(map.get(date)) ? map.get(date).size() : 0);
-                list.add(statistics);
-            });
+            betweenDate.forEach(
+                    date -> {
+                        TaskStatisticsByDateVO statistics = new TaskStatisticsByDateVO();
+                        statistics.setDate(date);
+                        statistics.setTotal(
+                                CollectionUtils.isNotEmpty(map.get(date))
+                                        ? map.get(date).size()
+                                        : 0);
+                        list.add(statistics);
+                    });
         }
         return list;
     }
@@ -439,15 +478,16 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         qw.eq(Project::getDeleted, 0);
         List<Project> projects = projectMapper.selectList(qw);
         if (CollectionUtils.isNotEmpty(projects)) {
-            projects.forEach(a -> {
-                ProjectVO projectVO = new ProjectVO();
-                projectVO.setProjectId(a.getId());
-                projectVO.setProjectName(a.getProjectName());
-                projectVO.setStatus(a.getStatus());
-                projectVO.setStatusName(ProjectStatusEnum.getStatusNameByStatus(a.getStatus()));
-                list.add(projectVO);
-            });
-
+            projects.forEach(
+                    a -> {
+                        ProjectVO projectVO = new ProjectVO();
+                        projectVO.setProjectId(a.getId());
+                        projectVO.setProjectName(a.getProjectName());
+                        projectVO.setStatus(a.getStatus());
+                        projectVO.setStatusName(
+                                ProjectStatusEnum.getStatusNameByStatus(a.getStatus()));
+                        list.add(projectVO);
+                    });
         }
         return list;
     }
@@ -459,7 +499,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         if (projectMapper.selectCount(queryWrapper) == null) {
             return 0L;
         }
-        return  projectMapper.selectCount(queryWrapper);
+        return projectMapper.selectCount(queryWrapper);
     }
-
 }

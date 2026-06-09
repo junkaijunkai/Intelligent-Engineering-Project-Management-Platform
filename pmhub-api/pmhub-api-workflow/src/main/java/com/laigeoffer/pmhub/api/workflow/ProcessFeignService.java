@@ -14,15 +14,21 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * @description 流程设计服务
  * @create 2024-04-24-22:38
  */
-@FeignClient(contextId = "processFeignService", value = ServiceNameConstants.WORKFLOW_SERVICE, fallbackFactory = ProcessFeignFallbackFactory.class)
+@FeignClient(
+        contextId = "processFeignService",
+        value = ServiceNameConstants.WORKFLOW_SERVICE,
+        fallbackFactory = ProcessFeignFallbackFactory.class)
 public interface ProcessFeignService {
 
     /**
      * 启动项目发布流程实例
+     *
      * @return
      */
     @PostMapping("/workflow/process/startProjectProcess")
-    R<Integer> startProjectProcess(@RequestBody ProjectProcessDTO request, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Integer> startProjectProcess(
+            @RequestBody ProjectProcessDTO request,
+            @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据流程定义id启动流程实例
@@ -30,5 +36,7 @@ public interface ProcessFeignService {
      * @param request 流程定义
      */
     @PostMapping("/workflow/startTaskProcessByDefId")
-    R<Void> startTaskProcessByDefId(@RequestBody ProjectProcessDTO request,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Void> startTaskProcessByDefId(
+            @RequestBody ProjectProcessDTO request,
+            @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

@@ -2,7 +2,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.ForUpdate;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,61 +9,64 @@ import java.util.Date;
  * @date 2022-12-12 11:10
  */
 public class TaskReqVO {
-    /**
-     * 任务id
-     */
+    /** 任务id */
     private String taskId;
-    /**
-     * 页码
-     */
+
+    /** 页码 */
     private Integer pageNum;
-    /**
-     * 页数
-     */
+
+    /** 页数 */
     private Integer pageSize;
-    /**
-     * 项目id
-     */
+
+    /** 项目id */
     private String projectId;
+
     @ForUpdate(fieldName = "任务名称")
     private String taskName;
-    /**
-     * 阶段code
-     */
+
+    /** 阶段code */
     private Integer stageCode;
-    /**
-     * 任务id
-     */
+
+    /** 任务id */
     private String executor;
+
     @ForUpdate(fieldName = "执行人")
     private Long userId;
+
     @ForUpdate(fieldName = "描述")
     private String description;
+
     private String createdBy;
+
     @ForUpdate(fieldName = "执行状态")
     private Integer executeStatus;
+
     @ForUpdate(fieldName = "任务状态")
     private Integer status;
+
     private Integer type;
+
     @ForUpdate(fieldName = "任务优先级")
     private Integer taskPriority;
-    /**
-     * 所属流程
-     */
+
+    /** 所属流程 */
     private String taskFlow;
+
     @ForUpdate(fieldName = "开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date beginTime;
+
     @ForUpdate(fieldName = "结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
+
     @ForUpdate(fieldName = "截止时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date closeTime;
-    /**
-     * 项目阶段id
-     */
+
+    /** 项目阶段id */
     private String projectStageId;
+
     @ForUpdate(fieldName = "任务进度")
     private BigDecimal taskProcess;
 

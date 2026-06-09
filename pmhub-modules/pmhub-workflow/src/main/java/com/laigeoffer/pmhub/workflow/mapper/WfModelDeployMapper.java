@@ -8,5 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023-03-14 11:25
  */
 @Mapper
-public interface WfModelDeployMapper extends BaseMapper<WfModelDeploy> {
-}
+public interface WfModelDeployMapper extends BaseMapper<WfModelDeploy> {}

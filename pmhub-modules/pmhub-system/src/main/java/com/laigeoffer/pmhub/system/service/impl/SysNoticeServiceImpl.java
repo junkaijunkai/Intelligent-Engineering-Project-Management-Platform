@@ -3,19 +3,14 @@ package com.laigeoffer.pmhub.system.service.impl;
 import com.laigeoffer.pmhub.system.domain.SysNotice;
 import com.laigeoffer.pmhub.system.mapper.SysNoticeMapper;
 import com.laigeoffer.pmhub.system.service.ISysNoticeService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-/**
- * 公告 服务层实现
- *
- */
+/** 公告 服务层实现 */
 @Service
 public class SysNoticeServiceImpl implements ISysNoticeService {
-    @Autowired
-    private SysNoticeMapper noticeMapper;
+    @Autowired private SysNoticeMapper noticeMapper;
 
     /**
      * 查询公告信息

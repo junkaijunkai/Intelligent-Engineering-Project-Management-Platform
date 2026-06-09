@@ -12,5 +12,4 @@ public class MaterialsApprovalSetDTO {
     private String approved;
     private String definitionId;
     private String deploymentId;
-
 }

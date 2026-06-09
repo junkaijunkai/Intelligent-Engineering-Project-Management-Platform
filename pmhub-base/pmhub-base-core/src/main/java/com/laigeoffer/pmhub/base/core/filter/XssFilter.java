@@ -1,24 +1,17 @@
 package com.laigeoffer.pmhub.base.core.filter;
 
-
 import com.laigeoffer.pmhub.base.core.enums.HttpMethod;
 import com.laigeoffer.pmhub.base.core.utils.StringUtils;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-/**
- * 防止XSS攻击的过滤器
- *
- */
+/** 防止XSS攻击的过滤器 */
 public class XssFilter implements Filter {
-    /**
-     * 排除链接
-     */
+    /** 排除链接 */
     public List<String> excludes = new ArrayList<>();
 
     @Override
@@ -41,7 +34,8 @@ public class XssFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        XssHttpServletRequestWrapper xssRequest = new XssHttpServletRequestWrapper((HttpServletRequest) request);
+        XssHttpServletRequestWrapper xssRequest =
+                new XssHttpServletRequestWrapper((HttpServletRequest) request);
         chain.doFilter(xssRequest, response);
     }
 
@@ -56,7 +50,5 @@ public class XssFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-
-    }
+    public void destroy() {}
 }
