@@ -197,7 +197,7 @@ jobs:
           restore-keys: owasp-nvd-${{ runner.os }}-
 
       - name: Run OWASP Dependency Check
-        run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DossIndexAnalyzerEnabled=false -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+        run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }} -DossindexUsername=${{ secrets.OSSINDEX_USER }} -DossindexPassword=${{ secrets.OSSINDEX_PASS }}
 
       - name: Upload dependency check report
         if: always()

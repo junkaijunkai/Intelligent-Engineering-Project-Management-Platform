@@ -396,7 +396,6 @@
                 <configuration>
                     <failBuildOnCVSS>11</failBuildOnCVSS>
                     <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                    <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
                 </configuration>
             </plugin>
         </plugins>
