@@ -1,6 +1,7 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysMenu;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysMenuMapper {
     /**
      * 查询系统菜单列表

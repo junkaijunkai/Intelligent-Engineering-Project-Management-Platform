@@ -1,6 +1,7 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysRoleDept;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysRoleDeptMapper {
     /**
      * 通过角色ID删除角色和部门关联

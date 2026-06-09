@@ -7,6 +7,7 @@ import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskExportVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskNotifyDTO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author canghe
  * @date 2022-12-12 14:34
  */
+@Mapper
 public interface ProjectTaskMapper extends BaseMapper<ProjectTask> {
 
     List<TaskResVO> queryMyCreatedTaskList(@Param("projectId") String projectId, @Param("username") String username);

@@ -60,7 +60,10 @@ public class RedisConfig extends CachingConfigurerSupport
                 "if current and tonumber(current) > count then\n" +
                 "    return tonumber(current);\n" +
                 "end\n" +
+                // 原子自增
                 "current = redis.call('incr', key)\n" +
+                // 仅当第一次访问时设置过期时间
+                // 保证窗口固定
                 "if tonumber(current) == 1 then\n" +
                 "    redis.call('expire', key, time)\n" +
                 "end\n" +

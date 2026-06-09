@@ -55,6 +55,7 @@ public class RateLimiterAspect {
         try {
             Long number = redisTemplate.execute(limitScript, keys, count, time);
             if (StringUtils.isNull(number) || number.intValue() > count) {
+                // 触发限流
                 throw new ServiceException("访问过于频繁，请稍候再试");
             }
             log.info("限制请求'{}',当前请求'{}',缓存key'{}'", count, number.intValue(), combineKey);
@@ -65,6 +66,10 @@ public class RateLimiterAspect {
         }
     }
 
+    /**
+     * 构造出一个唯一限流标识
+     * Key + IP + 类名 + 方法名
+      */
     public String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
         StringBuffer stringBuffer = new StringBuffer(rateLimiter.key());
         if (rateLimiter.limitType() == LimitType.IP) {

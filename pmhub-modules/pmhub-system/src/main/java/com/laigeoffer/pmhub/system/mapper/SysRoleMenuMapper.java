@@ -1,6 +1,7 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.system.domain.SysRoleMenu;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysRoleMenuMapper {
     /**
      * 查询菜单使用数量

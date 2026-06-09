@@ -18,6 +18,7 @@ public @interface EnablePmFeignClients
 {
     String[] value() default {};
 
+    // 扫描所有模块下定义的 @FeignClient
     String[] basePackages() default { "com.laigeoffer.pmhub" };
 
     Class<?>[] basePackageClasses() default {};

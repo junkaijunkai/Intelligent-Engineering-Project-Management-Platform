@@ -9,7 +9,6 @@
     <version>0.0.1</version>
 
     <name>pmhub</name>
-    <description>🔥热门推荐🔥大学春招、秋招、应届项目，SpringCloud + SpringCloud Alibaba + RocketMQ等技术架构，完成项目管理+BPM流程管理+AI智能项目，帮助学生主打就业的项目。</description>
 
     <modules>
         <module>pmhub-gateway</module>
@@ -248,7 +247,7 @@
 
 
 
-            <!-- rocketmq -->
+            <!-- rocketmq-->
             <dependency>
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-client-java</artifactId>
@@ -395,6 +394,64 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <!-- Checkstyle: 代码风格检查 (Linting) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <configLocation>${maven.multiModuleProjectDirectory}/checkstyle.xml</configLocation>
+                        <encoding>UTF-8</encoding>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>false</failsOnError>
+                        <violationSeverity>warning</violationSeverity>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    </configuration>
+                </plugin>
+
+                <!-- JaCoCo: 代码覆盖率 -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.12</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- OWASP Dependency Check: 依赖漏洞扫描 (SAST-Dependency) -->
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>10.0.4</version>
+                    <configuration>
+                        <failBuildOnCVSS>9</failBuildOnCVSS>
+                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    </configuration>
+                </plugin>
+
+                <!-- Surefire: 单元测试报告 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.3</version>
+                    <configuration>
+                        <argLine>@{argLine} -Dfile.encoding=UTF-8</argLine>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

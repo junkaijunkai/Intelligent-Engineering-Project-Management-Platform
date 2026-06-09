@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+   基于 Google Java Style 简化版。
+   当前基线宽松——项目历史上无 linting，逐步收紧。
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+
+    <!-- 排除自动生成代码 -->
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <module name="TreeWalker">
+        <!-- 命名规范 -->
+        <module name="LocalVariableNameCheck"/>
+        <module name="MemberNameCheck"/>
+        <module name="MethodNameCheck"/>
+        <module name="PackageNameCheck"/>
+        <module name="ParameterNameCheck"/>
+        <module name="TypeNameCheck">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Import 检查 -->
+        <module name="AvoidStarImport"/>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+
+        <!-- 代码结构 -->
+        <module name="EmptyBlock"/>
+        <module name="NeedBraces"/>
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="IllegalInstantiation"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- 空格/格式 -->
+        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+
+        <!-- 潜在 bug -->
+        <module name="ArrayTypeStyle"/>
+        <module name="StringLiteralEquality"/>
+        <module name="DefaultComesLast"/>
+        <module name="FallThrough"/>
+
+        <!-- 行长度 (120 字符) -->
+        <module name="LineLength">
+            <property name="max" value="120"/>
+            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        </module>
+    </module>
+
+    <!-- 文件级别检查 -->
+    <module name="FileTabCharacter"/>
+    <module name="NewlineAtEndOfFile"/>
+</module>

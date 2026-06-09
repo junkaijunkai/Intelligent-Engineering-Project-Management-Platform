@@ -47,6 +47,9 @@ public class DistributedLockAspect {
      */
     private DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
+    /**
+     * 切点定义
+     */
     @Pointcut("@annotation(com.laigeoffer.pmhub.base.security.annotation.DistributedLock)")
     public void distributorLock() {
     }
@@ -66,6 +69,7 @@ public class DistributedLockAspect {
                 }
                 lockObj = this.distributedLock.tryLock(lockKey, distributedLock.tryTime(), distributedLock.lockTime(), distributedLock.unit(), distributedLock.fair());
             } else {
+                // 阻塞型加锁
                 lockObj = this.distributedLock.lock(lockKey, distributedLock.lockTime(), distributedLock.unit(), distributedLock.fair());
             }
 
@@ -127,6 +131,7 @@ public class DistributedLockAspect {
             throw new UtilException("Lok key cannot be empty");
         }
         if (lockKey.contains("#")) {
+            // 支持SpEL解析，实现动态锁键拼接
             this.checkSpEL(lockKey);
             MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
             // 获取方法参数值

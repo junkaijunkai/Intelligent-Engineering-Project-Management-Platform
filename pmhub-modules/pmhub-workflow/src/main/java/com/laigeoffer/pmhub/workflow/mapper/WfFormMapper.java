@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.laigeoffer.pmhub.base.core.mapper.BaseMapperPlus;
 import com.laigeoffer.pmhub.workflow.domain.WfForm;
 import com.laigeoffer.pmhub.workflow.domain.vo.WfFormVo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author canghe
  * @createTime 2022/3/7 22:07
  */
+@Mapper
 public interface WfFormMapper extends BaseMapperPlus<WfFormMapper, WfForm, WfFormVo> {
 
     List<WfFormVo> selectFormVoList(@Param(Constants.WRAPPER) Wrapper<WfForm> queryWrapper);

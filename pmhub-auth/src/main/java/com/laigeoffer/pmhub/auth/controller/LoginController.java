@@ -100,6 +100,9 @@ public class LoginController {
         return R.ok();
     }
 
+    /**
+     * 限流压测接口
+     */
     @RateLimiter(key = "limitTest", time = 10, count = 2)
     @PostMapping(value = "/limitTest")
     public Long limitTest() {

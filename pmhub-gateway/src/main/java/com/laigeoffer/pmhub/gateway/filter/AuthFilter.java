@@ -50,23 +50,27 @@ public class AuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest.Builder mutate = request.mutate();
 
         String url = request.getURI().getPath();
-        // 跳过不需要验证的路径
+        // 跳过白名单注册的路径
         if (StringUtils.matches(url, ignoreWhite.getWhites())) {
             return chain.filter(exchange);
         }
+
         String token = getToken(request);
         if (StringUtils.isEmpty(token)) {
             return unauthorizedResponse(exchange, "令牌不能为空");
         }
+
         Claims claims = JwtUtils.parseToken(token);
         if (claims == null) {
             return unauthorizedResponse(exchange, "令牌已过期或验证不正确！");
         }
+
         String userkey = JwtUtils.getUserKey(claims);
         boolean islogin = redisService.hasKey(getTokenKey(userkey));
         if (!islogin) {
             return unauthorizedResponse(exchange, "登录状态已过期");
         }
+
         String userid = JwtUtils.getUserId(claims);
         String username = JwtUtils.getUserName(claims);
         if (StringUtils.isEmpty(userid) || StringUtils.isEmpty(username)) {

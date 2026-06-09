@@ -21,7 +21,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         HttpServletRequest httpServletRequest = ServletUtils.getRequest();
-        Map<String, String> headers = ServletUtils.getHeaders(httpServletRequest);
+        Map<String, String> headers = ServletUtils.getHeaders(httpServletRequest); // key: Security常量，value: 对应的字段
         // 传递用户信息请求头，防止丢失
         String userId = headers.get(SecurityConstants.DETAILS_USER_ID);
         if (StringUtils.isNotEmpty(userId)) {

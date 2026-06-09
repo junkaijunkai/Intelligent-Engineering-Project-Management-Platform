@@ -5,6 +5,7 @@ import com.laigeoffer.pmhub.project.domain.vo.project.ProjectReqVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO;
 import com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO;
 import com.laigeoffer.pmhub.project.domain.Project;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @author canghe
  * @date 2022-12-12 14:27
  */
+@Mapper
 public interface ProjectMapper extends BaseMapper<Project> {
 
     List<ProjectVO> queryMyProjectList(@Param("userId") Long userId);

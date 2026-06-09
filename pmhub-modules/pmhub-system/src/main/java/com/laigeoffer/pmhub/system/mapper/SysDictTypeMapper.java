@@ -2,6 +2,7 @@ package com.laigeoffer.pmhub.system.mapper;
 
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictType;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysDictTypeMapper {
     /**
      * 根据条件分页查询字典类型

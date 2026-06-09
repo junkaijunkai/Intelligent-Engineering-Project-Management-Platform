@@ -1,0 +1,117 @@
+name: CD - Docker Build
+
+on:
+  push:
+    branches:
+      - master    # 生产
+      - pre       # 预发
+      - dev       # 测试
+
+jobs:
+  # ============================================================
+  # 根据分支确定环境
+  # ============================================================
+  resolve-env:
+    name: Resolve Environment
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.env.outputs.name }}
+    steps:
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            echo "name=prod" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "pre" ]; then
+            echo "name=pre" >> $GITHUB_OUTPUT
+          else
+            echo "name=test" >> $GITHUB_OUTPUT
+          fi
+
+  # ============================================================
+  # 构建所有微服务 Docker 镜像（矩阵并行）
+  # ============================================================
+  docker-build:
+    name: Build ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: resolve-env
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: pmhub-gateway
+            module: pmhub-gateway
+          - name: pmhub-auth
+            module: pmhub-auth
+          - name: pmhub-system
+            module: pmhub-modules/pmhub-system
+          - name: pmhub-project
+            module: pmhub-modules/pmhub-project
+          - name: pmhub-workflow
+            module: pmhub-modules/pmhub-workflow
+          - name: pmhub-gen
+            module: pmhub-modules/pmhub-gen
+          - name: pmhub-job
+            module: pmhub-modules/pmhub-job
+          - name: pmhub-monitor
+            module: pmhub-monitor
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: "temurin"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Build jar
+        run: |
+          mvn clean package -pl ${{ matrix.service.module }} -am -B -DskipTests -U
+
+      - name: Copy jar to Docker context
+        run: |
+          JAR_FILE=$(find ${{ matrix.service.module }}/target -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -1)
+          cp "$JAR_FILE" ${{ matrix.service.module }}/app.jar
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.service.module }}
+          file: ${{ matrix.service.module }}/docker/Dockerfile
+          push: false
+          load: true
+          tags: |
+            ${{ matrix.service.name }}:${{ needs.resolve-env.outputs.env_name }}-latest
+            ${{ matrix.service.name }}:${{ github.sha }}
+
+      - name: Verify image
+        run: |
+          docker image inspect ${{ matrix.service.name }}:${{ needs.resolve-env.outputs.env_name }}-latest \
+            --format 'Image {{ .RepoTags }} built, size {{ .Size }}'
+
+  # ============================================================
+  # 汇总结果
+  # ============================================================
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: [resolve-env, docker-build]
+    if: always()
+    steps:
+      - name: Print build summary
+        run: |
+          echo "============================================"
+          echo "  CD Pipeline Complete"
+          echo "  Environment: ${{ needs.resolve-env.outputs.env_name }}"
+          echo "  Branch: ${{ github.ref_name }}"
+          echo "  Commit: ${{ github.sha }}"
+          echo "  Status: ${{ needs.docker-build.result }}"
+          echo "============================================"

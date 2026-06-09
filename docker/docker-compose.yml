@@ -51,8 +51,8 @@ services:
   pmhub-gateway:
     container_name: pmhub-gateway
     build:
-      context: pmhub/gateway
-      dockerfile: dockerfile
+      context: ../pmhub-gateway
+      dockerfile: docker/Dockerfile
     ports:
       - "6880:6880"
     environment:
@@ -74,8 +74,8 @@ services:
   pmhub-auth:
     container_name: pmhub-auth
     build:
-      context: pmhub/auth
-      dockerfile: dockerfile
+      context: ../pmhub-auth
+      dockerfile: docker/Dockerfile
     ports:
       - "6800:6800"
     environment:
@@ -95,8 +95,8 @@ services:
   pmhub-system:
     container_name: pmhub-system
     build:
-      context: pmhub/modules/system
-      dockerfile: dockerfile
+      context: ../pmhub-modules/pmhub-system
+      dockerfile: docker/Dockerfile
     ports:
       - "6801:6801"
     environment:
@@ -118,8 +118,8 @@ services:
   pmhub-gen:
     container_name: pmhub-gen
     build:
-      context: pmhub/modules/gen
-      dockerfile: dockerfile
+      context: ../pmhub-modules/pmhub-gen
+      dockerfile: docker/Dockerfile
     ports:
       - "6802:6802"
     environment:
@@ -139,8 +139,8 @@ services:
   pmhub-job:
     container_name: pmhub-job
     build:
-      context: pmhub/modules/job
-      dockerfile: dockerfile
+      context: ../pmhub-modules/pmhub-job
+      dockerfile: docker/Dockerfile
     ports:
       - "6803:6803"
     environment:
@@ -161,8 +161,8 @@ services:
   pmhub-project:
     container_name: pmhub-project
     build:
-      context: pmhub/modules/project
-      dockerfile: dockerfile
+      context: ../pmhub-modules/pmhub-project
+      dockerfile: docker/Dockerfile
     ports:
       - "6806:6806"
     environment:
@@ -185,8 +185,8 @@ services:
   pmhub-workflow:
     container_name: pmhub-workflow
     build:
-      context: pmhub/modules/workflow
-      dockerfile: dockerfile
+      context: ../pmhub-modules/pmhub-workflow
+      dockerfile: docker/Dockerfile
     ports:
       - "6808:6808"
     environment:
@@ -210,7 +210,7 @@ services:
   pmhub-monitor:
     container_name: pmhub-monitor
     build:
-      context: pmhub/monitor
-      dockerfile: dockerfile
+      context: ../pmhub-monitor
+      dockerfile: docker/Dockerfile
     ports:
       - "6888:6888"

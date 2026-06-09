@@ -104,6 +104,7 @@ public class TokenService {
         {
             if (StringUtils.isNotEmpty(token))
             {
+                // 将user对象从JSON反序列化为Java
                 String userkey = JwtUtils.getUserKey(token);
                 JSONObject jsonObject = redisService.getCacheObject(getTokenKey(userkey));
                 user = jsonObject.toJavaObject(LoginUser.class);
@@ -190,6 +191,7 @@ public class TokenService {
         long expireTime = loginUser.getExpireTime();
         long currentTime = System.currentTimeMillis();
         if (expireTime - currentTime <= MILLIS_MINUTE_TEN) {
+            // 剩余时间小于等于 20mins
             refreshToken(loginUser);
         }
     }

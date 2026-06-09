@@ -1,6 +1,7 @@
 package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDept;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysDeptMapper {
     /**
      * 查询部门管理数据

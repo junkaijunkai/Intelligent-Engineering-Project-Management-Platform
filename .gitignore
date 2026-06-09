@@ -50,3 +50,13 @@ nbdist/
 application-prod.yml
 
 *.jar
+
+# dev documents
+docs
+.claude
+pmhub-boot
+upload
+.github/workflows/sync2gitee.yml
+logs
+Test Plan.jmx
+#

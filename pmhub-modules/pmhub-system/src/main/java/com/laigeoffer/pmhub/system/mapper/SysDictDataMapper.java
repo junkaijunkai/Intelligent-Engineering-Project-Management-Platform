@@ -2,6 +2,7 @@ package com.laigeoffer.pmhub.system.mapper;
 
 import com.laigeoffer.pmhub.base.core.core.domain.dto.SysDictDataDTO;
 import com.laigeoffer.pmhub.base.core.core.domain.entity.SysDictData;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @author canghe
  */
+@Mapper
 public interface SysDictDataMapper {
     /**
      * 根据条件分页查询字典数据

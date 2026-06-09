@@ -3,6 +3,7 @@ package com.laigeoffer.pmhub.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.laigeoffer.pmhub.project.domain.vo.project.log.ProjectLogVO;
 import com.laigeoffer.pmhub.project.domain.ProjectLog;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @author canghe
  * @date 2022-12-12 14:27
  */
+@Mapper
 public interface ProjectLogMapper extends BaseMapper<ProjectLog> {
 
     List<ProjectLogVO> queryLogList(@Param("projectId") String projectId);
