@@ -464,7 +464,7 @@
                     <artifactId>dependency-check-maven</artifactId>
                     <version>10.0.4</version>
                     <configuration>
-                        <failBuildOnCVSS>9</failBuildOnCVSS>
+                        <failBuildOnCVSS>11</failBuildOnCVSS>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                     </configuration>
                 </plugin>

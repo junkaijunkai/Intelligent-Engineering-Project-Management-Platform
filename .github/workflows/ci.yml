@@ -162,9 +162,6 @@ jobs:
           -Dsonar.organization=${{ secrets.SONAR_ORG }}
           -Dsonar.projectKey=${{ github.event.repository.name }}
           -Dsonar.projectName=${{ github.event.repository.name }}
-          -Dsonar.java.binaries=**/target/classes
-          -Dsonar.sources=.
-          -Dsonar.exclusions=**/node_modules/**,**/target/**,**/dist/**
           -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
           -Dsonar.cpd.exclusions=**/entity/**,**/dto/**,**/vo/**,**/*DTO.java,**/*Entity.java,**/*VO.java
           -Dsonar.qualitygate.wait=false
