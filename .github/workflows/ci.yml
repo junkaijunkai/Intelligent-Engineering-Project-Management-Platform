@@ -38,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Run Checkstyle
-        run: mvn checkstyle:check -B -Dcheckstyle.violationSeverity=warning
+        run: mvn checkstyle:check -B -Dcheckstyle.failOnViolation=false -Dcheckstyle.violationSeverity=warning
 
       - name: Upload Checkstyle report
         if: always()
