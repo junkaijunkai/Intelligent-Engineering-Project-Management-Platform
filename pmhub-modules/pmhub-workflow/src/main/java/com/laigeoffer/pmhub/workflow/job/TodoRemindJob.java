@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * 代办提醒任务
- * @author canghe
  */
 @Component
 public class TodoRemindJob {

@@ -4,7 +4,6 @@ import lombok.Data;
 
 /**
  * 文本卡片消息
- * @author canghe
  */
 @Data
 public class TextCardDTO {

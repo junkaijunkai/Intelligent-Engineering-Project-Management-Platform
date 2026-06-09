@@ -10,7 +10,6 @@ import java.util.Date;
 /**
  * 定时任务调度日志表 sys_job_log
  *
- * @author canghe
  */
 public class SysJobLog extends BaseEntity {
     private static final long serialVersionUID = 1L;

@@ -2,7 +2,6 @@ package com.laigeoffer.pmhub.base.notice.enums;
 
 /**
  * 按钮状态
- * @author canghe
  */
 public enum ButtonStateEnum {
 

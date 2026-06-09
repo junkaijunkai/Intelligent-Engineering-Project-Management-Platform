@@ -5,7 +5,6 @@ import com.laigeoffer.pmhub.project.domain.ProjectTaskWorkTime;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @author canghe
  * @date 2022-12-12 14:34
  */
 @Mapper

@@ -6,7 +6,6 @@ import java.util.List;
 /**
  * 表格分页数据对象
  *
- * @author canghe
  */
 public class TableDataInfo implements Serializable {
     private static final long serialVersionUID = 1L;

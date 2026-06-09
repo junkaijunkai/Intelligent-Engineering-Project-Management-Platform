@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 异步任务 数据层
  *
- * @author canghe
  */
 @Mapper
 public interface PmhubAsyncMapper extends BaseMapper<PmhubAsync> {

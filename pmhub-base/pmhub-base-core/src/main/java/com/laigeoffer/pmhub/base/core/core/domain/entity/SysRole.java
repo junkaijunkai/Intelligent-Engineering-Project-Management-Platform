@@ -13,7 +13,6 @@ import java.util.Set;
 /**
  * 角色表 sys_role
  *
- * @author canghe
  */
 public class SysRole extends BaseEntity {
     private static final long serialVersionUID = 1L;

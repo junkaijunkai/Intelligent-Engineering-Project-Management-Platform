@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 /**
  * 企业微信工具类
  * 需要配置企微相关逻辑，如果配置有误，无法收到消息
- * @author canghe
  */
 @Component
 public class PublicUtil {

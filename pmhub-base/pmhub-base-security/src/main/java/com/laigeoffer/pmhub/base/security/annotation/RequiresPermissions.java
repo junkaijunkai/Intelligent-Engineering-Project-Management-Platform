@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 /**
  * 权限认证：必须具有指定权限才能进入该方法
  * 
- * @author canghe
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

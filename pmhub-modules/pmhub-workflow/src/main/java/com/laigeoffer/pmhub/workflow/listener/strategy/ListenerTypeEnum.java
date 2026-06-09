@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.workflow.listener.strategy;
 
 /**
- * @author canghe
  * @date 2023-07-11 09:25
  */
 public enum ListenerTypeEnum {

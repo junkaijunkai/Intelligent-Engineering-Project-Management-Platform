@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * 聚合系统接口
  * 
- * @author canghe
  */
 @Component
 @Primary

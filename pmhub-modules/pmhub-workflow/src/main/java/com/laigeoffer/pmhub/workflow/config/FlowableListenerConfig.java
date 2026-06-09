@@ -11,7 +11,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 
 /**
- * @author canghe
  */
 @Configuration
 public class FlowableListenerConfig implements ApplicationListener<ContextRefreshedEvent> {

@@ -8,7 +8,6 @@ import org.flowable.engine.task.Comment;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2023-02-24 11:23
  */
 @Data

@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * 字典 业务层处理
  *
- * @author canghe
  */
 @Service
 public class SysDictDataServiceImpl implements ISysDictDataService {

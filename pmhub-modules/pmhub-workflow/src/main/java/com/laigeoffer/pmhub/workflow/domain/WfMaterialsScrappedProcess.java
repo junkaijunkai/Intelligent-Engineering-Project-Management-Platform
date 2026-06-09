@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2023-02-28 10:09
  */
 @Data

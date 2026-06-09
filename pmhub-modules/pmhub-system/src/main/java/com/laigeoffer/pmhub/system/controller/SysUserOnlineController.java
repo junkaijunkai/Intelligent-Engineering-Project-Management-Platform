@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * 在线用户监控
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/system/monitor/online")

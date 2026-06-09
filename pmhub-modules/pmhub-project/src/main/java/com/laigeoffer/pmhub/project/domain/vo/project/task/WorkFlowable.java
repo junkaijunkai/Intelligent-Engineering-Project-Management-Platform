@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
 /**
- * @author canghe
  * @date 2023-02-28 10:35
  */
 public class WorkFlowable {

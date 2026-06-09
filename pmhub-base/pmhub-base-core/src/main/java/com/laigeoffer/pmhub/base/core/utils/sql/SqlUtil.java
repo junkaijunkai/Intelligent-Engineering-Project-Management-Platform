@@ -7,7 +7,6 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 /**
  * sql操作工具类
  *
- * @author canghe
  */
 public class SqlUtil {
     /**

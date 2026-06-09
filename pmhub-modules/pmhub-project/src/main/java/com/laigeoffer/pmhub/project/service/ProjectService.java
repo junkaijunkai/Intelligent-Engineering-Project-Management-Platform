@@ -10,7 +10,6 @@ import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskStatisticsByDateV
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-13 10:07
  */
 public interface ProjectService extends IService<Project> {

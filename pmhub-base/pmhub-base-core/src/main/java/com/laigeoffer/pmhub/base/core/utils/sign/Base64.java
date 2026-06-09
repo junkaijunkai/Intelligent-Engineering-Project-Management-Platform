@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.utils.sign;
 /**
  * Base64工具类
  *
- * @author canghe
  */
 public final class Base64 {
     static private final int BASELENGTH = 128;

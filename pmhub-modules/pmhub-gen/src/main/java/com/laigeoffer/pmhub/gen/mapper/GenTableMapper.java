@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * 业务 数据层
  *
- * @author canghe
  */
 @Mapper
 public interface GenTableMapper {

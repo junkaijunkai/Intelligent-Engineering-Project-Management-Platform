@@ -7,7 +7,6 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author canghe 序列生成类
  */
 public class Seq {
     // 通用序列类型

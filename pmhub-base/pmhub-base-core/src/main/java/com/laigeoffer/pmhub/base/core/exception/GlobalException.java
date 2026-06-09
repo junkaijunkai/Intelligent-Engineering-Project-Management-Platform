@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.exception;
 /**
  * 全局异常
  *
- * @author canghe
  */
 public class GlobalException extends RuntimeException {
     private static final long serialVersionUID = 1L;

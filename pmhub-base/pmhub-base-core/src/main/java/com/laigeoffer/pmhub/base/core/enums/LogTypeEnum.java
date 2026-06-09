@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.base.core.enums;
 
 /**
- * @author canghe
  * @date 2022-12-22 17:24
  */
 public enum LogTypeEnum {

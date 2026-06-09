@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.utils.poi;
 /**
  * Excel数据格式处理适配器
  *
- * @author canghe
  */
 public interface ExcelHandlerAdapter {
     /**

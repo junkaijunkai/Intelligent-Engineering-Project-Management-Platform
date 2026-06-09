@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * 限流处理
  *
- * @author canghe
  */
 @Aspect
 @Component

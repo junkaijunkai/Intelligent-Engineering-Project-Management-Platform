@@ -5,7 +5,6 @@ import com.laigeoffer.pmhub.project.domain.vo.project.task.TaskStatisticsVO;
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-14 14:16
  */
 public class ProjectStatisticsResVO {

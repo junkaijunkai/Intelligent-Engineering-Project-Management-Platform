@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.service.project;
 
 /**
- * @author canghe
  * @date 2023-01-09 11:37
  */
 public enum QueryProjectEnum {

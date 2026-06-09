@@ -2,7 +2,6 @@ package com.laigeoffer.pmhub.base.notice.enums;
 
 /**
  * 模板卡片类型
- * @author canghe
  */
 public enum CardTypeEnum {
 

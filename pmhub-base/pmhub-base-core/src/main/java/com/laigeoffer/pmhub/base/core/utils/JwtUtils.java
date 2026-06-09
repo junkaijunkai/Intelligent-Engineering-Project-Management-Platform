@@ -12,7 +12,6 @@ import java.util.Map;
 /**
  * Jwt工具类
  *
- * @author canghe
  */
 public class JwtUtils
 {

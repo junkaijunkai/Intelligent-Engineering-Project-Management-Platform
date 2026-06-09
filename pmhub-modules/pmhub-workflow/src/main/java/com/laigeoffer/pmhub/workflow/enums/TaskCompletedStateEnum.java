@@ -5,7 +5,6 @@ import com.laigeoffer.pmhub.base.core.enums.OAMessageStatusEnum;
 
 /**
  * 任务完成时的状态
- * @author canghe
  */
 public enum TaskCompletedStateEnum {
 

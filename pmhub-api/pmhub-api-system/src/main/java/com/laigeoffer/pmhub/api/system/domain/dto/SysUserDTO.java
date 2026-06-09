@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author canghe
  * @description SysUserDTO
  * @create 2024-06-24-16:50
  */

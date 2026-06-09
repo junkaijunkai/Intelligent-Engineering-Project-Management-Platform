@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 /**
  * 多实例处理类
  *
- * @author canghe
  */
 @AllArgsConstructor
 @Component("multiInstanceHandler")

@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.exception.job;
 /**
  * 计划策略异常
  *
- * @author canghe
  */
 public class TaskException extends Exception {
     private static final long serialVersionUID = 1L;

@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.constant;
 /**
  * 权限相关通用常量
  * 
- * @author canghe
  */
 public class SecurityConstants
 {

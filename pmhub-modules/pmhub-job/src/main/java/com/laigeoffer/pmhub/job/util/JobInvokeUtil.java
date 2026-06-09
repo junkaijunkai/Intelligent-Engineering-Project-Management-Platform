@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * 任务执行工具
  *
- * @author canghe
  */
 public class JobInvokeUtil {
     /**

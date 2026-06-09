@@ -9,7 +9,6 @@ import java.io.IOException;
 /**
  * 验证码处理
  *
- * @author canghe
  */
 public interface ValidateCodeService
 {

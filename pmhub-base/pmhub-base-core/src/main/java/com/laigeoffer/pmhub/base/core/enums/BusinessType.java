@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.enums;
 /**
  * 业务操作类型
  *
- * @author canghe
  */
 public enum BusinessType {
     /**

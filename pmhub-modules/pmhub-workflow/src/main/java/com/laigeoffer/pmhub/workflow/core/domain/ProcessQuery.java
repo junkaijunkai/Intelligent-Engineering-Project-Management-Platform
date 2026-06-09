@@ -8,7 +8,6 @@ import java.util.Map;
 /**
  * 流程查询实体对象
  *
- * @author canghe
  * @createTime 2022/6/11 01:15
  */
 @Data

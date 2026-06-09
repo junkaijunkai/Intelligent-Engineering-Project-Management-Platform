@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.task;
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-21 14:44
  */
 public class TaskCommentVO {

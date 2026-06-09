@@ -4,7 +4,6 @@ import cn.hutool.json.JSONUtil;
 
 /**
  * 代办任务数量提醒
- * @author canghe
  */
 public class TodoNumVO {
 

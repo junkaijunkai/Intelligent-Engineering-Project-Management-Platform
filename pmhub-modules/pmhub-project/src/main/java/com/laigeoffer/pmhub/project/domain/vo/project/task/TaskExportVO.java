@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.base.core.annotation.Excel;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2022-12-22 09:20
  */
 public class TaskExportVO {

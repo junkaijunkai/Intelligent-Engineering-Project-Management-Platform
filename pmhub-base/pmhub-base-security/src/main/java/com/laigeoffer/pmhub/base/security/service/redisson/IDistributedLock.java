@@ -5,7 +5,6 @@ import com.laigeoffer.pmhub.base.security.pojo.ILock;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author canghe
  * @description IDistributedLock 分布式锁接口
  * @create 2024-06-17-10:23
  */

@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * 流程抄送Service接口
  *
- * @author canghe
  * @date 2022-05-19
  */
 public interface IWfCopyService {

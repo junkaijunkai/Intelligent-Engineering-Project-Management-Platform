@@ -8,7 +8,6 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2023-03-16 09:13
  */
 @Data

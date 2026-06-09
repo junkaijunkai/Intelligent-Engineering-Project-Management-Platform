@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author canghe
  * @createTime 2022/3/24 18:57
  */
 public interface IWfProcessService {

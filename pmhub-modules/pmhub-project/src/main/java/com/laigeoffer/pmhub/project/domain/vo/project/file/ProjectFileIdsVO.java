@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.file;
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-16 10:34
  */
 public class ProjectFileIdsVO {

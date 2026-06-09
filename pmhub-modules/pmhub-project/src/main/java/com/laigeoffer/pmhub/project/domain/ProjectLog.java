@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2022-12-12 14:22
  */
 @Data

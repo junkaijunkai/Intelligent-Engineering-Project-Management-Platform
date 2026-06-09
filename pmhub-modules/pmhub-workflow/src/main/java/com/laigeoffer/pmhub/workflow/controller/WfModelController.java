@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 /**
  * 工作流流程模型管理
  *
- * @author canghe
  * @createTime 2022/6/21 9:09
  */
 @Slf4j

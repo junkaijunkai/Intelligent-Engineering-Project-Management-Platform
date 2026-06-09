@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * 个人信息 业务处理
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/system/user/profile")

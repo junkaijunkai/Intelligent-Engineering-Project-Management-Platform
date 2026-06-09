@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 验证码配置
  * 
- * @author canghe
  */
 @Configuration
 @RefreshScope

@@ -29,7 +29,6 @@ import java.util.Objects;
  * @param <M> mapper 泛型
  * @param <T> table 泛型
  * @param <V> vo 泛型
- * @author canghe
  * @since 2021-05-13
  */
 @SuppressWarnings("unchecked")

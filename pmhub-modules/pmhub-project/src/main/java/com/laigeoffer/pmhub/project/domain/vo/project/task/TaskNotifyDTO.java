@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.task;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2023-03-16 09:17
  */
 public class TaskNotifyDTO {

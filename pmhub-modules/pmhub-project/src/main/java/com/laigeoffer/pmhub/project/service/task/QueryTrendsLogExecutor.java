@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author canghe
  * @date 2023-01-09 16:32
  */
 @Service("queryTrendsLogExecutor")

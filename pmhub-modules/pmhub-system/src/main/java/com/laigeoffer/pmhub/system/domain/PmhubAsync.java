@@ -16,7 +16,6 @@ import java.util.Date;
 /**
  * 异步任务表 pmhub_async
  *
- * @author canghe
  */
 @Data
 public class PmhubAsync extends BaseEntity {

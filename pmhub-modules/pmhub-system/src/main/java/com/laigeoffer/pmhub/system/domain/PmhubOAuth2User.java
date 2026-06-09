@@ -4,7 +4,6 @@ import lombok.Data;
 
 /**
  * OAuth2 拿到的用户信息
- * @author canghe
  * @date 2024/01/10
  */
 @Data

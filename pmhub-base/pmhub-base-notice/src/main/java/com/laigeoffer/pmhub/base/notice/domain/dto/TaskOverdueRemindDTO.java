@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 
 /**
  * 任务逾期提醒
- * @author canghe
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({

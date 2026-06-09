@@ -13,7 +13,6 @@ import javax.validation.constraints.Size;
 /**
  * 岗位表 sys_post
  *
- * @author canghe
  */
 public class SysPost extends BaseEntity {
     private static final long serialVersionUID = 1L;

@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.workflow.domain.WfApprovalSet;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * @author canghe
  * @date 2023-04-20 13:55
  */
 @Mapper

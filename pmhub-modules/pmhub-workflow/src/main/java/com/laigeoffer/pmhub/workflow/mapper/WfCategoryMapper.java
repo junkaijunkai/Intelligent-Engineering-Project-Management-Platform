@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 流程分类Mapper接口
  *
- * @author canghe
  * @date 2022-01-15
  */
 @Mapper

@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  * Entity基类
  * 自动插入创建人、创建时间、更新人、更新时间、是否删除字段
  *
- * @author canghe
  */
 public class BaseCoreEntity  implements Serializable {
     private static final long serialVersionUID = 1L;

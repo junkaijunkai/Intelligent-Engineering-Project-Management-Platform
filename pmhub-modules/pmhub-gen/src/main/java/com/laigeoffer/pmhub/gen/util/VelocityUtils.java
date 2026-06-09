@@ -17,7 +17,6 @@ import java.util.Set;
 /**
  * 模板处理工具类
  *
- * @author canghe
  */
 public class VelocityUtils {
     /**

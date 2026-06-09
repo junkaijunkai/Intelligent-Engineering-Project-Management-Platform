@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.enums;
 /**
  * 操作人类别
  *
- * @author canghe
  */
 public enum OperatorType {
     /**

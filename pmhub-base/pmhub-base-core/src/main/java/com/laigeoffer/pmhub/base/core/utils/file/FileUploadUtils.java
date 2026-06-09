@@ -27,7 +27,6 @@ import java.util.Objects;
 /**
  * 文件上传工具类
  *
- * @author canghe
  */
 public class FileUploadUtils {
     /**

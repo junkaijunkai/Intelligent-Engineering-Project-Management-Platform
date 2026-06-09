@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 /**
  * Excel相关处理
  *
- * @author canghe
  */
 public class ExcelUtil<T> {
     public static final String FORMULA_REGEX_STR = "=|-|\\+|@";

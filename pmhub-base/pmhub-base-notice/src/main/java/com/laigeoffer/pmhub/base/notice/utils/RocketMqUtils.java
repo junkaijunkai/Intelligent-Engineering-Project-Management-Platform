@@ -24,7 +24,6 @@ import java.io.IOException;
 
 /**
  * RocketMQ连接工具
- * @author canghe
  */
 @Component
 public class RocketMqUtils {

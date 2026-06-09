@@ -7,7 +7,6 @@ import lombok.Data;
 /**
  * 流程实例关联表单对象 sys_instance_form
  *
- * @author canghe
  * @createTime 2022/3/7 22:07
  */
 @Data

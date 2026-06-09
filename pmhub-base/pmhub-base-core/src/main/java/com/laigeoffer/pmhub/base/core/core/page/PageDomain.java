@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 /**
  * 分页数据
  *
- * @author canghe
  */
 public class PageDomain {
     /**

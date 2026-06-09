@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.workflow.common.constant;
 
 /**
- * @author canghe
  * @createTime 2022/4/24 13:24
  */
 public class TaskConstants {

@@ -42,7 +42,6 @@ import java.util.zip.ZipOutputStream;
 /**
  * 业务 服务层实现
  *
- * @author canghe
  */
 @Service
 public class GenTableServiceImpl implements IGenTableService {

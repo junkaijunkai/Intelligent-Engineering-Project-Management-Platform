@@ -2,7 +2,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.task;
 
 
 /**
- * @author canghe
  * @date 2022-12-21 09:45
  */
 public class BurnDownChartVO {

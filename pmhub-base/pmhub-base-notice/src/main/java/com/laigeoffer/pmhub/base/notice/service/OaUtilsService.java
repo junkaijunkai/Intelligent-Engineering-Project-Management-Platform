@@ -5,7 +5,6 @@ import com.laigeoffer.pmhub.base.notice.exception.AesException;
 
 /**
  * OA系统交互工具接口
- * @author canghe
  */
 public interface OaUtilsService {
 

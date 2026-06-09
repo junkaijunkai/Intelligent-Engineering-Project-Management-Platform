@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * 流程抄送Mapper接口
  *
- * @author canghe
  * @date 2022-05-19
  */
 @Mapper

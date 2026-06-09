@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * 定时任务调度信息信息 服务层
  *
- * @author canghe
  */
 public interface ISysJobService {
     /**

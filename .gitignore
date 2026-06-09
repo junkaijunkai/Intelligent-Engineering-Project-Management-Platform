@@ -52,6 +52,7 @@ application-prod.yml
 *.jar
 
 # dev documents
+README.md
 docs
 .claude
 pmhub-boot

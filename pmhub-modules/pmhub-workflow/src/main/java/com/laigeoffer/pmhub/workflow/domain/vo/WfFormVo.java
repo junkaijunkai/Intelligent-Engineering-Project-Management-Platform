@@ -7,7 +7,6 @@ import lombok.Data;
 /**
  * 流程分类视图对象
  *
- * @author canghe
  * @createTime 2022/3/7 22:07
  */
 @Data

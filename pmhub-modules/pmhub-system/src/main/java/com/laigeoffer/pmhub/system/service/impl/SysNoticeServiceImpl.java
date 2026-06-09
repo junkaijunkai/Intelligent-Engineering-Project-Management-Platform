@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * 公告 服务层实现
  *
- * @author canghe
  */
 @Service
 public class SysNoticeServiceImpl implements ISysNoticeService {

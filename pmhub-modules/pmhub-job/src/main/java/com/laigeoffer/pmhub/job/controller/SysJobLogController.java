@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * 调度日志操作处理
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/schedule/monitor/jobLog")

@@ -16,7 +16,6 @@ import java.util.Set;
 /**
  * 用户权限处理
  *
- * @author canghe
  */
 @Component
 public class SysPermissionService implements ISysPermissionService {

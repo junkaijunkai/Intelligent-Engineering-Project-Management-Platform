@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.enums;
 /**
  * 用户状态
  *
- * @author canghe
  */
 public enum UserStatus {
     OK("0", "正常"), DISABLE("1", "停用"), DELETED("2", "删除");

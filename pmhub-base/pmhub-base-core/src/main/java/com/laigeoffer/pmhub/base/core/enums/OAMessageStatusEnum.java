@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.base.core.enums;
 
 /**
- * @author canghe
  * @date 2022-12-15 17:04
  */
 public enum OAMessageStatusEnum {

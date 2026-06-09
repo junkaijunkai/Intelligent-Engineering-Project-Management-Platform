@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.utils.uuid;
 /**
  * ID生成器工具类
  *
- * @author canghe
  */
 public class IdUtils {
     /**

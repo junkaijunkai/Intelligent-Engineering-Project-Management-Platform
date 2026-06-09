@@ -15,7 +15,6 @@ import java.util.*;
 /**
  * 缓存监控
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/system/monitor/cache")

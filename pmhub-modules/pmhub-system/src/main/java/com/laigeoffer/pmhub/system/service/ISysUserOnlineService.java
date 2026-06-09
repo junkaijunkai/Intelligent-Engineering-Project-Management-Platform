@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.system.domain.SysUserOnline;
 /**
  * 在线用户 服务层
  *
- * @author canghe
  */
 public interface ISysUserOnlineService {
     /**

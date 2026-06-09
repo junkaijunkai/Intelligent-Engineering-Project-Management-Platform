@@ -4,7 +4,6 @@ import lombok.Data;
 
 /**
  * 消息标题
- * @author canghe
  */
 @Data
 public class MainTitleDTO {

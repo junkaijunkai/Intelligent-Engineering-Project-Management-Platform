@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.base.core.utils.Arith;
 /**
  * CPU相关信息
  *
- * @author canghe
  */
 public class Cpu {
     /**

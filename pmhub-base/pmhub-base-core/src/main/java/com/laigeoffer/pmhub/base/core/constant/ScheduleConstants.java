@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.constant;
 /**
  * 任务调度通用常量
  *
- * @author canghe
  */
 public class ScheduleConstants {
     public static final String TASK_CLASS_NAME = "TASK_CLASS_NAME";

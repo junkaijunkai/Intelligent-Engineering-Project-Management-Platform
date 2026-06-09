@@ -6,7 +6,6 @@ import com.laigeoffer.pmhub.base.core.utils.StringUtils;
 /**
  * 字符串格式化
  *
- * @author canghe
  */
 public class StrFormatter {
     public static final String EMPTY_JSON = "{}";

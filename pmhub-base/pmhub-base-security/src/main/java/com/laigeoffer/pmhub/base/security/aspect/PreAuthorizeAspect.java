@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 /**
  * 基于 Spring Aop 的注解鉴权
  * 
- * @author kong
  */
 @Aspect
 @Component

@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 流程实例关联表单Mapper接口
  *
- * @author canghe
  * @createTime 2022/3/7 22:07
  */
 @Mapper

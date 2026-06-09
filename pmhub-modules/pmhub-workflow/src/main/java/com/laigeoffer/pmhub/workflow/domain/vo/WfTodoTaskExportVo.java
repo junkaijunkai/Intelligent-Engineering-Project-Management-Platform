@@ -11,7 +11,6 @@ import java.util.Date;
 /**
  * 待办流程对象导出VO
  *
- * @author canghe
  */
 @Data
 @NoArgsConstructor

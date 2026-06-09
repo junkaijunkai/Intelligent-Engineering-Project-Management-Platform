@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @author canghe
  * @description ProjectProcessDTO
  * @create 2024-05-16-15:01
  */

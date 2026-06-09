@@ -5,7 +5,6 @@ import lombok.Data;
 
 /**
  * 微信消息和taskid对应表
- * @author canghe
  */
 @Data
 public class MessageCode {

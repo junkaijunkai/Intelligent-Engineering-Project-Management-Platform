@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 安全服务工具类
  *
- * @author canghe
  */
 public class SecurityUtils {
     /**

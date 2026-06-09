@@ -11,7 +11,6 @@ import java.util.Date;
 /**
  * 流程抄送对象 wf_copy
  *
- * @author canghe
  * @date 2022-05-19
  */
 @Data

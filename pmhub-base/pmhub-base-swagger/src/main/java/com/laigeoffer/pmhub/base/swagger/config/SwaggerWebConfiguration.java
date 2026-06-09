@@ -6,7 +6,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * swagger 资源映射路径
  * 
- * @author canghe
  */
 public class SwaggerWebConfiguration implements WebMvcConfigurer
 {

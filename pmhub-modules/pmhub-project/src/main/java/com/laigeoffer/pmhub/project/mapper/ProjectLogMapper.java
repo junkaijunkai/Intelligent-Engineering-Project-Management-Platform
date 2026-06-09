@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-12 14:27
  */
 @Mapper

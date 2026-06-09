@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.enums;
 /**
  * 数据源
  *
- * @author canghe
  */
 public enum DataSourceType {
     /**

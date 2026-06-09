@@ -20,7 +20,6 @@ import java.util.List;
 /**
  * 部门信息
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/system/dept")

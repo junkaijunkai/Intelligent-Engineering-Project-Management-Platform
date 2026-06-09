@@ -17,7 +17,6 @@ import java.util.Arrays;
 /**
  * 图片处理工具类
  *
- * @author canghe
  */
 public class ImageUtils {
     private static final Logger log = LoggerFactory.getLogger(ImageUtils.class);

@@ -7,7 +7,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * 权限信息
  *
- * @author canghe
  */
 public class PermissionContextHolder {
     private static final String PERMISSION_CONTEXT_ATTRIBUTES = "PERMISSION_CONTEXT";

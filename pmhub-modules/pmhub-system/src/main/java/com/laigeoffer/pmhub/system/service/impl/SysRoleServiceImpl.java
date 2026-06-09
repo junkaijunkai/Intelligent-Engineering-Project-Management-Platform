@@ -25,7 +25,6 @@ import java.util.*;
 /**
  * 角色 业务层处理
  *
- * @author canghe
  */
 @Service
 public class SysRoleServiceImpl implements ISysRoleService {

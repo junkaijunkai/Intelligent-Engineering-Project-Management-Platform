@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.base.core.core.domain.dto;
 
 /**
- * @author canghe
  * @date 2023-02-28 09:13
  */
 public class ApprovalSetDTO {

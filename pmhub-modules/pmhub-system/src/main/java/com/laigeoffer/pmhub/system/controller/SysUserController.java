@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 /**
  * 用户信息
  *
- * @author canghe
  */
 @RestController
 @RequestMapping("/system/user")

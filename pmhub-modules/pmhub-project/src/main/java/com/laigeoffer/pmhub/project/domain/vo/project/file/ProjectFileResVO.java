@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * @author canghe
  * @date 2022-12-16 09:28
  */
 public class ProjectFileResVO {

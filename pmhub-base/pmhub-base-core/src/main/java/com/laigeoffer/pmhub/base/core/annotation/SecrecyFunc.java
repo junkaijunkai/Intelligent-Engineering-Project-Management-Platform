@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 /**
  * 保密函数
  *
- * @author canghe
  * @date 2023/07/17
  */
 @Retention(RetentionPolicy.RUNTIME)

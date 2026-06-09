@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 /**
  * 日志服务
  * 
- * @author canghe
  */
 @FeignClient(contextId = "logFeignService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = LogFeignFallbackFactory.class)
 public interface LogFeignService

@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * 流程分类Service接口
  *
- * @author canghe
  * @date 2022-01-15
  */
 public interface IWfCategoryService {

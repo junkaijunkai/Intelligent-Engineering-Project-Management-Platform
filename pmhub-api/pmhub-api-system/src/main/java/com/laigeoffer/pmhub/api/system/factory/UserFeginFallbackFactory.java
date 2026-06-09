@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * 用户服务降级处理
  *
- * @author canghe
  */
 @Component
 public class UserFeginFallbackFactory implements FallbackFactory<UserFeignService>

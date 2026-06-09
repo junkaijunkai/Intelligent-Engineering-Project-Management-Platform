@@ -11,7 +11,6 @@ import java.util.Date;
 /**
  * 流程定义视图对象 workflow_definition
  *
- * @author canghe
  * @date 2022-01-17
  */
 @Data

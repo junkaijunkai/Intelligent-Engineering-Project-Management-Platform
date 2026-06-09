@@ -8,7 +8,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * @author canghe
  * @date 2021-04-03
  */
 public class MyDefaultProcessDiagramCanvas extends DefaultProcessDiagramCanvas {

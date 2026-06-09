@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 /**
  * 流程设计业务对象
  *
- * @author canghe
  * @createTime 2022/3/10 00:12
  */
 @Data

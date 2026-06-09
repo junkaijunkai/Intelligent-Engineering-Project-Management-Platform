@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @author canghe
  * @date 2022-12-14 15:00
  */
 public interface ProjectTaskService extends IService<ProjectTask> {

@@ -10,7 +10,6 @@ import java.io.IOException;
 /**
  * Repeatable 过滤器
  *
- * @author canghe
  */
 public class RepeatableFilter implements Filter {
     @Override

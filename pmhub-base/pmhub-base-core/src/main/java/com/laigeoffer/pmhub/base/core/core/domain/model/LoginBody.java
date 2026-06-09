@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.core.domain.model;
 /**
  * 用户登录对象
  *
- * @author canghe
  */
 public class LoginBody {
     /**

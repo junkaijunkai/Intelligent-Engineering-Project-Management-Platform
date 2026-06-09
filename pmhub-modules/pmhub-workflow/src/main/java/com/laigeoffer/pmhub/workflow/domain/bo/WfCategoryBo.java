@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 /**
  * 流程分类业务对象
  *
- * @author canghe
  * @date 2022-01-15
  */
 

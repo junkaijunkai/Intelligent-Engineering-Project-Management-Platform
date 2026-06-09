@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author canghe
  * @description 系统模块
  * @create 2024-04-24-15:29
  */

@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.utils.file;
 /**
  * 媒体类型工具类
  *
- * @author canghe
  */
 public class MimeTypeUtils {
     public static final String IMAGE_PNG = "image/png";

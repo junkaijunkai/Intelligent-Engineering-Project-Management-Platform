@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.constant;
 /**
  * Token的Key常量
  * 
- * @author canghe
  */
 public class TokenConstants
 {

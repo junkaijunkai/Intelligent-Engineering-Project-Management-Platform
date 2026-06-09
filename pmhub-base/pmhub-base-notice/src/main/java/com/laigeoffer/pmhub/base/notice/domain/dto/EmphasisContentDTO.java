@@ -4,7 +4,6 @@ import lombok.Data;
 
 /**
  * 关键数据样式
- * @author canghe
  */
 @Data
 public class EmphasisContentDTO {

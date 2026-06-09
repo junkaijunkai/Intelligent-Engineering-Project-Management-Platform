@@ -5,7 +5,6 @@ import lombok.Data;
 
 /**
  * OAuth2 client
- * @author canghe
  * @date 2024/01/08
  */
 @Data

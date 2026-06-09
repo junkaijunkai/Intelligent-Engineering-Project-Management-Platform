@@ -4,7 +4,6 @@ package com.laigeoffer.pmhub.project.domain.vo.project.task;
 import com.laigeoffer.pmhub.base.core.annotation.Excel;
 
 /**
- * @author canghe
  * @date 2022-12-26 14:58
  */
 public class TaskExcelVO {

@@ -18,7 +18,6 @@ import java.util.List;
 
 /**
  * 开始全局监听
- * @author canghe
  */
 @Component
 public class GlobalProcessStartedListener extends AbstractFlowableEngineEventListener {

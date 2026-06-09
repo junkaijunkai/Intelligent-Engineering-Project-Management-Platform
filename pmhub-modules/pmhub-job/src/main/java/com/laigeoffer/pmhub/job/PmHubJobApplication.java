@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author canghe
  * @description 定时任务
  * @create 2024-04-25-15:13
  */

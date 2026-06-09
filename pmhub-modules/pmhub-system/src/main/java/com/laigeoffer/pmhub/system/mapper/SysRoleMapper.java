@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * 角色表 数据层
  *
- * @author canghe
  */
 @Mapper
 public interface SysRoleMapper {

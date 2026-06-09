@@ -8,7 +8,6 @@ import java.io.Serializable;
 /**
  * 角色
  *
- * @author canghe
  */
 
 @Data

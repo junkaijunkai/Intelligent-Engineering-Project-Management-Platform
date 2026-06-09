@@ -8,7 +8,6 @@ import java.util.Date;
 /**
  * 流程批复视图对象
  *
- * @author canghe
  * @createTime 2022/4/4 02:03
  */
 @Data

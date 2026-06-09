@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.exception.file;
 /**
  * 文件名大小限制异常类
  *
- * @author canghe
  */
 public class FileSizeLimitExceededException extends FileException {
     private static final long serialVersionUID = 1L;

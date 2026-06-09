@@ -7,7 +7,6 @@ import com.laigeoffer.pmhub.base.core.utils.ServletUtils;
 /**
  * 表格数据处理
  *
- * @author canghe
  */
 public class TableSupport {
     /**

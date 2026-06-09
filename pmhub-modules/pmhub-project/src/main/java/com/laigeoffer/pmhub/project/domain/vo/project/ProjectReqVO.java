@@ -1,7 +1,6 @@
 package com.laigeoffer.pmhub.project.domain.vo.project;
 
 /**
- * @author canghe
  * @date 2022-12-09 17:18
  */
 public class ProjectReqVO {

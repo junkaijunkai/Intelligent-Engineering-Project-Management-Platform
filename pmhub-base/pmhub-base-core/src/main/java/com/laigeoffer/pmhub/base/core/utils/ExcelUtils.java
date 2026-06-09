@@ -12,7 +12,6 @@ import java.util.Map;
 
 /**
  * Excel工具
- * @author canghe
  */
 public class ExcelUtils {
 

@@ -3,7 +3,6 @@ package com.laigeoffer.pmhub.base.core.constant;
 /**
  * 用户常量信息
  *
- * @author canghe
  */
 public class UserConstants {
     /**
