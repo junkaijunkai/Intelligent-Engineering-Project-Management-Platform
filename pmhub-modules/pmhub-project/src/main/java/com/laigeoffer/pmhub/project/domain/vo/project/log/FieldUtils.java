@@ -20,7 +20,6 @@ public class FieldUtils {
     public static <T> List<LogDataVO> getChangedFields(T newBean, T oldBean) {
         List<LogDataVO> data = new ArrayList<>(10);
         Field[] fields = newBean.getClass().getDeclaredFields();
-        List<LogContentVO> list = new ArrayList<>();
         for (Field field : fields) {
             LogDataVO logDataVO = new LogDataVO();
             field.setAccessible(true);
@@ -64,8 +63,9 @@ public class FieldUtils {
                         LogContentVO logContentVO = new LogContentVO();
                         logContentVO.setField(field.getName());
                         logContentVO.setFieldName(field.getAnnotation(ForUpdate.class).fieldName());
-                        logContentVO.setOldValue(oldValue.toString());
-                        logContentVO.setNewValue(newValue.toString());
+                        logContentVO.setOldValue(oldValue == null ? "" : oldValue.toString());
+                        logContentVO.setNewValue(newValue == null ? "" : newValue.toString());
+                        List<LogContentVO> list = new ArrayList<>();
                         list.add(logContentVO);
                         logDataVO.setLogContentVOList(list);
                         data.add(logDataVO);

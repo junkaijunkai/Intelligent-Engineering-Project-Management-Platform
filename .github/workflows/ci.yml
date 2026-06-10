@@ -10,6 +10,12 @@ on:
     branches:
       - master
       - dev
+  workflow_dispatch:
+    inputs:
+      run_owasp:
+        description: "Run OWASP Dependency Check"
+        type: boolean
+        default: false
 
 env:
   MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
@@ -173,6 +179,10 @@ jobs:
     name: SAST (OWASP Dependency Check)
     runs-on: ubuntu-latest
     needs: lint
+    if: |
+      github.ref == 'refs/heads/master' ||
+      github.ref == 'refs/heads/pre' ||
+      github.event_name == 'workflow_dispatch' && inputs.run_owasp == true
     steps:
       - uses: actions/checkout@v4
 

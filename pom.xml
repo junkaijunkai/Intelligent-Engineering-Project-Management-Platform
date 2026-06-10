@@ -48,6 +48,8 @@
         <tobato.version>1.27.2</tobato.version>
         <knife4j.version>3.0.3</knife4j.version>
 
+        <!-- 默认为空；JaCoCo prepare-agent 运行时会覆盖此值注入 agent 参数 -->
+        <argLine></argLine>
         <spring-boot.version>2.7.18</spring-boot.version>
         <spring-cloud.version>2021.0.8</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
@@ -475,7 +477,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.3</version>
                     <configuration>
-                        <argLine>@{argLine} -Dfile.encoding=UTF-8</argLine>
+                        <argLine>${argLine} -Dfile.encoding=UTF-8</argLine>
                     </configuration>
                 </plugin>
             </plugins>
