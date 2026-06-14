@@ -1,0 +1,22 @@
+package com.dahua.pvision.base.security.annotation;
+
+import java.lang.annotation.*;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+/** 自定义feign注解 添加basePackages路径 */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@EnableFeignClients
+public @interface EnablePmFeignClients {
+    String[] value() default {};
+
+    // 扫描所有模块下定义的 @FeignClient
+    String[] basePackages() default {"com.dahua.pvision"};
+
+    Class<?>[] basePackageClasses() default {};
+
+    Class<?>[] defaultConfiguration() default {};
+
+    Class<?>[] clients() default {};
+}

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.laigeoffer.pmhub-cloud</groupId>
+    <groupId>com.dahua.pvision</groupId>
     <artifactId>pmhub</artifactId>
     <version>0.0.1</version>
 
@@ -278,14 +278,14 @@
             <!-- 核心模块通用包 -->
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-core</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-datasource</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
@@ -293,50 +293,50 @@
 
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-seata</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-security</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-sensitive</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-swagger</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <!--Rocketmq-消息提醒-->
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-notice</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-base-framework</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-api-system</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.laigeoffer.pmhub-cloud</groupId>
+                <groupId>com.dahua.pvision</groupId>
                 <artifactId>pmhub-api-workflow</artifactId>
                 <version>${laigeoffer.version}</version>
             </dependency>

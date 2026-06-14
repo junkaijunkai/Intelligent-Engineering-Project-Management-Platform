@@ -51,13 +51,17 @@ application-prod.yml
 
 *.jar
 
+pmhub-boot
+
+.github/workflows/sync2gitee.yml
+
+LICENSE
+
 # dev documents
 README.md
+pmhub-ui/README.md
 docs
-.claude
-pmhub-boot
-upload
-.github/workflows/sync2gitee.yml
+uploadPath
 logs
+upload
 Test Plan.jmx
-#

@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.laigeoffer.pmhub.workflow.mapper.ListenerMapper">
+<mapper namespace="com.dahua.pvision.workflow.mapper.ListenerMapper">
 
 
-    <select id="getTaskCompletedState" parameterType="String" resultType="com.laigeoffer.pmhub.workflow.domain.vo.TaskCompletedStateVO">
+    <select id="getTaskCompletedState" parameterType="String" resultType="com.dahua.pvision.workflow.domain.vo.TaskCompletedStateVO">
         select c.TYPE_ as taskType ,c.MESSAGE_ as taskMessage,c.TIME_ from
             (select inst.TASK_ID_,inst.PROC_INST_ID_
                 from ACT_HI_ACTINST inst
@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <select id="getLastTaskCompletedState" parameterType="String" resultType="com.laigeoffer.pmhub.workflow.domain.vo.TaskCompletedStateVO">
+    <select id="getLastTaskCompletedState" parameterType="String" resultType="com.dahua.pvision.workflow.domain.vo.TaskCompletedStateVO">
         select
             t.TYPE_ as taskType
              ,t.MESSAGE_ as taskMessage
@@ -69,7 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where t.instance_id = #{instId}
     </select>
 
-    <select id="getTodoNumList" resultType="com.laigeoffer.pmhub.workflow.domain.vo.TodoNumVO">
+    <select id="getTodoNumList" resultType="com.dahua.pvision.workflow.domain.vo.TodoNumVO">
         select *
         from (select u.user_wx_name as userWxName, task.num,u.user_name
               from (select t.ASSIGNEE_, count(t.ID_) as num from ACT_RU_TASK t group by t.ASSIGNEE_) task

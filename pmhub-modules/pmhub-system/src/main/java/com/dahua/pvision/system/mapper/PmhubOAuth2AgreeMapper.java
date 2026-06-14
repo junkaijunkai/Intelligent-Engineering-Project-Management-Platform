@@ -1,0 +1,9 @@
+package com.dahua.pvision.system.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.dahua.pvision.system.domain.PmhubOAuth2Agree;
+import org.apache.ibatis.annotations.Mapper;
+
+/** 用户授权登录 数据层 */
+@Mapper
+public interface PmhubOAuth2AgreeMapper extends BaseMapper<PmhubOAuth2Agree> {}

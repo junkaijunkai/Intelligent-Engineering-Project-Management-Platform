@@ -2,22 +2,22 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.laigeoffer.pmhub.project.mapper.ProjectMapper">
-    <select id="queryMyProjectList" parameterType="java.lang.Long" resultType="com.laigeoffer.pmhub.project.domain.vo.project.ProjectVO">
+<mapper namespace="com.dahua.pvision.project.mapper.ProjectMapper">
+    <select id="queryMyProjectList" parameterType="java.lang.Long" resultType="com.dahua.pvision.project.domain.vo.project.ProjectVO">
         select p.id as projectId, p.project_name, p.cover, p.status from pmhub_project p inner join pmhub_project_member pm on p.id = pm.pt_id
         where p.deleted = 0 and pm.type = 'project' and pm.user_id = #{userId} order by p.project_process desc
     </select>
-    <select id="recycleProjectList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO">
+    <select id="recycleProjectList" resultType="com.dahua.pvision.project.domain.vo.project.ProjectResVO">
         select p.close_begin_time,p.close_end_time,p.id as projectId, p.project_code, p.project_name, p.user_id, ps.stage_code,ps.stage_name, p.type as projectType, p.status, p.published, p.project_process, p.created_time, p.updated_time,p.description,p.cover,p.auto_update_process,p.open_prefix,p.prefix,p.open_task_private,p.msg_notify,p.notify_day
         from pmhub_project p left join pmhub_project_stage ps on p.project_stage_id = ps.id
         where p.deleted = 1 order by p.created_time desc
     </select>
-    <select id="detail" resultType="com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO">
+    <select id="detail" resultType="com.dahua.pvision.project.domain.vo.project.ProjectResVO">
         select p.close_begin_time,p.close_end_time,p.id as projectId, p.project_code, p.project_name, p.user_id,  ps.stage_code,ps.stage_name, p.type as projectType, p.status, p.published, p.project_process, p.created_time, p.updated_time,p.description,p.cover,p.auto_update_process,p.open_prefix,p.prefix,p.open_task_private,p.msg_notify,p.notify_day
         from pmhub_project p left join pmhub_project_stage ps on p.project_stage_id = ps.id
         where p.id = #{projectId}
     </select>
-    <select id="selectMyProjectList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO">
+    <select id="selectMyProjectList" resultType="com.dahua.pvision.project.domain.vo.project.ProjectResVO">
         select p.close_begin_time,p.close_end_time,p.id as projectId, p.project_code, p.project_name, p.user_id, ps.stage_code,ps.stage_name, p.type as projectType, p.status, p.published, p.project_process, p.created_time, p.updated_time,p.description,p.cover,p.auto_update_process,p.open_prefix,p.prefix,p.open_task_private,p.msg_notify,p.notify_day
         from pmhub_project p
         left join pmhub_project_stage ps on p.project_stage_id = ps.id
@@ -44,7 +44,7 @@
         order by p.created_time desc
     </select>
 
-    <select id="selectMyCollectProjectList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.ProjectResVO">
+    <select id="selectMyCollectProjectList" resultType="com.dahua.pvision.project.domain.vo.project.ProjectResVO">
         select p.close_begin_time,p.close_end_time,p.id as projectId, p.project_code, p.project_name, p.user_id, ps.stage_name, p.type as projectType, p.status, p.published, p.project_process,p.created_time, p.updated_time,p.description,p.cover,p.auto_update_process,p.open_prefix,p.prefix,p.open_task_private,p.msg_notify,p.notify_day
         from pmhub_project p
         left join pmhub_project_stage ps on p.project_stage_id = ps.id

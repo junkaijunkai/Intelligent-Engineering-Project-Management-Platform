@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.laigeoffer.pmhub.project.mapper.ProjectTaskMapper">
-    <select id="queryMyCreatedTaskList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+<mapper namespace="com.dahua.pvision.project.mapper.ProjectTaskMapper">
+    <select id="queryMyCreatedTaskList" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select pt.id as taskId, pt.project_id, pt.status, pt.task_name, pt.created_time, ps.stage_name from pmhub_project_task pt left join pmhub_project_stage ps on pt.project_stage_id = ps.id
         where pt.deleted = 0 and pt.created_by = #{username}
         <if test="projectId != null and projectId != ''">
@@ -11,7 +11,7 @@
         </if>
         order by pt.created_time desc
     </select>
-    <select id="queryMyExecutedTaskList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="queryMyExecutedTaskList" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select pt.id as taskId, pt.project_id, pt.status, pt.task_name, pt.created_time, ps.stage_name from pmhub_project_task pt left join pmhub_project_stage ps on pt.project_stage_id = ps.id
         where pt.deleted = 0 and pt.user_id = #{userId}
         <if test="projectId != null and projectId != ''">
@@ -19,7 +19,7 @@
         </if>
         order by pt.created_time desc
     </select>
-    <select id="queryMyPartookTaskList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="queryMyPartookTaskList" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select pt.id as taskId, pt.project_id, pt.status, pt.task_name, pt.created_time, ps.stage_name from pmhub_project_task pt
             inner join pmhub_project_member pm on pt.id = pm.pt_id
             left join pmhub_project_stage ps on pt.project_stage_id = ps.id
@@ -29,7 +29,7 @@
         </if>
         order by pt.created_time desc
     </select>
-    <select id="detail" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="detail" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select p.cover,ps.id as projectStageId, pt.begin_time, pt.end_time, pt.close_time,pt.created_by,pt.created_time,pt.updated_time,pt.description,pt.execute_status,pt.status,pt.user_id,pt.project_id,p.project_name,ps.stage_name
              ,pt.task_flow,pt.task_name,pt.task_priority,pt.task_process,pt.close_time
                from pmhub_project_task pt
@@ -37,7 +37,7 @@
             left join pmhub_project_stage ps on pt.project_stage_id = ps.id
         where pt.id = #{taskId}
     </select>
-    <select id="queryChildTask" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="queryChildTask" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select pt.id as taskId, pt.begin_time, pt.end_time, pt.close_time,pt.created_by,pt.created_time,pt.updated_time,pt.description,pt.execute_status,pt.status,pt.user_id,pt.project_id,p.project_name,ps.stage_name
              ,pt.task_flow,pt.task_name,pt.task_priority,pt.task_process
         from pmhub_project_task pt
@@ -45,7 +45,7 @@
                  left join pmhub_project_stage ps on ps.id = pt.project_stage_id
         where pt.task_pid = #{taskId} order by pt.created_time desc
     </select>
-    <select id="list" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="list" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select ptp.approved, ptp.instance_id as procInsId, ptp.deployment_id as deployId, ptp.definition_id, ptp.task_id as taskProcessId,p.project_name, pt.task_process,pt.id as taskId, pt.task_name, ps.stage_name, pt.status, pt.execute_status, pt.task_priority, pt.created_time,pt.close_time,pt.begin_time,pt.end_time,pm.user_id from pmhub_project_task pt
         left join pmhub_project p on p.id = pt.project_id
         left join pmhub_project_member pm on pt.id = pm.pt_id
@@ -72,7 +72,7 @@
         </if>
         order by pt.created_time desc
     </select>
-    <select id="taskList" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskResVO">
+    <select id="taskList" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskResVO">
         select ptp.approved, ptp.instance_id as procInsId, ptp.deployment_id as deployId, ptp.definition_id, ptp.task_id as taskProcessId,pt.project_id,p.project_name,pt.task_process,pt.id as taskId, pt.task_name, ps.stage_name, pt.status, pt.execute_status, pt.task_priority, pt.created_time,pt.close_time, pt.user_id, pt.begin_time,pt.end_time
         from pmhub_project_task pt
         left join pmhub_project p on pt.project_id = p.id
@@ -96,14 +96,14 @@
         </if>
         order by pt.created_time desc
     </select>
-    <select id="exportAll" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskExportVO">
+    <select id="exportAll" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskExportVO">
         select pt.task_name, p.project_name, ps.stage_name,  pt.status, pt.execute_status, pt.task_priority, pt.created_time, pt.user_id from pmhub_project_task pt
         left join pmhub_project_member pm on pt.id = pm.pt_id
         left join pmhub_project p on p.id = pt.project_id
         left join pmhub_project_stage ps on pt.project_stage_id = ps.id
         where pt.deleted = 0 and pm.type = 'task' and pm.user_id = #{userId}
     </select>
-    <select id="export" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskExportVO">
+    <select id="export" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskExportVO">
         select pt.task_name, p.project_name, ps.stage_name,  pt.status, pt.execute_status, pt.task_priority,  pt.created_time, pt.user_id from pmhub_project_task pt
         left join pmhub_project p on p.id = pt.project_id
         left join pmhub_project_stage ps on pt.project_stage_id = ps.id
@@ -115,14 +115,14 @@
             </foreach>
         </if>
     </select>
-    <select id="queryTaskNotifyJob" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskNotifyDTO">
+    <select id="queryTaskNotifyJob" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskNotifyDTO">
         select p.id as projectId,p.msg_notify, p.notify_day,p.status,pt.id as taskId,pt.task_name,pt.user_id,pt.close_time,su.user_wx_name,su.user_name
         from pmhub_project p
         left join pmhub_project_task pt on p.id = pt.project_id
         left join sys_user su on pt.user_id = su.user_id
         where p.deleted = 0 and p.msg_notify = 1 and pt.deleted = 0 and pt.execute_status != 2
     </select>
-    <select id="queryTaskNotifyJob2" resultType="com.laigeoffer.pmhub.project.domain.vo.project.task.TaskNotifyDTO">
+    <select id="queryTaskNotifyJob2" resultType="com.dahua.pvision.project.domain.vo.project.task.TaskNotifyDTO">
         select p.id as projectId,p.msg_notify, p.notify_day,p.status,pt.id as taskId,pt.task_name,pt.user_id,pt.close_time,su.user_wx_name,su.user_name
         from pmhub_project p
                  left join pmhub_project_task pt on p.id = pt.project_id
@@ -140,7 +140,7 @@
     <select id="queryProjectStatus" resultType="java.lang.Integer">
         select status from pmhub_project where id = #{projectId}
     </select>
-    <select id="queryProjectsStatus" resultType="com.laigeoffer.pmhub.project.domain.Project">
+    <select id="queryProjectsStatus" resultType="com.dahua.pvision.project.domain.Project">
         select * from pmhub_project p where p.deleted = 0
         <if test="projectIds != null and projectIds.size() > 0">
             and p.id in
