@@ -48,6 +48,22 @@ services:
       - ./redis/conf/redis.conf:/home/pmhub/redis/redis.conf
       - ./redis/data:/data
     command: redis-server /home/pmhub/redis/redis.conf
+  pmhub-seata:
+    container_name: pmhub-seata
+    image: seataio/seata-server:1.5.2
+    ports:
+      - "7091:7091"
+      - "8091:8091"
+    volumes:
+      - ./seata/seata-application.yml:/seata-server/resources/application.yml
+    environment:
+      - SEATA_PORT=8091
+    depends_on:
+      - pmhub-nacos
+      - pmhub-mysql
+    links:
+      - pmhub-nacos
+      - pmhub-mysql
   pmhub-gateway:
     container_name: pmhub-gateway
     build:

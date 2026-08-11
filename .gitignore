@@ -1,67 +1,95 @@
-######################################################################
-# Build Tools
+# macOS / Windows
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-.gradle
-/build/
-!gradle/wrapper/gradle-wrapper.jar
-
-target/
-!.mvn/wrapper/maven-wrapper.jar
-
-######################################################################
-# IDE
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-
-### IntelliJ IDEA ###
-.idea
+# IDEs and editors
+.idea/
+.vscode/
 *.iws
 *.iml
 *.ipr
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
 
-### JRebel ###
-rebel.xml
+# Spring Tool Suite / Eclipse
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
 
-### NetBeans ###
+# NetBeans
 nbproject/private/
-build/*
 nbbuild/
 nbdist/
 .nb-gradle/
 
-######################################################################
-# Others
-*.log
-*.xml.versionsBackup
-*.swp
-
-!*/build/*.java
-!*/build/*.html
-!*/build/*.xml
-
-.DS_store
-*/.DS_store
-application-prod.yml
-
+# Java / Maven / Gradle
+target/
+build/
+.gradle/
+dependency-reduced-pom.xml
+.flattened-pom.xml
+*.class
 *.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
 
-pmhub-boot
+# Frontend dependencies and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
+# Logs and runtime files
+logs/
+log/
+*.log
+*.pid
+*.pid.lock
+hs_err_pid*
+replay_pid*
+
+# Local environment overrides
+.env.local
+.env.*.local
+application-prod.yml
+application-prod.yaml
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# Generated backups / temporary files
+*.xml.versionsBackup
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+
+# Project runtime storage
+uploadPath/
+upload/
+
+# Repository conventions
+pmhub-boot/
 .github/workflows/sync2gitee.yml
-
-LICENSE
-
-# dev documents
-README.md
-pmhub-ui/README.md
-docs
-uploadPath
-logs
-upload
 Test Plan.jmx
+
+docs/*
+
+# Agent instructions are repo documentation and should remain trackable.
+!AGENTS.md
+!CLAUDE.md
+!docs/project-notes.md
+!docs/use-case-overview.puml
+!docs/local-startup-and-demo-guide.md

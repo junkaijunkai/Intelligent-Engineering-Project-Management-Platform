@@ -28,17 +28,24 @@ public class GlobalTaskCompletedListener extends AbstractFlowableEngineEventList
 
         TaskEntity taskEntity = (TaskEntity) event.getEntity();
         LambdaQueryWrapper<WfTaskMessageDeal> qw = new LambdaQueryWrapper<>();
+        // where taskId and Assignee
         qw.eq(WfTaskMessageDeal::getTaskId, taskEntity.getId())
                 .eq(WfTaskMessageDeal::getAssignee, taskEntity.getAssignee());
         wfTaskMessageDealMapper.delete(qw);
         // TODO: 2024.04.25 删除OA
         // 清理审批提醒消息
         //        RocketMqUtils.cleanMessage(taskEntity.getId() + "_" + taskEntity.getAssignee());
-        //        OAUtils.restfulCall2(OAUtils.ALTER_MESSAGE_API,
-        // OAUtils.mapToStr(OAUtils.alterCustomMessageSingle(taskEntity.getId() + "_" +
-        // taskEntity.getAssignee(), OAMessageStatusEnum.DEAL.getStatus(),
-        // wfCopyMapper.selectUserById(Long.valueOf(taskEntity.getAssignee())).getUserName())),
-        // OAUtils.ALTER_MESSAGE_API);
+        //        OAUtils.restfulCall2(
+        //          OAUtils.ALTER_MESSAGE_API,
+        //          OAUtils.mapToStr(
+        //              OAUtils.alterCustomMessageSingle(
+        //                  taskEntity.getId() + "_" + taskEntity.getAssignee(),
+        //                  OAMessageStatusEnum.DEAL.getStatus(),
+        //                  wfCopyMapper.selectUserById(Long.valueOf(taskEntity.getAssignee())).getUserName()
+        //              )
+        //          ),
+        //          OAUtils.ALTER_MESSAGE_API
+        //        );
         LogFactory.get().info("任务结束------------------------End---------------------->");
     }
 }

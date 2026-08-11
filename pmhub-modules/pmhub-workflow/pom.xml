@@ -73,6 +73,12 @@
             <artifactId>pmhub-base-datasource</artifactId>
         </dependency>
 
+        <!--Seata 分布式事务-->
+        <dependency>
+            <groupId>com.dahua.pvision</groupId>
+            <artifactId>pmhub-base-seata</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.dahua.pvision</groupId>
             <artifactId>pmhub-base-swagger</artifactId>
