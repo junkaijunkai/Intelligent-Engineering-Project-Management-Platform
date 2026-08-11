@@ -4,7 +4,7 @@ This pipeline gives the internship demonstration a reliable localhost CI/CD cons
 
 ## What it proves
 
-1. The committed PmHub frontend, deterministic mock API, narration, and final MP4 are present.
+1. The committed frontend, deterministic mock API, narration, and local runner are present.
 2. The mock API contract passes its automated Node.js tests.
 3. The local runner assembles a delivery manifest for the self-contained demo bundle.
 4. The console starts the app on localhost and smoke-tests the frontend, login, dashboard, projects, and workflow queue.

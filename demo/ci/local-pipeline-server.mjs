@@ -23,7 +23,7 @@ const stagingUrl = `http://${stagingHost}:${stagingPort}`
 const branch = runGit(["branch", "--show-current"]) || "local"
 const commit = runGit(["rev-parse", "--short", "HEAD"]) || "working-tree"
 const stages = [
-  stage("source", "Source Contract", "Verify the tracked UI, demo data, script, and video"),
+  stage("source", "Source Contract", "Verify the tracked UI, demo data, script, and local runner"),
   stage("tests", "API Test Gate", "Run deterministic login, routing, project, task, and workflow tests"),
   stage("package", "Assemble Artifact", "Create a local delivery manifest with content fingerprints"),
   stage("deploy", "Deploy Staging", "Start the interactive application on the localhost staging port"),
@@ -44,7 +44,7 @@ const pipeline = {
   logs: [],
   artifacts: [
     { name: "Interactive staging app", href: stagingUrl, kind: "deployment" },
-    { name: "Screen-only demo video", href: "/artifacts/demo-video.mp4", kind: "video" },
+    { name: "Bundle manifest", href: "/artifacts/bundle-manifest.json", kind: "artifact" },
     { name: "Delivery evidence", href: "/artifacts/pipeline-evidence.json", kind: "evidence" },
   ],
 }
@@ -108,7 +108,6 @@ async function createBundleManifest() {
     "demo/ci/local-pipeline-server.mjs",
     "pmhub-ui/dist/index.html",
     "docs/app-demo-script.md",
-    "output/pmhub-app-demo-screen-only.mp4",
   ]
   const entries = []
   for (const relativePath of files) {
@@ -216,8 +215,8 @@ async function runPipeline() {
       item.detail = `${await smokeStaging()} live routes passed`
     })
     await runStage("release", async (item) => {
-      const video = await stat(path.join(projectRoot, "output/pmhub-app-demo-screen-only.mp4"))
-      if (video.size < 1_000_000) throw new Error("Demo video artifact is incomplete")
+      const indexHtml = await readFile(path.join(projectRoot, "pmhub-ui/dist/index.html"), "utf8")
+      if (!indexHtml.includes("Engineering Project Management")) throw new Error("Neutral application build is incomplete")
       item.detail = "Ready for Jun Kai to record"
     })
     pipeline.status = "passed"
@@ -267,8 +266,8 @@ const dashboardServer = createServer(async (req, res) => {
         void runPipeline()
         sendJson(res, { message: `Build #${pipeline.build} started` }, 202)
       }
-    } else if (req.method === "GET" && url.pathname === "/artifacts/demo-video.mp4") {
-      await sendFile(res, path.join(projectRoot, "output/pmhub-app-demo-screen-only.mp4"), "video/mp4", "project-management-demo.mp4")
+    } else if (req.method === "GET" && url.pathname === "/artifacts/bundle-manifest.json") {
+      await sendFile(res, path.join(evidenceDir, "bundle-manifest.json"), "application/json; charset=utf-8", "bundle-manifest.json")
     } else if (req.method === "GET" && url.pathname === "/artifacts/pipeline-evidence.json") {
       await sendFile(res, path.join(evidenceDir, "pipeline-evidence.json"), "application/json; charset=utf-8", "pipeline-evidence.json")
     } else {

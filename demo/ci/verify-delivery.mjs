@@ -15,8 +15,7 @@ const requiredFiles = [
   "scripts/start-local-demo.sh",
   "pmhub-ui/dist/index.html",
   "docs/app-demo-script.md",
-  "output/pmhub-app-demo-screen-only.mp4",
-  "output/pmhub-app-demo-screen-only.timing.json",
+  "demo/ci/local-pipeline-server.mjs",
 ]
 
 async function inspectRequiredFile(relativePath) {
@@ -34,20 +33,6 @@ if (!indexHtml.includes("<title>Engineering Project Management</title>")) {
   throw new Error("The committed frontend build does not contain the neutral project-management title")
 }
 
-const timing = JSON.parse(
-  await readFile(path.join(projectRoot, "output/pmhub-app-demo-screen-only.timing.json"), "utf8"),
-)
-if (timing.totalDurationSeconds !== 270 || timing.steps?.length !== 7) {
-  throw new Error("The demo timing manifest must contain the approved 270-second, seven-step walkthrough")
-}
-
-const videoPath = path.join(projectRoot, "output/pmhub-app-demo-screen-only.mp4")
-const videoHeader = (await readFile(videoPath)).subarray(0, 32).toString("latin1")
-const videoSize = files.find((file) => file.path.endsWith(".mp4"))?.bytes || 0
-if (!videoHeader.includes("ftyp") || videoSize < 1_000_000) {
-  throw new Error("The tracked MP4 is missing or does not look like a complete video deliverable")
-}
-
 const evidence = {
   check: "pmhub-demo-delivery-contract",
   status: "passed",
@@ -56,13 +41,6 @@ const evidence = {
   frontend: "committed engineering project-management build",
   api: "deterministic local mock",
   cloudDependencies: 0,
-  video: {
-    path: timing.output,
-    durationSeconds: timing.totalDurationSeconds,
-    width: timing.probe?.streams?.find((stream) => stream.width)?.width,
-    height: timing.probe?.streams?.find((stream) => stream.height)?.height,
-    bytes: videoSize,
-  },
   files,
 }
 
@@ -72,4 +50,4 @@ await writeFile(
   `${JSON.stringify(evidence, null, 2)}\n`,
 )
 
-console.log(`Demo delivery contract passed: ${files.length} files, ${videoSize} video bytes, no cloud dependencies.`)
+console.log(`Demo delivery contract passed: ${files.length} runnable files, no cloud dependencies.`)
