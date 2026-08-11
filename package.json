@@ -5,6 +5,11 @@
   "scripts": {
     "demo": "node demo/mock-server.mjs",
     "demo:check": "node --test demo/mock-server.test.mjs",
+    "demo:verify": "node demo/ci/verify-delivery.mjs",
+    "demo:deploy:ephemeral": "node demo/ci/run-ephemeral-deployment.mjs",
+    "demo:pipeline": "npm run demo:verify && npm run demo:check && npm run demo:deploy:ephemeral",
+    "demo:ci": "node demo/ci/local-pipeline-server.mjs",
+    "demo:brand": "node demo/branding/apply-neutral-brand.mjs",
     "demo:record": "node demo/recording/render-demo.mjs"
   }
 }

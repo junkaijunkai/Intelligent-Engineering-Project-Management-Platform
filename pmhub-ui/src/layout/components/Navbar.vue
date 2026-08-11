@@ -30,7 +30,7 @@
         trigger="click"
       >
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar" />
+          <span class="user-avatar neutral-avatar">JK</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -68,7 +68,7 @@ export default {
     Search,
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar", "device"]),
+    ...mapGetters(["sidebar", "device"]),
     setting: {
       get() {
         return this.$store.state.settings.showSettings;
@@ -184,6 +184,16 @@ export default {
           width: 40px;
           height: 40px;
           border-radius: 10px;
+        }
+
+        .neutral-avatar {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: #2563eb;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 700;
         }
 
         .el-icon-caret-bottom {

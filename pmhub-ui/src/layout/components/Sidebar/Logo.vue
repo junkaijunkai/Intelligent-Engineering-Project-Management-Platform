@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import logoImg from '@/assets/logo/logo.png'
 import variables from '@/assets/styles/variables.scss'
 
 export default {
@@ -35,8 +34,8 @@ export default {
   },
   data() {
     return {
-      title: 'PmHub',
-      logo: logoImg
+      title: 'Engineering Project Management',
+      logo: null
     }
   }
 }

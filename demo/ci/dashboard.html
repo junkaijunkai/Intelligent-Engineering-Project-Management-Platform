@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Local Delivery Console</title>
+  <style>
+    :root { color-scheme: dark; --bg:#08111f; --panel:#101b2d; --line:#24344d; --muted:#8fa2bb; --text:#f2f6fb; --green:#36d399; --blue:#60a5fa; --amber:#fbbf24; --red:#fb7185; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at 72% 0,#17335b 0,transparent 35%),linear-gradient(145deg,#060b13,#0b1728 55%,#09121f); color:var(--text); font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .shell { width:min(1180px,calc(100% - 36px)); margin:0 auto; padding:34px 0 48px; }
+    header { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:24px; }
+    .eyebrow { color:var(--blue); font:700 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { margin:8px 0 5px; font-size:30px; line-height:1.12; letter-spacing:-.035em; }
+    .subtitle { color:var(--muted); margin:0; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    button,.button { border:1px solid var(--line); background:#14243a; color:var(--text); border-radius:9px; padding:10px 14px; font-weight:700; text-decoration:none; cursor:pointer; transition:.18s ease; }
+    button:hover,.button:hover { border-color:#5276a6; transform:translateY(-1px); }
+    button:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .button.primary { background:var(--blue); color:#07111e; border-color:transparent; }
+    .hero { display:grid; grid-template-columns:1.1fr .9fr; gap:16px; margin-bottom:16px; }
+    .card { background:linear-gradient(145deg,rgba(17,30,50,.96),rgba(12,23,39,.95)); border:1px solid var(--line); border-radius:14px; box-shadow:0 18px 50px rgba(0,0,0,.22); }
+    .summary { padding:21px 22px; }
+    .summary-top { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .status { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+    .status:before { content:""; width:8px; height:8px; border-radius:50%; background:var(--muted); }
+    .status.running:before { background:var(--amber); box-shadow:0 0 0 5px rgba(251,191,36,.12); animation:pulse 1s infinite; }
+    .status.passed:before { background:var(--green); box-shadow:0 0 0 5px rgba(54,211,153,.1); }
+    .status.failed:before { background:var(--red); }
+    @keyframes pulse { 50% { opacity:.35; } }
+    .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:22px; }
+    .metric { border-left:2px solid #294364; padding-left:11px; }
+    .metric small { display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+    .metric strong { display:block; margin-top:3px; font:700 14px ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .progress { height:7px; background:#07101d; border-radius:999px; overflow:hidden; margin-top:20px; }
+    .progress > i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--green)); transition:width .45s ease; }
+    .artifacts { padding:21px 22px; }
+    h2 { font-size:14px; margin:0 0 14px; letter-spacing:.02em; }
+    .artifact { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 0; border-top:1px solid rgba(73,94,123,.35); }
+    .artifact:first-of-type { border-top:0; }
+    .artifact span { color:var(--muted); font-size:12px; }
+    .artifact a { color:#b9d7ff; text-decoration:none; font-weight:700; }
+    .pipeline { padding:20px 22px 10px; margin-bottom:16px; }
+    .stages { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+    .stage { position:relative; min-height:150px; padding:14px; border:1px solid var(--line); border-radius:11px; background:rgba(5,14,26,.52); transition:.25s ease; }
+    .stage.running { border-color:rgba(251,191,36,.65); transform:translateY(-2px); }
+    .stage.passed { border-color:rgba(54,211,153,.42); }
+    .stage.failed { border-color:rgba(251,113,133,.65); }
+    .stage-index { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font:700 11px ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .stage-dot { width:8px; height:8px; border-radius:50%; background:#3e5069; }
+    .stage.running .stage-dot { background:var(--amber); animation:pulse 1s infinite; }
+    .stage.passed .stage-dot { background:var(--green); }
+    .stage.failed .stage-dot { background:var(--red); }
+    .stage h3 { font-size:13px; margin:16px 0 7px; }
+    .stage p { color:var(--muted); font-size:11px; line-height:1.45; margin:0; }
+    .stage-detail { position:absolute; left:14px; right:14px; bottom:13px; color:#c9d7e8; font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .logs { overflow:hidden; }
+    .logs-head { display:flex; justify-content:space-between; padding:15px 18px; border-bottom:1px solid var(--line); }
+    .logs-head span { color:var(--muted); font:11px ui-monospace,SFMono-Regular,Menlo,monospace; }
+    pre { margin:0; height:230px; overflow:auto; padding:15px 18px; background:#050b13; color:#b8c8da; font:11px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; }
+    .success { color:var(--green); } .error { color:var(--red); }
+    footer { color:#667b97; text-align:center; font-size:11px; margin-top:20px; letter-spacing:.08em; text-transform:uppercase; }
+    @media (max-width:900px) { .hero { grid-template-columns:1fr; } .stages { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { header { flex-direction:column; } .actions { justify-content:flex-start; } .stages { grid-template-columns:1fr; } .meta { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div><div class="eyebrow">Localhost Delivery System</div><h1>Internship Demo Pipeline</h1><p class="subtitle">Real local checks, simulated delivery flow, zero cloud dependencies.</p></div>
+      <div class="actions"><button id="run">Run pipeline</button><a class="button primary" href="http://127.0.0.1:4173" target="_blank">Open staging app</a></div>
+    </header>
+    <section class="hero">
+      <div class="card summary">
+        <div class="summary-top"><div><div class="eyebrow">Current build</div><h2 id="build-name" style="margin:7px 0 0;font-size:20px">Loading…</h2></div><div id="status" class="status idle">Idle</div></div>
+        <div class="meta"><div class="metric"><small>Branch</small><strong id="branch">—</strong></div><div class="metric"><small>Commit</small><strong id="commit">—</strong></div><div class="metric"><small>Duration</small><strong id="duration">—</strong></div></div>
+        <div class="progress"><i id="progress"></i></div>
+      </div>
+      <div class="card artifacts"><h2>Delivery outputs</h2><div id="artifacts"></div></div>
+    </section>
+    <section class="card pipeline"><h2>Pipeline stages</h2><div id="stages" class="stages"></div></section>
+    <section class="card logs"><div class="logs-head"><strong>Runner output</strong><span>LOCAL / NO SECRETS / NO CLOUD</span></div><pre id="logs">Waiting for runner…</pre></section>
+    <footer>Engineering project management · demo delivery console</footer>
+  </main>
+  <script>
+    const $ = (selector) => document.querySelector(selector)
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))
+    const duration = (state) => {
+      if (!state.startedAt) return '—'
+      const end = state.finishedAt ? new Date(state.finishedAt) : new Date()
+      return `${((end - new Date(state.startedAt)) / 1000).toFixed(1)}s`
+    }
+    async function refresh() {
+      try {
+        const state = await fetch('/api/pipeline', { cache:'no-store' }).then((response) => response.json())
+        $('#build-name').textContent = `${state.name} #${state.build}`
+        $('#branch').textContent = state.branch
+        $('#commit').textContent = state.commit
+        $('#duration').textContent = duration(state)
+        $('#status').className = `status ${state.status}`
+        $('#status').textContent = state.status
+        $('#run').disabled = state.status === 'running'
+        const completed = state.stages.filter((stage) => stage.status === 'passed').length
+        $('#progress').style.width = `${(completed / state.stages.length) * 100}%`
+        $('#stages').innerHTML = state.stages.map((stage, index) => `<article class="stage ${escapeHtml(stage.status)}"><div class="stage-index"><span>0${index + 1}</span><i class="stage-dot"></i></div><h3>${escapeHtml(stage.name)}</h3><p>${escapeHtml(stage.description)}</p><div class="stage-detail">${escapeHtml(stage.detail)}</div></article>`).join('')
+        $('#artifacts').innerHTML = state.artifacts.map((artifact) => `<div class="artifact"><div><a href="${escapeHtml(artifact.href)}" target="_blank">${escapeHtml(artifact.name)}</a><br><span>${escapeHtml(artifact.kind)}</span></div><span>↗</span></div>`).join('')
+        $('#logs').innerHTML = state.logs.length ? state.logs.map((entry) => `<span class="${escapeHtml(entry.level)}">[${escapeHtml(entry.time)}] ${escapeHtml(entry.message)}</span>`).join('\n') : 'Waiting for runner…'
+        $('#logs').scrollTop = $('#logs').scrollHeight
+      } catch (error) { $('#logs').textContent = `Dashboard connection error: ${error.message}` }
+      setTimeout(refresh, 650)
+    }
+    $('#run').addEventListener('click', () => fetch('/api/run', { method:'POST' }))
+    refresh()
+  </script>
+</body>
+</html>

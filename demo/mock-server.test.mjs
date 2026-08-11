@@ -16,10 +16,10 @@ after(async () => {
   await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())))
 })
 
-test("serves the real PmHub frontend build", async () => {
+test("serves the real project-management frontend build", async () => {
   const response = await fetch(baseUrl)
   assert.equal(response.status, 200)
-  assert.match(await response.text(), /<title>PmHub<\/title>/)
+  assert.match(await response.text(), /<title>Engineering Project Management<\/title>/)
 })
 
 test("supports the login and dynamic-route bootstrap", async () => {

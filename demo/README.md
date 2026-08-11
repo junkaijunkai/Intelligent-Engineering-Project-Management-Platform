@@ -1,6 +1,6 @@
-# PmHub local recording demo
+# Local engineering project-management demo
 
-This demo mode runs the repository's committed PmHub Vue build against deterministic in-memory API responses. It is intended for a stable course demonstration when Java, Maven, MySQL, Redis, Nacos, Seata, or external cloud services are unavailable.
+This demo mode runs the repository's committed Vue build against deterministic in-memory API responses. It is intended for a stable course demonstration when Java, Maven, MySQL, Redis, Nacos, Seata, or external cloud services are unavailable.
 
 ## Start
 

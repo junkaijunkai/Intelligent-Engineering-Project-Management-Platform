@@ -367,7 +367,7 @@ async function serveStatic(res, pathname) {
   res.writeHead(200, {
     "Content-Type": mimeTypes[path.extname(filePath).toLowerCase()] || "application/octet-stream",
     "Content-Length": fileStat.size,
-    "Cache-Control": filePath.endsWith("index.html") ? "no-store" : "public, max-age=3600",
+    "Cache-Control": "no-store",
   })
   createReadStream(filePath).pipe(res)
 }
@@ -417,7 +417,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const host = process.env.HOST || "127.0.0.1"
   const server = createDemoServer()
   server.listen(port, host, () => {
-    console.log(`PmHub local demo is ready: http://${host}:${port}`)
+    console.log(`Project Management demo is ready: http://${host}:${port}`)
     console.log("Demo login: any username and password")
     console.log("All API responses use deterministic in-memory data; no cloud services are contacted.")
   })

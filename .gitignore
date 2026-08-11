@@ -53,6 +53,7 @@ pnpm-debug.log*
 # Logs and runtime files
 logs/
 log/
+demo-ci-artifacts/
 *.log
 *.pid
 *.pid.lock
