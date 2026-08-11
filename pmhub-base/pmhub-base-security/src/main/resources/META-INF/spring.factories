@@ -5,7 +5,7 @@ com.dahua.pvision.base.security.service.TokenService,\
 com.dahua.pvision.base.security.handle.GlobalExceptionHandler,\
 com.dahua.pvision.base.security.config.WebMvcConfig,\
 com.dahua.pvision.base.security.aspect.LogAspect,\
-com.dahua.pvision.base.core.config.ResourcesConfig,\
+com.dahua.pvision.base.security.config.ResourcesConfig,\
 com.dahua.pvision.base.security.service.redisson.RedissonDistributedLock,\
 com.dahua.pvision.base.security.aspect.DistributedLockAspect,\
 com.dahua.pvision.base.security.config.RedissonConfig

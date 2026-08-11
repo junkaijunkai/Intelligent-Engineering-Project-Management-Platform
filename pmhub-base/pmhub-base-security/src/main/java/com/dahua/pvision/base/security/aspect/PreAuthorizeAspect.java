@@ -21,9 +21,9 @@ public class PreAuthorizeAspect {
 
     /** 定义AOP签名 (切入所有使用鉴权注解的方法) */
     public static final String POINTCUT_SIGN =
-            " @annotation(annotation.com.dahua.pvision.base.security.RequiresLogin) || "
-                    + "@annotation(annotation.com.dahua.pvision.base.security.RequiresPermissions) || "
-                    + "@annotation(annotation.com.dahua.pvision.base.security.RequiresRoles)";
+            " @annotation(com.dahua.pvision.base.security.annotation.RequiresLogin) || "
+                    + "@annotation(com.dahua.pvision.base.security.annotation.RequiresPermissions) || "
+                    + "@annotation(com.dahua.pvision.base.security.annotation.RequiresRoles)";
 
     /** 声明AOP签名 */
     @Pointcut(POINTCUT_SIGN)

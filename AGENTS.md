@@ -29,5 +29,7 @@ Pvision/PmHub 是面向企业项目协作的项目管理与流程自动化平台
 - `@pmhub-monitor` 是运行时监控中心，不属于用户业务服务；`@pmhub-modules/pmhub-gen` 是开发辅助服务，不属于核心用户业务服务。
 - 服务默认端口：gateway 6880、auth 6800、system 6801、gen 6802、job 6803、project 6806、workflow 6808、monitor 6888。
 - 跨服务调用优先查看 `@pmhub-api`，服务之间通过 Feign 和服务名调用，不应假设跨库直连。
+- 包名重构后必须同步检查 `META-INF/spring.factories` 和 AspectJ 字符串切点；`pmhub-base-security` 已通过 `AutoConfigurationMetadataTest` 覆盖自动配置类加载与鉴权切点解析。
+- 本地服务默认以局域网 IP 注册到 Nacos；启用 VPN/TUN 时需将本地网段设为直连，否则 Gateway 访问注册地址可能出现 `Connection prematurely closed` 或 `Connection reset`。
 - 关键发现和后续决策需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
 - When contents you generate and things you say are referenced from an existing source, mark the references at the end using "Generated based on `@ document or module`".
