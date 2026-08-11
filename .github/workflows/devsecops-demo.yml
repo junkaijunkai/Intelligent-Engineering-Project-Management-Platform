@@ -5,17 +5,48 @@ on:
 
 permissions:
   contents: read
+  packages: write
+
+env:
+  CI: "true"
+  MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+  DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-ci.txt"
 
 jobs:
-  devsecops-demo:
-    name: Build DevSecOps Evidence
+  prepare:
+    name: Prepare Evidence Workspace
     runs-on: ubuntu-latest
-    timeout-minutes: 35
-    env:
-      CI: "true"
-      MAVEN_OPTS: "-Dfile.encoding=UTF-8"
-      DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-ci.txt"
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+
+      - name: Prepare evidence workspace
+        run: bash devsecops-demo/scripts/preflight.sh
+
+      - name: Upload prepare evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-evidence-prepare
+          path: devsecops-demo/out/
+          retention-days: 7
+          if-no-files-found: warn
+
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: prepare
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -36,6 +67,36 @@ jobs:
         id: unit_tests
         continue-on-error: true
         run: bash devsecops-demo/scripts/run-unit-tests.sh
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-evidence-test
+          path: devsecops-demo/out/
+          retention-days: 7
+          if-no-files-found: warn
+
+  runtime-assessment:
+    name: Runtime & Security Assessment
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    needs: prepare
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+
+      - name: Prepare evidence workspace
+        run: bash devsecops-demo/scripts/preflight.sh
 
       - name: Build and start frontend demo container
         id: frontend
@@ -76,6 +137,114 @@ jobs:
         if: always()
         run: bash devsecops-demo/scripts/normalize-artifact-permissions.sh
 
+      - name: Clean up demo resources
+        if: always()
+        run: bash devsecops-demo/scripts/cleanup.sh
+
+      - name: Upload runtime assessment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-evidence-runtime
+          path: devsecops-demo/out/
+          retention-days: 7
+          if-no-files-found: warn
+
+  cd-publish-deploy:
+    name: Publish & Ephemeral Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [test, runtime-assessment]
+    if: always()
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare image metadata
+        id: image
+        run: |
+          owner="$(printf '%s' "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${owner}/pvision-devsecops-demo-frontend"
+          echo "image=${image}" >> "$GITHUB_OUTPUT"
+          echo "sha_tag=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "latest_tag=demo-latest" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        id: login
+        continue-on-error: true
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend demo image
+        id: build
+        continue-on-error: true
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: devsecops-demo/container/frontend/Dockerfile
+          push: true
+          build-args: |
+            NGINX_IMAGE=nginx:1.28.0-alpine
+          tags: |
+            ${{ steps.image.outputs.image }}:${{ steps.image.outputs.sha_tag }}
+            ${{ steps.image.outputs.image }}:${{ steps.image.outputs.latest_tag }}
+
+      - name: Deploy pushed image to ephemeral staging
+        if: always()
+        env:
+          GHCR_IMAGE: ${{ steps.image.outputs.image }}
+          GHCR_SHA_TAG: ${{ steps.image.outputs.sha_tag }}
+          GHCR_LATEST_TAG: ${{ steps.image.outputs.latest_tag }}
+          GHCR_DIGEST: ${{ steps.build.outputs.digest }}
+          GHCR_LOGIN_OUTCOME: ${{ steps.login.outcome }}
+          GHCR_BUILD_OUTCOME: ${{ steps.build.outcome }}
+        run: bash devsecops-demo/scripts/run-cd-deploy.sh
+
+      - name: Normalize CD evidence permissions
+        if: always()
+        run: bash devsecops-demo/scripts/normalize-artifact-permissions.sh
+
+      - name: Clean up CD staging container
+        if: always()
+        run: docker rm -f pvision-devsecops-cd-staging >/dev/null 2>&1 || true
+
+      - name: Upload CD evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-evidence-cd
+          path: devsecops-demo/out/
+          retention-days: 7
+          if-no-files-found: warn
+
+  compliance-package:
+    name: Compliance & Evidence Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [prepare, test, runtime-assessment, cd-publish-deploy]
+    if: always()
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download stage evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: devsecops-evidence-*
+          path: devsecops-demo/out/
+          merge-multiple: true
+
+      - name: Normalize downloaded artifact permissions
+        if: always()
+        run: bash devsecops-demo/scripts/normalize-artifact-permissions.sh
+
       - name: Generate audit and compliance evidence
         if: always()
         run: bash devsecops-demo/scripts/generate-compliance.sh
@@ -100,7 +269,3 @@ jobs:
           path: devsecops-demo/out/
           retention-days: 90
           if-no-files-found: error
-
-      - name: Clean up demo resources
-        if: always()
-        run: bash devsecops-demo/scripts/cleanup.sh

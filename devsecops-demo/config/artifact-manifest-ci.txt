@@ -30,3 +30,12 @@
 05-vulnerability/remediation-history.txt
 05-vulnerability/remediation-and-rescan.html
 05-vulnerability/remediation-and-rescan.json
+07-cd/ghcr-push.txt
+07-cd/ghcr-image.json
+07-cd/ghcr-pull.txt
+07-cd/deployment-console.txt
+07-cd/deployment-summary.json
+07-cd/deployment-health.json
+07-cd/deployment-health-headers.txt
+07-cd/deployment-container-inspect.json
+07-cd/deployment-container-logs.txt
