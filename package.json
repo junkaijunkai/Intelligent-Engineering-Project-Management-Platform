@@ -1,0 +1,9 @@
+{
+  "name": "pmhub-local-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node demo/mock-server.mjs",
+    "demo:check": "node --test demo/mock-server.test.mjs"
+  }
+}
