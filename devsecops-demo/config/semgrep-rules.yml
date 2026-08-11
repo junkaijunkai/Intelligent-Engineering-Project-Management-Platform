@@ -1,0 +1,42 @@
+rules:
+  - id: java-runtime-command-execution
+    languages: [java]
+    severity: WARNING
+    message: Review runtime command execution for injection and allow-list controls.
+    patterns:
+      - pattern: Runtime.getRuntime().exec(...)
+
+  - id: java-process-builder
+    languages: [java]
+    severity: WARNING
+    message: Review ProcessBuilder arguments for command injection.
+    patterns:
+      - pattern: new ProcessBuilder(...)
+
+  - id: java-weak-message-digest
+    languages: [java]
+    severity: WARNING
+    message: Replace weak message digest algorithms with an approved algorithm.
+    pattern-either:
+      - pattern: MessageDigest.getInstance("MD5")
+      - pattern: MessageDigest.getInstance("SHA-1")
+
+  - id: javascript-dynamic-html
+    languages: [javascript, typescript]
+    severity: INFO
+    message: Review dynamic HTML assignment for cross-site scripting controls.
+    pattern-either:
+      - pattern: $ELEMENT.innerHTML = $VALUE
+      - pattern: $ELEMENT.outerHTML = $VALUE
+
+  - id: generic-private-key-material
+    languages: [generic]
+    severity: ERROR
+    message: Private key material must not be committed to source control.
+    paths:
+      include:
+        - "*.yml"
+        - "*.yaml"
+        - "*.properties"
+        - "*.env"
+    pattern-regex: "-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----"
