@@ -18,3 +18,8 @@ bash devsecops-demo/scripts/run-all.sh
 ## GitHub execution
 
 Push the committed workflow, then run **DevSecOps Demo Evidence** manually from the GitHub Actions page.
+
+The GitHub Actions workflow uploads a native evidence package under `devsecops-demo/out/`.
+It keeps tool reports such as JUnit, JaCoCo, k6, Semgrep, Trivy, ZAP, Git audit, and GDPR
+mapping artifacts, but does not require presentation screenshots. Tool failures and scan
+findings are recorded in the evidence status files instead of blocking artifact upload.
