@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "demo": "node demo/mock-server.mjs",
-    "demo:check": "node --test demo/mock-server.test.mjs"
+    "demo:check": "node --test demo/mock-server.test.mjs",
+    "demo:record": "node demo/recording/render-demo.mjs"
   }
 }

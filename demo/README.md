@@ -26,6 +26,14 @@ npm run demo:check
 
 The check starts an isolated ephemeral server and verifies the frontend, authentication bootstrap, routes, dashboard statistics, project list, task list, and workflow queue.
 
+## Render the screen-only demo
+
+```bash
+npm run demo:record
+```
+
+This recreates the 4 minute 30 second, 1080p recording from clean interface captures, eased mouse movement, and click-driven zooms. The final MP4 and its timing manifest are written to `output/`. See `demo/recording/README.md` for the shot list and rendering details.
+
 ## Demo data and limitations
 
 - Data is reset every time the process restarts.

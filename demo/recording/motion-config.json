@@ -1,0 +1,78 @@
+{
+  "title": "PmHub App Demo — Screen Only",
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "outputWidth": 1920,
+    "outputHeight": 1080,
+    "fps": 30
+  },
+  "motion": {
+    "clickZoom": 1.18,
+    "holdSeconds": 0.65,
+    "releaseSeconds": 0.85
+  },
+  "steps": [
+    {
+      "id": "01-dashboard",
+      "title": "Portfolio dashboard",
+      "asset": "01-dashboard.png",
+      "durationSeconds": 35,
+      "cursor": [[0, 1170, 80], [3, 180, 110], [12, 310, 110], [18, 525, 110], [24, 740, 110], [30, 1120, 320], [33, 83, 157], [35, 83, 157]],
+      "exitClick": { "at": 34.3, "focus": [83, 157] }
+    },
+    {
+      "id": "02-projects",
+      "title": "Project portfolio",
+      "asset": "02-projects.png",
+      "durationSeconds": 50,
+      "incomingClick": [83, 157],
+      "cursor": [[0, 83, 157], [1.5, 83, 157], [3, 235, 68], [8, 470, 150], [20, 745, 350], [32, 1000, 350], [42, 332, 67], [49, 332, 67], [50, 332, 67]],
+      "exitClick": { "at": 49.3, "focus": [332, 67] }
+    },
+    {
+      "id": "03-projects-archived",
+      "title": "Archived project evidence",
+      "asset": "03-projects-archived.png",
+      "durationSeconds": 25,
+      "incomingClick": [332, 67],
+      "cursor": [[0, 332, 67], [1.5, 332, 67], [5, 500, 350], [16, 960, 350], [20, 83, 230], [24, 83, 230], [25, 83, 230]],
+      "exitClick": { "at": 24.3, "focus": [83, 230] }
+    },
+    {
+      "id": "04-tasks",
+      "title": "Task execution and delivery risk",
+      "asset": "04-tasks.png",
+      "durationSeconds": 55,
+      "incomingClick": [83, 230],
+      "cursor": [[0, 83, 230], [1.5, 83, 230], [4, 330, 100], [12, 635, 180], [22, 410, 390], [34, 790, 390], [45, 1090, 390], [51, 83, 300], [55, 83, 300]],
+      "exitClick": { "at": 54.3, "focus": [83, 300] }
+    },
+    {
+      "id": "05-todo",
+      "title": "Pending approval governance",
+      "asset": "05-todo.png",
+      "durationSeconds": 45,
+      "incomingClick": [83, 300],
+      "cursor": [[0, 83, 300], [1.5, 83, 300], [5, 330, 130], [12, 470, 275], [23, 760, 275], [32, 1030, 275], [40, 83, 380], [45, 83, 380]],
+      "exitClick": { "at": 44.3, "focus": [83, 380] }
+    },
+    {
+      "id": "06-finished",
+      "title": "Completed approval audit trail",
+      "asset": "06-finished.png",
+      "durationSeconds": 40,
+      "incomingClick": [83, 380],
+      "cursor": [[0, 83, 380], [1.5, 83, 380], [5, 460, 265], [15, 775, 265], [26, 1030, 265], [35, 48, 116], [40, 48, 116]],
+      "exitClick": { "at": 39.3, "focus": [48, 116] }
+    },
+    {
+      "id": "07-dashboard-close",
+      "title": "Management close",
+      "asset": "01-dashboard.png",
+      "durationSeconds": 20,
+      "incomingClick": [48, 116],
+      "cursor": [[0, 48, 116], [1.5, 48, 116], [4, 280, 110], [10, 770, 560], [16, 1175, 675], [20, 1175, 675]]
+    }
+  ]
+}
