@@ -1,0 +1,383 @@
+name: DevSecOps CI
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - pre
+  pull_request:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+    inputs:
+      run_owasp:
+        description: "Run OWASP Dependency-Check"
+        type: boolean
+        required: false
+        default: false
+      run_sonarcloud:
+        description: "Run SonarCloud analysis"
+        type: boolean
+        required: false
+        default: false
+      run_dast:
+        description: "Run the time-consuming DAST scan"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  CI: "true"
+  MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
+  DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-ci.txt"
+  # Repository secret with the same name expected by docker/docker-compose.yml.
+  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+jobs:
+  lint:
+    name: Lint (Checkstyle)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -B -Dcheckstyle.failOnViolation=false -Dcheckstyle.failsOnError=false -Dcheckstyle.violationSeverity=warning
+      - name: Upload Checkstyle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-checkstyle
+          path: "**/target/checkstyle-result.xml"
+          if-no-files-found: warn
+          retention-days: 7
+
+  unit-test:
+    name: Unit Tests and Coverage
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pmhub_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Initialize MySQL schema
+        run: |
+          sudo apt-get install -y -qq mysql-client
+          for sql in sql/pmhub-system.sql sql/pmhub-project.sql sql/pmhub-workflow.sql sql/pmhub-gen.sql sql/pmhub_seata.sql; do
+            mysql -h 127.0.0.1 -u root -proot < "$sql"
+          done
+      - name: Run Maven tests with JaCoCo
+        run: mvn test -B -Dspring.profiles.active=test
+      - name: Publish JUnit report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Maven Test Report
+          path: "**/target/surefire-reports/*.xml"
+          reporter: java-junit
+      - name: Upload unit test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-unit-test
+          path: |
+            **/target/surefire-reports/
+            **/target/site/jacoco/
+          if-no-files-found: warn
+          retention-days: 7
+
+  dependency-scan:
+    name: Dependency Scan (OWASP)
+    runs-on: ubuntu-latest
+    needs: lint
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_owasp == true }}
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Run OWASP Dependency Check
+        run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+      - name: Upload dependency report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-dependency-scan
+          path: "**/target/dependency-check-report.*"
+          if-no-files-found: warn
+          retention-days: 7
+
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    needs: unit-test
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Run Semgrep evidence scan
+        run: bash devsecops-demo/scripts/preflight.sh && bash devsecops-demo/scripts/run-sast.sh
+      - name: Upload SAST artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-sast
+          path: devsecops-demo/out/03-security/sast/
+          if-no-files-found: warn
+          retention-days: 7
+
+  sonarcloud:
+    name: SAST (SonarCloud, Manual)
+    runs-on: ubuntu-latest
+    needs: unit-test
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_sonarcloud == true }}
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Run SonarCloud when configured
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_ORG" ]; then
+            echo "SONAR_TOKEN and SONAR_ORG are required when run_sonarcloud is enabled."
+            exit 1
+          fi
+          mvn compile sonar:sonar -B \
+            -Dsonar.organization="$SONAR_ORG" \
+            -Dsonar.projectKey="${{ github.event.repository.name }}" \
+            -Dsonar.projectName="${{ github.event.repository.name }}" \
+            -Dsonar.qualitygate.wait=false
+
+  build:
+    name: Build Maven Package
+    runs-on: ubuntu-latest
+    needs: [unit-test, dependency-scan, sast]
+    if: always() && needs.unit-test.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Build package
+        run: mvn clean package -B -DskipTests -U
+      - name: Upload application packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-jars
+          path: |
+            pmhub-gateway/target/*.jar
+            pmhub-auth/target/*.jar
+            pmhub-modules/*/target/*.jar
+            pmhub-monitor/target/*.jar
+          if-no-files-found: warn
+          retention-days: 7
+
+  build-all-service-images:
+    name: Build Image (${{ matrix.service.name }})
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: pmhub-gateway, module: pmhub-gateway }
+          - { name: pmhub-auth, module: pmhub-auth }
+          - { name: pmhub-system, module: pmhub-modules/pmhub-system }
+          - { name: pmhub-project, module: pmhub-modules/pmhub-project }
+          - { name: pmhub-workflow, module: pmhub-modules/pmhub-workflow }
+          - { name: pmhub-gen, module: pmhub-modules/pmhub-gen }
+          - { name: pmhub-job, module: pmhub-modules/pmhub-job }
+          - { name: pmhub-monitor, module: pmhub-monitor }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Build service package
+        run: mvn clean package -pl "${{ matrix.service.module }}" -am -B -DskipTests -U
+      - name: Prepare Docker context
+        run: |
+          jar_file=$(find "${{ matrix.service.module }}/target" -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -1)
+          test -n "$jar_file"
+          cp "$jar_file" "${{ matrix.service.module }}/app.jar"
+      - name: Build service image
+        run: docker build --tag "pvision/${{ matrix.service.name }}:${{ github.sha }}" -f "${{ matrix.service.module }}/docker/Dockerfile" "${{ matrix.service.module }}"
+      - name: Inspect service image
+        run: docker image inspect "pvision/${{ matrix.service.name }}:${{ github.sha }}" --format 'Image={{index .RepoTags 0}} Size={{.Size}}'
+
+  full-project-runtime:
+    name: Full Project Compose Runtime
+    runs-on: ubuntu-latest
+    needs: [build-all-service-images, scan-all-service-images]
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Install runtime dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+      - name: Run full backend Compose runtime
+        env:
+          RUN_DAST: ${{ github.event_name == 'workflow_dispatch' && inputs.run_dast || false }}
+        run: |
+          bash devsecops-demo/scripts/preflight.sh
+          bash devsecops-demo/scripts/run-full-project-runtime.sh
+      - name: Upload full project runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-full-project-runtime
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 7
+
+  scan-all-service-images:
+    name: Scan Image (${{ matrix.service.name }})
+    runs-on: ubuntu-latest
+    needs: build-all-service-images
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: pmhub-gateway, module: pmhub-gateway }
+          - { name: pmhub-auth, module: pmhub-auth }
+          - { name: pmhub-system, module: pmhub-modules/pmhub-system }
+          - { name: pmhub-project, module: pmhub-modules/pmhub-project }
+          - { name: pmhub-workflow, module: pmhub-modules/pmhub-workflow }
+          - { name: pmhub-gen, module: pmhub-modules/pmhub-gen }
+          - { name: pmhub-job, module: pmhub-modules/pmhub-job }
+          - { name: pmhub-monitor, module: pmhub-monitor }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Build image for scan
+        run: |
+          mvn clean package -pl "${{ matrix.service.module }}" -am -B -DskipTests -U
+          jar_file=$(find "${{ matrix.service.module }}/target" -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -1)
+          cp "$jar_file" "${{ matrix.service.module }}/app.jar"
+          docker build --tag "pvision/${{ matrix.service.name }}:${{ github.sha }}" -f "${{ matrix.service.module }}/docker/Dockerfile" "${{ matrix.service.module }}"
+      - name: Run Trivy image scan
+        run: |
+          mkdir -p "devsecops-demo/out/03-security/images/${{ matrix.service.name }}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/devsecops-demo/out/03-security/images/${{ matrix.service.name }}:/evidence" aquasec/trivy:0.70.0 image --format json --output /evidence/trivy.json "pvision/${{ matrix.service.name }}:${{ github.sha }}"
+      - name: Upload service image scan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-image-scan-${{ matrix.service.name }}
+          path: devsecops-demo/out/03-security/images/${{ matrix.service.name }}/
+          if-no-files-found: warn
+          retention-days: 7
+
+  compliance:
+    name: Compliance as Code
+    runs-on: ubuntu-latest
+    needs: [scan-all-service-images, full-project-runtime]
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate compliance evidence
+        run: bash devsecops-demo/scripts/preflight.sh && bash devsecops-demo/scripts/generate-compliance.sh
+      - name: Verify required artifacts
+        run: bash devsecops-demo/scripts/verify-artifacts.sh
+      - name: Upload compliance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-compliance
+          path: devsecops-demo/out/04-compliance/
+          if-no-files-found: warn
+          retention-days: 7
+
+  evidence-package:
+    name: Unified CI Evidence Package
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, dependency-scan, sast, sonarcloud, build, build-all-service-images, scan-all-service-images, full-project-runtime, compliance]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: devsecops-ci-*
+          path: devsecops-demo/out/
+          merge-multiple: true
+      - name: Generate unified metadata and verify artifacts
+        run: |
+          bash devsecops-demo/scripts/normalize-artifact-permissions.sh
+          bash devsecops-demo/scripts/sanitize-artifacts.sh
+          bash devsecops-demo/scripts/verify-artifacts.sh
+      - name: Upload unified evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-evidence
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 90

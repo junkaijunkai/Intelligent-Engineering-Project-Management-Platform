@@ -9,7 +9,7 @@ TMP_DIR="$DEMO_DIR/tmp"
 # shellcheck disable=SC1091
 source "$DEMO_DIR/config/tool-versions.env"
 
-DEMO_NETWORK="pvision-devsecops-demo-net"
+DEMO_NETWORK="${DEVSECOPS_NETWORK:-pvision-devsecops-demo-net}"
 FRONTEND_CONTAINER="pvision-devsecops-demo-frontend"
 FRONTEND_IMAGE="pvision-devsecops-demo-frontend:demo"
 REDIS_CONTAINER="pvision-devsecops-demo-redis"

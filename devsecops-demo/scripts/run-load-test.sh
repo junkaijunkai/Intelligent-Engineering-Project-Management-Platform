@@ -6,7 +6,9 @@ source "$(dirname "$0")/common.sh"
 EVIDENCE_DIR="$OUT_DIR/01-testing/load"
 mkdir -p "$EVIDENCE_DIR"
 
-target_url="http://$FRONTEND_CONTAINER/health"
+TARGET_HOST="${DEVSECOPS_TARGET_HOST:-pmhub-gateway}"
+TARGET_PORT="${DEVSECOPS_TARGET_PORT:-6880}"
+target_url="http://${TARGET_HOST}:${TARGET_PORT}/actuator/health"
 
 set +e
 docker run --rm \
