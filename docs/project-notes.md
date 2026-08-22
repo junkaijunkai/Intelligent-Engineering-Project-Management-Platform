@@ -44,13 +44,7 @@
 
 - Workflow 基于 Flowable 6.7.2 数据表和引擎，独立维护运行时、历史、部署、模型、任务、变量和身份关联表。
 - 自定义表包括流程分类、表单、模型部署关联、流程表单关联、审批设置、抄送记录、任务消息处理和特定业务流程关联。
-- 模型接口负责模型列表、历史版本、BPMN XML、保存、最新版本、删除、导出和部署。
-- 部署接口负责已部署流程列表、发布状态、BPMN XML、关联表单和审批设置。
-- 流程实例接口负责启动通用流程、项目审批、任务审批、流程详情和实例状态管理。
-- 待办工作流支持完成、驳回、退回、退回列表、认领、取消认领、委派、转办、撤回、终止和流程图展示。
-- Workflow 通过监听器处理流程开始、结束、取消、任务分配和任务完成等事件；监听器内部再按策略类型选择执行器。
-- 流程表单是动态 JSON 配置，模型/部署/表单/审批设置共同决定项目或任务提交后的审批路径。
-- 项目审批由 Project 发起，Workflow 创建流程实例；审批完成后需要关注 Workflow listener 和 Project 的流程关联状态更新。
+- 模型后需要关注 Workflow listener 和 Project 的流程关联状态更新。
 - Workflow 启用了 `EnableDistributedLock`；分布式锁横切实现位于 base-security，使用 Redisson key 前缀、SpEL 动态 key 和 finally 解锁。
 - 工作流中的 `@Transactional` 主要保护同一 Workflow 数据库内的审批操作；它不等同于跨服务分布式事务。
 
@@ -97,5 +91,3 @@
 - Job 维护 Quartz 调度定义和执行日志；项目逾期 Job 位于 Project，不应因为都带 Job 类就合并为同一服务职责。
 - 代码中有部分从 Ruoyi/旧 OA 能力迁移而来的通用接口、注释或前端残留；回答项目能力时以当前 Controller、Service、配置和 SQL 为准。
 - 测试目录目前以 base-core 工具测试、代码生成测试和少量 project domain 测试为主，未见覆盖完整登录、网关、审批或跨服务链路的集成测试。
-
-Generated based on `@pmhub-api`, `@pmhub-auth`, `@pmhub-base`, `@pmhub-gateway`, `@pmhub-modules/pmhub-system`, `@pmhub-modules/pmhub-project`, `@pmhub-modules/pmhub-workflow`, `@pmhub-modules/pmhub-job`, `@pmhub-monitor`, `@pmhub-ui`, `@sql`, and `@docker`.

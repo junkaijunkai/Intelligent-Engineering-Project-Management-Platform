@@ -15,7 +15,7 @@ This script is designed for a screen-only recording. Use the local deterministic
 
 **Narration:**
 
-> This is PmHub, an intelligent engineering project management platform. It brings project delivery, task execution, and approval workflows into one operational view. The dashboard gives a concise management baseline: three active project records, eighteen tasks, today's workload, and the current overdue exposure. The charts then show delivery progress by project and the distribution of task status.
+> This is my intelligent engineering project management platform. It brings project delivery, task execution, and approval workflows into one operational view. The dashboard gives a concise management baseline: three active project records, eighteen tasks, today's workload, and the current overdue exposure. The charts then show delivery progress by project and the distribution of task status.
 
 ## 00:30–01:25 — Project portfolio
 
@@ -55,6 +55,6 @@ This script is designed for a screen-only recording. Use the local deterministic
 
 **Narration:**
 
-> PmHub therefore connects portfolio visibility, accountable execution, proactive risk awareness, and auditable approval in one engineering management workflow. The result is faster status review, clearer ownership, and more reliable delivery evidence.
+> The platform therefore connects portfolio visibility, accountable execution, proactive risk awareness, and auditable approval in one place. The result is faster status review, clearer ownership, and more reliable delivery evidence.
 
 Generated based on `@pmhub-ui`, `@sql/pmhub-system.sql`, `@docs/project-notes.md`, and `@docs/local-startup-and-demo-guide.md`; recording structure adapted from the CineX App Demo requirement of a concise working-system demonstration.

@@ -87,6 +87,7 @@ pmhub-boot/
 Test Plan.jmx
 
 docs/*
+docker/.env
 
 # Agent instructions are repo documentation and should remain trackable.
 !AGENTS.md

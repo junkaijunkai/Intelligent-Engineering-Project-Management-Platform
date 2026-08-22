@@ -32,4 +32,5 @@ Pvision/PmHub 是面向企业项目协作的项目管理与流程自动化平台
 - 包名重构后必须同步检查 `META-INF/spring.factories` 和 AspectJ 字符串切点；`pmhub-base-security` 已通过 `AutoConfigurationMetadataTest` 覆盖自动配置类加载与鉴权切点解析。
 - 本地服务默认以局域网 IP 注册到 Nacos；启用 VPN/TUN 时需将本地网段设为直连，否则 Gateway 访问注册地址可能出现 `Connection prematurely closed` 或 `Connection reset`。
 - 关键发现和后续决策需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
-- When contents you generate and things you say are referenced from an existing source, mark the references at the end using "Generated based on `@ document or module`".
+- 处理多任务时，灵活使用sub-agents：按任务间的依赖关系来决定sub-agents是并行执行还是线性执行
+- 每次做完写任务后都要：检查代码语法 - 运行相应的测试 - 验证需求已完成，且没有引入回归（不要自我验证、不要信任自己完成的工作，而是让独立的sub-agent来对你完成的工作进行对抗性评估）
