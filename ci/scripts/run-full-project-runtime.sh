@@ -33,6 +33,7 @@ sed -e "s|jdbc:mysql://localhost:3306/|jdbc:mysql://pmhub-mysql:3306/|g" \
 sed -e "s#jdbc:mysql://127.0.0.1:3306/#jdbc:mysql://pmhub-mysql:3306/#g" \
     -e "s/host: localhost/host: pmhub-redis/g" \
     -e "s/host: 127.0.0.1/host: pmhub-redis/g" \
+    -e "s#redis://localhost:6379#redis://pmhub-redis:6379#g" \
     -e "s/password: 123456/password: ${MYSQL_ROOT_PASSWORD}/g" \
     "$ROOT_DIR/sql/pmhub_nacos.sql" > "$NACOS_SQL"
 
@@ -89,18 +90,18 @@ curl --fail --silent --show-error http://127.0.0.1:6880/actuator/health > "$EVID
 "${compose[@]}" ps > "$EVIDENCE_DIR/compose-ps.txt"
 docker network inspect "${PROJECT_NAME}_default" > "$EVIDENCE_DIR/network-inspect.json"
 
-if ! bash "$DEMO_DIR/scripts/run-project-integration.sh"; then
+if ! bash "$CI_DIR/scripts/run-project-integration.sh"; then
   runtime_status=1
 else
   runtime_status=0
 fi
 
 DEVSECOPS_NETWORK="${PROJECT_NAME}_default" DEVSECOPS_TARGET_HOST=pmhub-gateway DEVSECOPS_TARGET_PORT=6880 \
-  bash "$DEMO_DIR/scripts/run-load-test.sh" || runtime_status=1
+  bash "$CI_DIR/scripts/run-load-test.sh" || runtime_status=1
 
 if [ "${RUN_DAST:-false}" = "true" ]; then
   DEVSECOPS_NETWORK="${PROJECT_NAME}_default" DEVSECOPS_TARGET_HOST=pmhub-gateway DEVSECOPS_TARGET_PORT=6880 \
-    bash "$DEMO_DIR/scripts/run-dast.sh" || runtime_status=1
+    bash "$CI_DIR/scripts/run-dast.sh" || runtime_status=1
 fi
 
 for service in pmhub-nacos pmhub-mysql pmhub-redis pmhub-seata pmhub-gateway pmhub-auth pmhub-system pmhub-project pmhub-workflow pmhub-gen pmhub-job pmhub-monitor; do

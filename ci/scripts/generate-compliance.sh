@@ -14,5 +14,5 @@ if [ ! -s "$VULN_DIR/remediation-history.txt" ]; then
   printf 'No matching security remediation commits were found in the checked-out history.\n' > "$VULN_DIR/remediation-history.txt"
 fi
 
-python3 "$DEMO_DIR/scripts/generate_evidence.py" compliance
+python3 "$CI_DIR/scripts/generate_compliance_evidence.py"
 record_status compliance PASS "Git audit trail, historical remediation, GDPR mapping, and rescan evidence were generated."

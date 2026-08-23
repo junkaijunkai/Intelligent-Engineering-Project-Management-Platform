@@ -20,7 +20,7 @@ docker run --rm \
   -v "$EVIDENCE_DIR:/evidence" \
   "$SEMGREP_IMAGE" \
   semgrep scan \
-  --config /workspace/devsecops-demo/config/semgrep-rules.yml \
+  --config /workspace/ci/config/semgrep-rules.yml \
   --exclude pmhub-boot \
   --exclude target \
   --exclude node_modules \
@@ -35,7 +35,7 @@ docker run --rm \
   -v "$EVIDENCE_DIR:/evidence" \
   "$SEMGREP_IMAGE" \
   semgrep scan \
-  --config /workspace/devsecops-demo/config/semgrep-rules.yml \
+  --config /workspace/ci/config/semgrep-rules.yml \
   --exclude pmhub-boot \
   --exclude target \
   --exclude node_modules \

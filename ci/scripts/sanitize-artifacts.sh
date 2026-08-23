@@ -27,7 +27,7 @@ except OSError as exc:
 PY
 done < <(find "$OUT_DIR" -type f \( -name '*.txt' -o -name '*.log' -o -name '*.json' -o -name '*.xml' -o -name '*.html' -o -name '*.md' -o -name '*.sarif' \) -print0)
 
-if rg --no-messages -n --hidden -i '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})' "$OUT_DIR"; then
+if grep -RInE --binary-files=without-match '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})' "$OUT_DIR"; then
   record_status sanitization FAILED "Potential secret material remains in evidence."
   exit 1
 fi

@@ -5,8 +5,8 @@ source "$(dirname "$0")/common.sh"
 
 missing=0
 report="$OUT_DIR/00-metadata/artifact-verification.txt"
-manifest_name="${DEVSECOPS_ARTIFACT_MANIFEST:-artifact-manifest.txt}"
-manifest="$DEMO_DIR/config/$manifest_name"
+manifest_name="${DEVSECOPS_ARTIFACT_MANIFEST:-artifact-manifest-project-ci.txt}"
+manifest="$CI_DIR/config/$manifest_name"
 
 if [ ! -f "$manifest" ]; then
   record_status verification FAILED "Artifact manifest $manifest_name does not exist."

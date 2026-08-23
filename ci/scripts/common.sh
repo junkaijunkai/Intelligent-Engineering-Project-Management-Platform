@@ -2,16 +2,14 @@
 set -u
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-DEMO_DIR="$ROOT_DIR/devsecops-demo"
-OUT_DIR="$DEMO_DIR/out"
-TMP_DIR="$DEMO_DIR/tmp"
+CI_DIR="$ROOT_DIR/ci"
+OUT_DIR="$ROOT_DIR/devsecops-demo/out"
+TMP_DIR="$ROOT_DIR/devsecops-demo/tmp"
 
 # shellcheck disable=SC1091
-source "$DEMO_DIR/config/tool-versions.env"
+source "$CI_DIR/config/tool-versions.env"
 
 DEMO_NETWORK="${DEVSECOPS_NETWORK:-pvision-devsecops-demo-net}"
-FRONTEND_CONTAINER="pvision-devsecops-demo-frontend"
-FRONTEND_IMAGE="pvision-devsecops-demo-frontend:demo"
 REDIS_CONTAINER="pvision-devsecops-demo-redis"
 GATEWAY_CONTAINER="pvision-devsecops-demo-gateway"
 GATEWAY_IMAGE="pvision-devsecops-demo-gateway:demo"
@@ -42,5 +40,5 @@ path.write_text(json.dumps({
 PY
 }
 
-export ROOT_DIR DEMO_DIR OUT_DIR TMP_DIR
-export DEMO_NETWORK FRONTEND_CONTAINER FRONTEND_IMAGE REDIS_CONTAINER GATEWAY_CONTAINER GATEWAY_IMAGE
+export ROOT_DIR CI_DIR OUT_DIR TMP_DIR
+export DEMO_NETWORK REDIS_CONTAINER GATEWAY_CONTAINER GATEWAY_IMAGE

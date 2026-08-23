@@ -8,15 +8,14 @@ mkdir -p \
   "$OUT_DIR/01-testing/unit" \
   "$OUT_DIR/01-testing/integration" \
   "$OUT_DIR/01-testing/load" \
-  "$OUT_DIR/02-container" \
   "$OUT_DIR/03-security/sast" \
-  "$OUT_DIR/03-security/image" \
+  "$OUT_DIR/03-security/images" \
   "$OUT_DIR/03-security/dast" \
   "$OUT_DIR/04-compliance/iac" \
   "$OUT_DIR/04-compliance/git" \
   "$OUT_DIR/04-compliance/gdpr" \
   "$OUT_DIR/05-vulnerability" \
-  "$OUT_DIR/06-presentation/raw-screenshots"
+  "$OUT_DIR/05-runtime/logs"
 
 {
   echo "Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -32,7 +31,7 @@ python3 - <<'PY'
 import json, os
 from pathlib import Path
 versions = {}
-for line in (Path(os.environ["DEMO_DIR"]) / "config" / "tool-versions.env").read_text().splitlines():
+for line in (Path(os.environ["CI_DIR"]) / "config" / "tool-versions.env").read_text().splitlines():
     if line and not line.startswith("#"):
         key, value = line.split("=", 1)
         versions[key] = value

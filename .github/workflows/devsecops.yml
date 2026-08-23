@@ -34,7 +34,7 @@ permissions:
 env:
   CI: "true"
   MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
-  DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-ci.txt"
+  DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-project-ci.txt"
   # Repository secret with the same name expected by docker/docker-compose.yml.
   MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
@@ -99,8 +99,8 @@ jobs:
           for sql in sql/pmhub-system.sql sql/pmhub-project.sql sql/pmhub-workflow.sql sql/pmhub-gen.sql sql/pmhub_seata.sql; do
             mysql -h 127.0.0.1 -u root -proot < "$sql"
           done
-      - name: Run Maven tests with JaCoCo
-        run: mvn test -B -Dspring.profiles.active=test
+      - name: Run unit tests and collect CI evidence
+        run: bash ci/scripts/preflight.sh && bash ci/scripts/run-unit-tests.sh
       - name: Publish JUnit report
         if: always()
         continue-on-error: true
@@ -114,9 +114,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-unit-test
-          path: |
-            **/target/surefire-reports/
-            **/target/site/jacoco/
+          path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 7
 
@@ -157,13 +155,13 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Run Semgrep evidence scan
-        run: bash devsecops-demo/scripts/preflight.sh && bash devsecops-demo/scripts/run-sast.sh
+        run: bash ci/scripts/preflight.sh && bash ci/scripts/run-sast.sh
       - name: Upload SAST artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-sast
-          path: devsecops-demo/out/03-security/sast/
+          path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 7
 
@@ -201,7 +199,7 @@ jobs:
   build:
     name: Build Maven Package
     runs-on: ubuntu-latest
-    needs: [unit-test, dependency-scan, sast]
+    needs: [unit-test, sast]
     if: always() && needs.unit-test.result == 'success'
     steps:
       - uses: actions/checkout@v4
@@ -274,12 +272,14 @@ jobs:
           cache: maven
       - name: Install runtime dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+      - name: Build runtime JARs for Compose contexts
+        run: mvn clean package -B -DskipTests -U
       - name: Run full backend Compose runtime
         env:
           RUN_DAST: ${{ github.event_name == 'workflow_dispatch' && inputs.run_dast || false }}
         run: |
-          bash devsecops-demo/scripts/preflight.sh
-          bash devsecops-demo/scripts/run-full-project-runtime.sh
+          bash ci/scripts/preflight.sh
+          bash ci/scripts/run-full-project-runtime.sh
       - name: Upload full project runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -328,7 +328,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-image-scan-${{ matrix.service.name }}
-          path: devsecops-demo/out/03-security/images/${{ matrix.service.name }}/
+          path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 7
 
@@ -341,10 +341,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Download CI evidence before compliance packaging
+        uses: actions/download-artifact@v4
+        with:
+          pattern: devsecops-ci-*
+          path: devsecops-demo/out/
+          merge-multiple: true
       - name: Generate compliance evidence
-        run: bash devsecops-demo/scripts/preflight.sh && bash devsecops-demo/scripts/generate-compliance.sh
+        run: bash ci/scripts/preflight.sh && bash ci/scripts/generate-compliance.sh
       - name: Verify required artifacts
-        run: bash devsecops-demo/scripts/verify-artifacts.sh
+        run: bash ci/scripts/verify-artifacts.sh
       - name: Upload compliance artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -370,9 +376,9 @@ jobs:
           merge-multiple: true
       - name: Generate unified metadata and verify artifacts
         run: |
-          bash devsecops-demo/scripts/normalize-artifact-permissions.sh
-          bash devsecops-demo/scripts/sanitize-artifacts.sh
-          bash devsecops-demo/scripts/verify-artifacts.sh
+          bash ci/scripts/normalize-artifact-permissions.sh
+          bash ci/scripts/sanitize-artifacts.sh
+          bash ci/scripts/verify-artifacts.sh
       - name: Upload unified evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -381,3 +387,23 @@ jobs:
           path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 90
+
+  pipeline-summary:
+    name: Pipeline Result Summary
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, dependency-scan, sast, sonarcloud, build, build-all-service-images, scan-all-service-images, full-project-runtime, compliance, evidence-package]
+    if: always()
+    steps:
+      - name: Print job results
+        run: |
+          echo "lint=${{ needs.lint.result }}"
+          echo "unit-test=${{ needs.unit-test.result }}"
+          echo "dependency-scan=${{ needs.dependency-scan.result }}"
+          echo "sast=${{ needs.sast.result }}"
+          echo "sonarcloud=${{ needs.sonarcloud.result }}"
+          echo "build=${{ needs.build.result }}"
+          echo "build-all-service-images=${{ needs.build-all-service-images.result }}"
+          echo "scan-all-service-images=${{ needs.scan-all-service-images.result }}"
+          echo "full-project-runtime=${{ needs.full-project-runtime.result }}"
+          echo "compliance=${{ needs.compliance.result }}"
+          echo "evidence-package=${{ needs.evidence-package.result }}"

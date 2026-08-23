@@ -11,13 +11,13 @@ export const options = {
   },
 };
 
-const target = __ENV.TARGET_URL || 'http://pvision-devsecops-demo-frontend/health';
+const target = __ENV.TARGET_URL || 'http://pmhub-gateway:6880/actuator/health';
 
 export default function () {
-  const response = http.get(target, { tags: { assessment: 'frontend-smoke' } });
+  const response = http.get(target, { tags: { assessment: 'gateway-health' } });
   check(response, {
     'HTTP status is 200': (r) => r.status === 200,
-    'response identifies demo service': (r) => r.body.includes('pvision-frontend-demo'),
+    'response contains a health status': (r) => r.body.includes('status'),
   });
 }
 

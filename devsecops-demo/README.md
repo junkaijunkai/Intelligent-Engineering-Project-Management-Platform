@@ -1,29 +1,22 @@
-# DevSecOps Demo Evidence
+# DevSecOps Evidence Helpers
 
-This directory contains a time-bounded, manually triggered evidence pipeline for the DevSecOps demo.
+This directory contains scripts and configuration used by the project-wide DevSecOps CI workflow.
 
 ## Scope
 
-- The frontend demo container is the primary integration, load, container, and DAST target.
-- The gateway container is optional evidence and never blocks the primary evidence package.
+- The full backend Docker Compose environment is the CI runtime target.
+- Gateway is the single HTTP entrypoint for integration, load, and DAST checks.
 - Security findings are retained as evidence; missing or invalid reports fail verification.
 - Generated reports are written to `out/` and are never committed.
 
 ## Local execution
 
 ```bash
-bash devsecops-demo/scripts/run-all.sh
+bash ci/scripts/run-all.sh
 ```
 
 ## GitHub execution
 
-Push the committed workflow, then run **DevSecOps Demo Evidence** manually from the GitHub Actions page.
-
-The GitHub Actions workflow uploads a native evidence package under `devsecops-demo/out/`.
-It keeps tool reports such as JUnit, JaCoCo, k6, Semgrep, Trivy, ZAP, Git audit, and GDPR
-mapping artifacts, but does not require presentation screenshots. Tool failures and scan
-findings are recorded in the evidence status files instead of blocking artifact upload.
-
-For CD demonstration, the workflow publishes the frontend demo image to GHCR and verifies it
-in a GitHub Actions ephemeral staging container. This is a short-lived deployment evidence
-environment for assessment and presentation, not a persistent company intranet deployment.
+The unified workflow is `.github/workflows/devsecops.yml`; reusable CI scripts and configuration live under `ci/`.
+It builds and scans all backend service images, starts the full Compose runtime on a hosted
+runner, and uploads project-level evidence. OWASP, SonarCloud, and DAST are manual options.

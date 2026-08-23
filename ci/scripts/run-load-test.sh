@@ -14,7 +14,7 @@ set +e
 docker run --rm \
   --network "$DEMO_NETWORK" \
   -e TARGET_URL="$target_url" \
-  -v "$DEMO_DIR/load:/scripts:ro" \
+  -v "$CI_DIR/load:/scripts:ro" \
   -v "$EVIDENCE_DIR:/evidence" \
   "$K6_IMAGE" run /scripts/k6-smoke.js \
   > "$EVIDENCE_DIR/k6-console.txt" 2>&1
