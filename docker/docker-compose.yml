@@ -5,9 +5,10 @@ version: '3.8'
 services:
   pmhub-nacos:
     container_name: pmhub-nacos
-    image: nacos/nacos-server
+    image: nacos/nacos-server:v2.2.3
     build:
       context: ./nacos
+      dockerfile: dockerfile
     environment:
       - MODE=standalone
     healthcheck:
@@ -55,9 +56,10 @@ services:
       start_period: 30s
   pmhub-redis:
     container_name: pmhub-redis
-    image: redis
+    image: redis:7-alpine
     build:
       context: ./redis
+      dockerfile: dockerfile
     ports:
       - "6379:6379"
     volumes:

@@ -68,26 +68,65 @@ done
 compose=(docker compose -p "$PROJECT_NAME" -f "$COMPOSE_BASE" -f "$COMPOSE_OVERRIDE")
 export CI_COMPOSE_FILE="$COMPOSE_BASE:$COMPOSE_OVERRIDE"
 export COMPOSE_PROJECT_NAME="$PROJECT_NAME"
+
+capture_runtime_evidence() {
+  "${compose[@]}" ps > "$EVIDENCE_DIR/compose-ps.txt" 2>&1 || true
+  for service in pmhub-nacos pmhub-mysql pmhub-redis pmhub-seata pmhub-gateway pmhub-auth pmhub-system pmhub-project pmhub-workflow pmhub-gen pmhub-job pmhub-monitor; do
+    docker logs "$service" > "$EVIDENCE_DIR/logs/$service.log" 2>&1 || true
+  done
+}
+
 "${compose[@]}" up -d pmhub-mysql
+mysql_ready=false
 for i in {1..60}; do
-  if MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root -e 'SELECT 1' >/dev/null 2>&1; then break; fi
+  if MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root -e 'SELECT 1' >/dev/null 2>&1; then
+    mysql_ready=true
+    break
+  fi
   sleep 2
 done
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$ROOT_DIR/sql/pmhub-system.sql"
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$ROOT_DIR/sql/pmhub-project.sql"
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$ROOT_DIR/sql/pmhub-workflow.sql"
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$ROOT_DIR/sql/pmhub-gen.sql"
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$ROOT_DIR/sql/pmhub_seata.sql"
-MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$NACOS_SQL"
+if [ "$mysql_ready" != true ]; then
+  capture_runtime_evidence
+  printf '{"status":"FAIL","reason":"MySQL readiness check timed out."}\n' > "$EVIDENCE_DIR/gateway-health.json"
+  record_status project-runtime FAILED "MySQL did not become ready; runtime logs and status were retained."
+  exit 1
+fi
 
-"${compose[@]}" up -d --build
+run_sql() {
+  local sql_file="$1"
+  if ! MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$sql_file"; then
+    capture_runtime_evidence
+    printf '{"status":"FAIL","reason":"SQL initialization failed: %s"}\n' "$(basename "$sql_file")" > "$EVIDENCE_DIR/gateway-health.json"
+    record_status project-runtime FAILED "SQL initialization failed; runtime logs and status were retained."
+    exit 1
+  fi
+}
+
+run_sql "$ROOT_DIR/sql/pmhub-system.sql"
+run_sql "$ROOT_DIR/sql/pmhub-project.sql"
+run_sql "$ROOT_DIR/sql/pmhub-workflow.sql"
+run_sql "$ROOT_DIR/sql/pmhub-gen.sql"
+run_sql "$ROOT_DIR/sql/pmhub_seata.sql"
+run_sql "$NACOS_SQL"
+
+if ! "${compose[@]}" up -d --build; then
+  capture_runtime_evidence
+  printf '{"status":"FAIL","reason":"Compose startup failed before Gateway health check."}\n' > "$EVIDENCE_DIR/gateway-health.json"
+  record_status project-runtime FAILED "Compose startup failed; runtime logs and status were retained."
+  exit 1
+fi
 for i in {1..90}; do
   gateway_status=$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:6880/actuator/health || true)
   if [ "$gateway_status" = "200" ]; then break; fi
   sleep 4
 done
 
-curl --fail --silent --show-error http://127.0.0.1:6880/actuator/health > "$EVIDENCE_DIR/gateway-health.json"
+if ! curl --fail --silent --show-error http://127.0.0.1:6880/actuator/health > "$EVIDENCE_DIR/gateway-health.json"; then
+  capture_runtime_evidence
+  printf '{"status":"FAIL","reason":"Gateway health check failed after Compose startup."}\n' > "$EVIDENCE_DIR/gateway-health.json"
+  record_status project-runtime FAILED "Gateway health check failed; runtime logs and status were retained."
+  exit 1
+fi
 "${compose[@]}" ps > "$EVIDENCE_DIR/compose-ps.txt"
 docker network inspect "${PROJECT_NAME}_default" > "$EVIDENCE_DIR/network-inspect.json"
 
