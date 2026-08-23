@@ -1,15 +1,11 @@
-DROP
-DATABASE IF EXISTS `pmhub-nacos`;
+DROP DATABASE IF EXISTS `pmhub-nacos`;
 
-CREATE
-DATABASE  `pmhub-nacos` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `pmhub-nacos` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
-SET
-FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 0;
 
-USE
-`pmhub-nacos`;
+USE `pmhub-nacos`;
 
 
 -- ----------------------------
@@ -590,5 +586,4 @@ INSERT INTO `users` (`username`, `password`, `enabled`)
 VALUES ('nacos', '$2a$10$EuWPZHzz32dJN7jexM34MOeYirDdFAZm2kuWj7VEOJhhZkDrxfvUu', 1);
 COMMIT;
 
-SET
-FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 1;

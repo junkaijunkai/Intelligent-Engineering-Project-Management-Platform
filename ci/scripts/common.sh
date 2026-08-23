@@ -5,6 +5,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CI_DIR="$ROOT_DIR/ci"
 OUT_DIR="$ROOT_DIR/devsecops-demo/out"
 TMP_DIR="$ROOT_DIR/devsecops-demo/tmp"
+DEPLOY_ENV="${DEPLOY_ENV:-local}"
+COMPLIANCE_MODE="${COMPLIANCE_MODE:-$DEPLOY_ENV}"
 
 # shellcheck disable=SC1091
 source "$CI_DIR/config/tool-versions.env"
@@ -40,5 +42,5 @@ path.write_text(json.dumps({
 PY
 }
 
-export ROOT_DIR CI_DIR OUT_DIR TMP_DIR
+export ROOT_DIR CI_DIR OUT_DIR TMP_DIR DEPLOY_ENV COMPLIANCE_MODE
 export DEMO_NETWORK REDIS_CONTAINER GATEWAY_CONTAINER GATEWAY_IMAGE

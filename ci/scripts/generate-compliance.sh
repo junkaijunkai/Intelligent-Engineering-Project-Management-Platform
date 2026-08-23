@@ -15,4 +15,8 @@ if [ ! -s "$VULN_DIR/remediation-history.txt" ]; then
 fi
 
 python3 "$CI_DIR/scripts/generate_compliance_evidence.py"
+if ! bash "$CI_DIR/scripts/run-iac-scan.sh"; then
+  record_status compliance FAILED "IaC policy scan found blocking findings."
+  exit 1
+fi
 record_status compliance PASS "Git audit trail, historical remediation, GDPR mapping, and rescan evidence were generated."

@@ -1,0 +1,14 @@
+{
+  "mode": "ci",
+  "rules": {
+    "hardcoded-development-credential": "warning",
+    "latest-image": "warning",
+    "privileged-container": "error",
+    "public-data-port": "warning",
+    "missing-core-healthcheck": "warning",
+    "missing-restart-policy": "warning",
+    "missing-resource-limits": "warning",
+    "root-container": "warning",
+    "critical-iac-finding": "error"
+  }
+}

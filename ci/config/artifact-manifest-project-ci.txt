@@ -20,6 +20,10 @@
 04-compliance/git/git-audit-trail.txt
 04-compliance/gdpr/gdpr-assessment-mapping.html
 04-compliance/gdpr/gdpr-assessment-mapping.json
+04-compliance/iac/policy-results.json
+04-compliance/iac/policy-results.html
+04-compliance/iac/policy-results.sarif
+04-compliance/iac/policy-results.txt
 05-vulnerability/remediation-and-rescan.html
 05-vulnerability/remediation-and-rescan.json
 05-runtime/compose-ps.txt

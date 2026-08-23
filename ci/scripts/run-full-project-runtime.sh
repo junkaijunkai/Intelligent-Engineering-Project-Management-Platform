@@ -6,13 +6,13 @@ source "$(dirname "$0")/common.sh"
 : "${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set}"
 PROJECT_NAME="${CI_COMPOSE_PROJECT_NAME:-pvision-ci}"
 COMPOSE_BASE="$ROOT_DIR/docker/docker-compose.yml"
-CI_DIR="${RUNNER_TEMP:-$TMP_DIR}/pvision-ci-compose"
-COMPOSE_OVERRIDE="$CI_DIR/docker-compose.ci.yml"
-NACOS_CONFIG="$CI_DIR/nacos-application.properties"
-SEATA_CONFIG="$CI_DIR/seata-application.yml"
-NACOS_SQL="$CI_DIR/pmhub_nacos-ci.sql"
+RUNTIME_TMP_DIR="${RUNNER_TEMP:-$TMP_DIR}/pvision-ci-compose"
+COMPOSE_OVERRIDE="$RUNTIME_TMP_DIR/docker-compose.ci.yml"
+NACOS_CONFIG="$RUNTIME_TMP_DIR/nacos-application.properties"
+SEATA_CONFIG="$RUNTIME_TMP_DIR/seata-application.yml"
+NACOS_SQL="$RUNTIME_TMP_DIR/pmhub_nacos-ci.sql"
 EVIDENCE_DIR="$OUT_DIR/05-runtime"
-mkdir -p "$CI_DIR" "$EVIDENCE_DIR/logs"
+mkdir -p "$RUNTIME_TMP_DIR" "$EVIDENCE_DIR/logs"
 
 cleanup() {
   docker compose -p "$PROJECT_NAME" -f "$COMPOSE_BASE" -f "$COMPOSE_OVERRIDE" down -v --remove-orphans >/dev/null 2>&1 || true
@@ -34,6 +34,7 @@ sed -e "s#jdbc:mysql://127.0.0.1:3306/#jdbc:mysql://pmhub-mysql:3306/#g" \
     -e "s/host: localhost/host: pmhub-redis/g" \
     -e "s/host: 127.0.0.1/host: pmhub-redis/g" \
     -e "s#redis://localhost:6379#redis://pmhub-redis:6379#g" \
+    -e "s|server-addr: 127.0.0.1:8848|server-addr: pmhub-nacos:8848|g" \
     -e "s/password: 123456/password: ${MYSQL_ROOT_PASSWORD}/g" \
     "$ROOT_DIR/sql/pmhub_nacos.sql" > "$NACOS_SQL"
 

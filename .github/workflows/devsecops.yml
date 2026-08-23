@@ -33,6 +33,8 @@ permissions:
 
 env:
   CI: "true"
+  DEPLOY_ENV: ci
+  COMPLIANCE_MODE: ci
   MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
   DEVSECOPS_ARTIFACT_MANIFEST: "artifact-manifest-project-ci.txt"
   # Repository secret with the same name expected by docker/docker-compose.yml.
@@ -336,6 +338,7 @@ jobs:
     name: Compliance as Code
     runs-on: ubuntu-latest
     needs: [scan-all-service-images, full-project-runtime]
+    if: always() && (needs.scan-all-service-images.result == 'success' || needs.scan-all-service-images.result == 'failure' || needs.scan-all-service-images.result == 'cancelled') && (needs.full-project-runtime.result == 'success' || needs.full-project-runtime.result == 'failure' || needs.full-project-runtime.result == 'cancelled')
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
