@@ -34,6 +34,7 @@ Pvision/PmHub 是面向企业项目协作的项目管理与流程自动化平台
 - CI 的 Nacos 初始化通过 `mysql` 客户端执行 `sql/pmhub_nacos.sql`；`DROP/CREATE/USE/SET` 等语句必须保持关键字与参数在同一条语句中，不能按 Navicat 导出格式拆行，否则客户端会提前执行不完整语句。
 - CI Compose runtime 会生成隔离配置并将 Nacos、MySQL、Redis 的容器内地址替换为 Compose 服务名；Nacos 数据库内嵌配置中的 `server-addr` 也必须使用 `pmhub-nacos:8848`，不能保留 `127.0.0.1`。
 - Compose 中的 Nacos 镜像固定为 `nacos/nacos-server:v2.2.3`，必须与当前 Nacos 2.x SQL schema 和 Spring Cloud Alibaba 2021.x 依赖保持兼容，避免使用漂移的 `latest` 标签。
-- 关键发现和后续决策需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
+- Nacos 在 GitHub Actions 的 cgroup v2 + Java 8 环境下禁用 Micrometer processor/system metrics；该兼容参数只写入 `run-full-project-runtime.sh` 生成的临时配置，不改变本地或正式 Nacos 配置。
+- 关键发现需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
 - 处理多任务时，灵活使用sub-agents：按任务间的依赖关系来决定sub-agents是并行执行还是线性执行
 - 每次做完写任务后都要：检查代码语法 - 运行相应的测试 - 验证需求已完成，且没有引入回归（不要自我验证、不要信任自己完成的工作，而是让独立的sub-agent来对你完成的工作进行对抗性评估）
