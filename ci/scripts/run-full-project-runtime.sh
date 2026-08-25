@@ -28,8 +28,7 @@ trap cleanup EXIT
       -e "s|^db.password=.*|db.password=${MYSQL_ROOT_PASSWORD}|" \
       "$ROOT_DIR/docker/nacos/conf/application.properties"
   printf '%s\n' \
-    'management.metrics.binders.processor.enabled=false' \
-    'management.metrics.binders.system.enabled=false'
+    'spring.autoconfigure.exclude=org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration'
 } > "$NACOS_CONFIG"
 sed -e "s|jdbc:mysql://localhost:3306/|jdbc:mysql://pmhub-mysql:3306/|g" \
     -e "s|127.0.0.1:8848|pmhub-nacos:8848|g" \

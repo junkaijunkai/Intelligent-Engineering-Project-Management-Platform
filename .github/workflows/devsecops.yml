@@ -1,15 +1,15 @@
 name: DevSecOps CI
 
 on:
-  push:
-    branches:
-      - master
-      - dev
-      - pre
-  pull_request:
-    branches:
-      - master
-      - dev
+  #push:
+   # branches:
+    #  - master
+     # - dev
+     # - pre
+  #pull_request:
+   # branches:
+    #  - master
+    #  - dev
   workflow_dispatch:
     inputs:
       run_owasp:
@@ -23,7 +23,7 @@ on:
         required: false
         default: false
       run_dast:
-        description: "Run the time-consuming DAST scan"
+        description: "Run DAST scan"
         type: boolean
         required: false
         default: false
