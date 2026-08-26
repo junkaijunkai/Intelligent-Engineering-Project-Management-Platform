@@ -21,6 +21,7 @@ import org.apache.rocketmq.client.apis.consumer.FilterExpression;
 import org.apache.rocketmq.client.apis.consumer.FilterExpressionType;
 import org.apache.rocketmq.client.apis.consumer.PushConsumer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Component;
  * @date 2023/07/21
  */
 @Component
+@ConditionalOnProperty(
+        prefix = "pmhub.rocketMQ", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class OAMessageConsumer implements CommandLineRunner {
 
     /** 微信topic */

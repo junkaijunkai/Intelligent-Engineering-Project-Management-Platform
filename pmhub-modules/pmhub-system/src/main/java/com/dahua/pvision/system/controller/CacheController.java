@@ -1,5 +1,6 @@
 package com.dahua.pvision.system.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.dahua.pvision.base.core.constant.CacheConstants;
 import com.dahua.pvision.base.core.core.domain.AjaxResult;
 import com.dahua.pvision.base.core.utils.StringUtils;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/system/monitor/cache")
 public class CacheController {
     private static final List<SysCache> caches = new ArrayList<SysCache>();
-    @Autowired private RedisTemplate<String, String> redisTemplate;
+    @Autowired private RedisTemplate<Object, Object> redisTemplate;
 
     {
         caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "用户信息"));
@@ -73,14 +74,16 @@ public class CacheController {
     @RequiresPermissions("monitor:cache:list")
     @GetMapping("/getKeys/{cacheName}")
     public AjaxResult getCacheKeys(@PathVariable String cacheName) {
-        Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
+        Set<Object> cacheKeys = redisTemplate.keys(cacheName + "*");
         return AjaxResult.success(cacheKeys);
     }
 
     @RequiresPermissions("monitor:cache:list")
     @GetMapping("/getValue/{cacheName}/{cacheKey}")
     public AjaxResult getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey) {
-        String cacheValue = redisTemplate.opsForValue().get(cacheKey);
+        Object cacheObject = redisTemplate.opsForValue().get(cacheKey);
+        String cacheValue =
+                cacheObject instanceof String ? (String) cacheObject : JSON.toJSONString(cacheObject);
         SysCache sysCache = new SysCache(cacheName, cacheKey, cacheValue);
         return AjaxResult.success(sysCache);
     }
@@ -88,7 +91,7 @@ public class CacheController {
     @RequiresPermissions("monitor:cache:list")
     @DeleteMapping("/clearCacheName/{cacheName}")
     public AjaxResult clearCacheName(@PathVariable String cacheName) {
-        Collection<String> cacheKeys = redisTemplate.keys(cacheName + "*");
+        Collection<Object> cacheKeys = redisTemplate.keys(cacheName + "*");
         redisTemplate.delete(cacheKeys);
         return AjaxResult.success();
     }
@@ -103,7 +106,7 @@ public class CacheController {
     @RequiresPermissions("monitor:cache:list")
     @DeleteMapping("/clearCacheAll")
     public AjaxResult clearCacheAll() {
-        Collection<String> cacheKeys = redisTemplate.keys("*");
+        Collection<Object> cacheKeys = redisTemplate.keys("*");
         redisTemplate.delete(cacheKeys);
         return AjaxResult.success();
     }

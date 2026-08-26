@@ -1,5 +1,6 @@
 package com.dahua.pvision.base.security.utils;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.dahua.pvision.base.core.config.redis.RedisService;
 import com.dahua.pvision.base.core.constant.CacheConstants;
@@ -31,10 +32,13 @@ public class DictUtils {
      * @return dictDatas 字典数据列表
      */
     public static List<SysDictData> getDictCache(String key) {
-        JSONArray arrayCache =
+        Object cacheObject =
                 SpringUtils.getBean(RedisService.class).getCacheObject(getCacheKey(key));
-        if (StringUtils.isNotNull(arrayCache)) {
-            return arrayCache.toList(SysDictData.class);
+        if (cacheObject instanceof JSONArray) {
+            return ((JSONArray) cacheObject).toList(SysDictData.class);
+        }
+        if (cacheObject instanceof Collection) {
+            return JSON.parseArray(JSON.toJSONString(cacheObject), SysDictData.class);
         }
         return null;
     }

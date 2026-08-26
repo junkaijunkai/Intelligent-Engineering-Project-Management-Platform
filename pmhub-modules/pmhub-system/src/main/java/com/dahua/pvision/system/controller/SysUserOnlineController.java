@@ -1,6 +1,5 @@
 package com.dahua.pvision.system.controller;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.dahua.pvision.base.core.annotation.Log;
 import com.dahua.pvision.base.core.config.redis.RedisService;
 import com.dahua.pvision.base.core.constant.CacheConstants;
@@ -11,6 +10,7 @@ import com.dahua.pvision.base.core.core.page.TableDataInfo;
 import com.dahua.pvision.base.core.enums.BusinessType;
 import com.dahua.pvision.base.core.utils.StringUtils;
 import com.dahua.pvision.base.security.annotation.RequiresPermissions;
+import com.dahua.pvision.base.security.service.TokenService;
 import com.dahua.pvision.system.domain.SysUserOnline;
 import com.dahua.pvision.system.service.ISysUserOnlineService;
 import java.util.ArrayList;
@@ -28,14 +28,18 @@ public class SysUserOnlineController extends BaseController {
 
     @Autowired private RedisService redisService;
 
+    @Autowired private TokenService tokenService;
+
     @RequiresPermissions("monitor:online:list")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName) {
         Collection<String> keys = redisService.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
         for (String key : keys) {
-            JSONObject jsonObject = redisService.getCacheObject(key);
-            LoginUser user = jsonObject.toJavaObject(LoginUser.class);
+            LoginUser user = tokenService.convertToLoginUser(redisService.getCacheObject(key));
+            if (StringUtils.isNull(user)) {
+                continue;
+            }
             if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {
                 if (StringUtils.equals(ipaddr, user.getIpaddr())
                         && StringUtils.equals(userName, user.getUsername())) {

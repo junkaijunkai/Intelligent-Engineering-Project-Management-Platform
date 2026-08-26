@@ -80,8 +80,7 @@ public class TokenService {
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
-                LoginUser user = redisService.getCacheObject(userKey);
-                return user;
+                return convertToLoginUser(redisService.getCacheObject(userKey));
             } catch (Exception e) {
             }
         }
@@ -97,16 +96,39 @@ public class TokenService {
         LoginUser user = null;
         try {
             if (StringUtils.isNotEmpty(token)) {
-                // 将user对象从JSON反序列化为Java
                 String userkey = JwtUtils.getUserKey(token, secret);
-                JSONObject jsonObject = redisService.getCacheObject(getTokenKey(userkey));
-                user = jsonObject.toJavaObject(LoginUser.class);
-                return user;
+                return convertToLoginUser(redisService.getCacheObject(getTokenKey(userkey)));
             }
         } catch (Exception e) {
             log.error("获取用户信息异常'{}'", e.getMessage());
         }
         return user;
+    }
+
+    /**
+     * 将 Redis 中的登录用户缓存转换为 LoginUser。
+     *
+     * <p>Redis 使用 FastJSON 保存对象时，可能直接恢复为 LoginUser，也可能因历史缓存或其他
+     * 序列化方式恢复为 JSONObject/Map。调用方不能假定 Redis 返回固定的具体类型。
+     *
+     * @param cacheObject Redis 缓存对象
+     * @return 登录用户，无法转换时返回 null
+     */
+    public LoginUser convertToLoginUser(Object cacheObject) {
+        if (cacheObject == null) {
+            return null;
+        }
+        if (cacheObject instanceof LoginUser) {
+            return (LoginUser) cacheObject;
+        }
+        if (cacheObject instanceof JSONObject) {
+            return ((JSONObject) cacheObject).toJavaObject(LoginUser.class);
+        }
+        if (cacheObject instanceof Map) {
+            return new JSONObject((Map) cacheObject).toJavaObject(LoginUser.class);
+        }
+        log.warn("Redis 登录用户缓存类型无法转换: {}", cacheObject.getClass().getName());
+        return null;
     }
 
     /** 设置用户身份信息 */
@@ -213,8 +235,9 @@ public class TokenService {
         Map<String, Object> tokensMap = redisService.getCacheKv("login_tokens:*");
         tokensMap.forEach(
                 (key, value) -> {
-                    if (Objects.equals(
-                            ((JSONObject) value).getLong("userId"), loginUser.getUserId())) {
+                    LoginUser cachedUser = convertToLoginUser(value);
+                    if (cachedUser != null
+                            && Objects.equals(cachedUser.getUserId(), loginUser.getUserId())) {
                         String token = key.replace(CacheConstants.LOGIN_TOKEN_KEY, "");
                         loginUser.setToken(token);
                         refreshToken(loginUser);

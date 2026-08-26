@@ -1,5 +1,6 @@
 package com.dahua.pvision.base.notice.utils;
 
+import com.alibaba.fastjson2.JSONObject;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.LogFactory;
@@ -10,6 +11,7 @@ import com.dahua.pvision.base.notice.domain.dto.ProcessWxMessageStateUpdateDTO;
 import com.dahua.pvision.base.notice.domain.entity.WxResult;
 import com.dahua.pvision.base.notice.enums.ButtonStateEnum;
 import java.io.IOException;
+import java.util.Map;
 import javax.annotation.Resource;
 import org.apache.rocketmq.client.apis.ClientConfiguration;
 import org.apache.rocketmq.client.apis.ClientConfigurationBuilder;
@@ -31,12 +33,12 @@ public class RocketMqUtils {
     /** 微信topic */
     private static String WX_TOPIC;
 
-    @Value("${pmhub.rocketMQ.addr}")
+    @Value("${pmhub.rocketMQ.addr:}")
     private void setAddr(String addr) {
         RocketMqUtils.addr = addr;
     }
 
-    @Value("${pmhub.rocketMQ.topic.wxMessage}")
+    @Value("${pmhub.rocketMQ.topic.wxMessage:pmhub-wx-message}")
     public void setWxTopic(String wxMessage) {
         WX_TOPIC = wxMessage;
     }
@@ -94,7 +96,15 @@ public class RocketMqUtils {
         LogFactory.get().info("清理消息：" + instId);
         try {
             // 清理消息
-            MessageDataDTO messageDataDTO = (MessageDataDTO) redisService.getCacheObject(instId);
+            Object cacheObject = redisService.getCacheObject(instId);
+            MessageDataDTO messageDataDTO = null;
+            if (cacheObject instanceof MessageDataDTO) {
+                messageDataDTO = (MessageDataDTO) cacheObject;
+            } else if (cacheObject instanceof JSONObject) {
+                messageDataDTO = ((JSONObject) cacheObject).toJavaObject(MessageDataDTO.class);
+            } else if (cacheObject instanceof Map) {
+                messageDataDTO = new JSONObject((Map) cacheObject).toJavaObject(MessageDataDTO.class);
+            }
             if (messageDataDTO != null) {
                 ProcessWxMessageStateUpdateDTO processWxMessageStateUpdateDTO =
                         new ProcessWxMessageStateUpdateDTO();

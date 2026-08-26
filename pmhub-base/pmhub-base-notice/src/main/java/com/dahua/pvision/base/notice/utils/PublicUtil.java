@@ -80,17 +80,17 @@ public class PublicUtil {
     /** 后端代理转发路由 */
     private static String SERVER_PATH = "";
 
-    @Value("${pmhub.workWx.corpid}")
+    @Value("${pmhub.workWx.corpid:}")
     private void setCorpId(String corpId) {
         PublicUtil.CORP_ID = corpId;
     }
 
-    @Value("${pmhub.workWx.corpsecret}")
+    @Value("${pmhub.workWx.corpsecret:}")
     private void setCorpSecret(String corpSecret) {
         PublicUtil.CORP_SECRET = corpSecret;
     }
 
-    @Value("${pmhub.workWx.agentid}")
+    @Value("${pmhub.workWx.agentid:0}")
     private void setAgentId(Integer agentid) {
         PublicUtil.AGENT_ID = agentid;
     }
@@ -99,7 +99,7 @@ public class PublicUtil {
         return AGENT_ID;
     }
 
-    @Value("${pmhub.workWx.path}")
+    @Value("${pmhub.workWx.path:}")
     private void setServerPath(String path) {
         SERVER_PATH = path;
     }

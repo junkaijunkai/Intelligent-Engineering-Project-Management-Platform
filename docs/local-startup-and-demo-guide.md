@@ -11,7 +11,7 @@
 | 基础设施 | MySQL 5.7 | 3306 | 必需 |
 | 基础设施 | Redis | 6379 | 必需 |
 | 基础设施 | Nacos 2.x | 8848 | 必需 |
-| 分布式事务 | Seata 1.5.2 | 8091 | 创建任务时建议启动 |
+| 分布式事务 | Seata 1.5.2 | 8091 | 必需 |
 | 后端 | System | 6801 | 必需 |
 | 后端 | Project | 6806 | 必需 |
 | 后端 | Workflow | 6808 | 录制审批时必需 |
@@ -23,7 +23,7 @@
 
 ## 2. 环境版本
 
-- JDK：项目目标版本为 Java 8；本地推荐使用 JDK 8 或 17。
+- JDK：项目目标版本为 Java 8；本地运行推荐使用 JDK 17。JDK 26 会与当前 Lombok、Spring Boot 2.7 和 Java 8 编译目标产生兼容问题。
 - Maven：3.6 及以上。
 - Node.js：使用仓库指定的 `v16.18.1`，不要直接使用 Node 26。
 - npm：随 Node 16 安装的版本即可。
@@ -61,7 +61,7 @@ mysql -uroot -p123456 < sql/pmhub-workflow.sql
 mysql -uroot -p123456 < sql/pmhub_nacos.sql
 ```
 
-如果要稳定演示“创建任务”涉及的 Seata 分布式事务，再执行：
+Seata 数据库是本地启动后端服务的必需依赖，必须执行：
 
 ```bash
 mysql -uroot -p123456 < sql/pmhub_seata.sql
@@ -76,7 +76,7 @@ pmhub-system
 pmhub-project
 pmhub-workflow
 pmhub-nacos
-pmhub-seata        # 使用 Seata 时
+pmhub-seata
 ```
 
 ## 4. 启动基础设施
@@ -122,7 +122,7 @@ pmhub-workflow-dev.yml
 
 逐项检查业务服务配置中的 MySQL 地址、用户名和密码；还要确认 Redis 地址是 `127.0.0.1:6379`。
 
-### 4.3 Seata（录制创建任务时建议启动）
+### 4.3 Seata（必需）
 
 将 Seata 配置为：
 
@@ -130,9 +130,30 @@ pmhub-workflow-dev.yml
 - 服务名：`seata-server`；
 - 分组：`SEATA_GROUP`；
 - 数据库：`pmhub-seata`；
-- 端口：`8091`。
+- 端口：`8091`；Seata 控制台端口为 `7091`（如果使用 Seata 1.5.2 的默认配置）。
 
-启动后，在 Nacos 服务列表确认 `seata-server` 已注册。只浏览项目列表时可以不启动 Seata；录制新建任务前应启动，否则 `@GlobalTransactional` 操作可能重试或失败。
+如果使用本机解压的 Seata Server，在 Seata 安装目录执行：
+
+```bash
+sh bin/seata-server.sh -h 127.0.0.1 -p 8091 -m db
+```
+
+启动前确认 Seata 的 `conf/application.yml` 使用 Nacos `127.0.0.1:8848`、注册分组 `SEATA_GROUP`，并连接数据库 `pmhub-seata`。仓库提供的参考配置位于 `docker/seata/seata-application.yml`。
+
+如果使用仓库 Docker Compose，可只启动 Seata 容器：
+
+```bash
+cd docker
+docker compose up -d pmhub-seata
+```
+
+启动后必须同时满足以下条件：
+
+1. `127.0.0.1:8091` 可以建立 TCP 连接；
+2. Nacos 服务列表中存在 `seata-server`，且注册地址可被本机 Java 服务访问；
+3. Seata 日志没有持续报 `pmhub-seata` 数据库连接或 Nacos 注册错误。
+
+project 和 workflow 启动时不要传 `--seata.enabled=false`。只有在临时浏览页面、明确不执行创建任务等事务操作时，才可以临时关闭 Seata。
 
 ### 4.4 关于仓库 Docker Compose 的重要说明
 
@@ -147,11 +168,20 @@ pmhub-workflow-dev.yml
 
 ## 5. 构建后端
 
-首次启动前，在仓库根目录安装所有 Maven 模块：
+首次启动或修改公共模块后，在仓库根目录使用 JDK 17 安装所有 Maven 模块：
 
 ```bash
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 \
 mvn clean install -DskipTests -Ddependency-check.skip=true
 ```
+
+确认：
+
+```bash
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 java -version
+```
+
+直接使用某个模块的 `-f ... spring-boot:run` 时，Maven 会从本地仓库加载公共模块；因此修改 `pmhub-base` 或 `pmhub-api` 后必须先执行上面的 `install`，否则可能继续运行旧版依赖。
 
 如果 IDE 仍然提示找不到内部模块，重新加载根目录 `pom.xml`，不要只导入某一个业务模块。
 
@@ -165,14 +195,14 @@ mvn clean install -DskipTests -Ddependency-check.skip=true
 4. `com.dahua.pvision.auth.PmHubAuthApplication`
 5. `com.dahua.pvision.gateway.PmHubGatewayApplication`
 
-也可以开五个终端，在完成根项目 `mvn install` 后分别执行：
+也可以开五个终端，在完成根项目 `mvn install`、并确认 Seata 已启动后分别执行。每个服务使用 JDK 17；`JM.LOG.PATH` 用于指定 Nacos 客户端日志目录，避免默认目录不可写：
 
 ```bash
-mvn -f pmhub-modules/pmhub-system/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
-mvn -f pmhub-modules/pmhub-project/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
-mvn -f pmhub-modules/pmhub-workflow/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
-mvn -f pmhub-auth/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
-mvn -f pmhub-gateway/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 mvn -f pmhub-modules/pmhub-system/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=-DJM.LOG.PATH=/tmp/pvision-system-logs
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 mvn -f pmhub-modules/pmhub-project/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=-DJM.LOG.PATH=/tmp/pvision-project-logs
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 mvn -f pmhub-modules/pmhub-workflow/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=-DJM.LOG.PATH=/tmp/pvision-workflow-logs
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 mvn -f pmhub-auth/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=-DJM.LOG.PATH=/tmp/pvision-auth-logs
+JAVA_HOME=/opt/homebrew/opt/openjdk@17 mvn -f pmhub-gateway/pom.xml spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments=-DJM.LOG.PATH=/tmp/pvision-gateway-logs
 ```
 
 这里必须显式传入 `dev`。各微服务的 `bootstrap.yml` 当前将
@@ -230,8 +260,8 @@ WHERE user_name = 'admin';
 按以下顺序检查，全部通过后再开始录屏：
 
 1. `redis-cli ping` 返回 `PONG`。
-2. Nacos 控制台能看到 5 个后端服务和 Seata（如使用）。
-3. 五个 Java 控制台都没有持续刷连接数据库、Redis、Nacos 或 Seata 的错误。
+2. Nacos 控制台能看到 5 个后端服务和 `seata-server`。
+3. `127.0.0.1:8091` 可访问，五个 Java 控制台都没有持续刷连接数据库、Redis、Nacos 或 Seata 的错误。
 4. 打开前端后，浏览器 Network 中 `/dev-api/...` 请求不是 `502/503`。
 5. 使用演示账号完成一次登录、退出、重新登录。
 6. 提前创建一套演示项目、阶段、成员和任务，避免空页面。
@@ -288,9 +318,9 @@ port=8080 npm run dev
 
 IDEA 启动时则在 Run Configuration 中设置 `Active profiles` 为 `dev`，或在 VM options 中加入 `-Dspring.profiles.active=dev`。
 
-### 新建任务失败并出现 Seata 错误
+### Seata 启动失败或新建任务出现 Seata 错误
 
-确认 `pmhub-seata` 数据库已初始化、Seata Server 已启动并注册为 `seata-server`，同时检查 `pmhub-project-dev.yml` 的事务组映射。
+确认 `pmhub-seata` 数据库已初始化、Seata Server 已监听 `8091` 并注册为 `seata-server`，同时检查 `pmhub-project-dev.yml` 的事务组映射。不要只检查 Seata 控制台 `7091`，业务服务连接的是事务端口 `8091`。
 
 ### Workflow 启动时报表不存在
 

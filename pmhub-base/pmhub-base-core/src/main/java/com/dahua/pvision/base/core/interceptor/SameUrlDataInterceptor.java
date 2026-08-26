@@ -5,6 +5,7 @@ import com.dahua.pvision.base.core.annotation.RepeatSubmit;
 import com.dahua.pvision.base.core.config.redis.RedisService;
 import com.dahua.pvision.base.core.constant.CacheConstants;
 import com.dahua.pvision.base.core.filter.RepeatedlyRequestWrapper;
+import com.dahua.pvision.base.core.core.text.Convert;
 import com.dahua.pvision.base.core.utils.StringUtils;
 import com.dahua.pvision.base.core.utils.http.HttpHelper;
 import java.util.HashMap;
@@ -54,10 +55,11 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
         String cacheRepeatKey = CacheConstants.REPEAT_SUBMIT_KEY + url + submitKey;
 
         Object sessionObj = redisService.getCacheObject(cacheRepeatKey);
-        if (sessionObj != null) {
-            Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
-            if (sessionMap.containsKey(url)) {
-                Map<String, Object> preDataMap = (Map<String, Object>) sessionMap.get(url);
+        if (sessionObj instanceof Map) {
+            Map<?, ?> sessionMap = (Map<?, ?>) sessionObj;
+            Object preDataObject = sessionMap.get(url);
+            if (preDataObject instanceof Map) {
+                Map<?, ?> preDataMap = (Map<?, ?>) preDataObject;
                 if (compareParams(nowDataMap, preDataMap)
                         && compareTime(nowDataMap, preDataMap, annotation.interval())) {
                     return true;
@@ -72,17 +74,19 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
     }
 
     /** 判断参数是否相同 */
-    private boolean compareParams(Map<String, Object> nowMap, Map<String, Object> preMap) {
-        String nowParams = (String) nowMap.get(REPEAT_PARAMS);
-        String preParams = (String) preMap.get(REPEAT_PARAMS);
+    private boolean compareParams(Map<?, ?> nowMap, Map<?, ?> preMap) {
+        String nowParams = Convert.toStr(nowMap.get(REPEAT_PARAMS), "");
+        String preParams = Convert.toStr(preMap.get(REPEAT_PARAMS), "");
         return nowParams.equals(preParams);
     }
 
     /** 判断两次间隔时间 */
-    private boolean compareTime(
-            Map<String, Object> nowMap, Map<String, Object> preMap, int interval) {
-        long time1 = (Long) nowMap.get(REPEAT_TIME);
-        long time2 = (Long) preMap.get(REPEAT_TIME);
+    private boolean compareTime(Map<?, ?> nowMap, Map<?, ?> preMap, int interval) {
+        Long time1 = Convert.toLong(nowMap.get(REPEAT_TIME));
+        Long time2 = Convert.toLong(preMap.get(REPEAT_TIME));
+        if (time1 == null || time2 == null) {
+            return false;
+        }
         if ((time1 - time2) < interval) {
             return true;
         }

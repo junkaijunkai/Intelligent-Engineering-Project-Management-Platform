@@ -16,7 +16,7 @@ public class MessageUtils {
     /** 服务器host */
     public static String host;
 
-    @Value("${pmhub.workWx.host}")
+    @Value("${pmhub.workWx.host:}")
     private void setHost(String host) {
         MessageUtils.host = host;
     }
@@ -24,7 +24,7 @@ public class MessageUtils {
     /** 后端路由 */
     public static String path;
 
-    @Value("${pmhub.workWx.path}")
+    @Value("${pmhub.workWx.path:}")
     private void setPath(String path) {
         MessageUtils.path = path;
     }
@@ -32,7 +32,7 @@ public class MessageUtils {
     /** appid */
     public static String appid;
 
-    @Value("${pmhub.workWx.corpid}")
+    @Value("${pmhub.workWx.corpid:}")
     private void setAppid(String appid) {
         MessageUtils.appid = appid;
     }
@@ -40,7 +40,7 @@ public class MessageUtils {
     /** agentid */
     public static String agentid;
 
-    @Value("${pmhub.workWx.agentid}")
+    @Value("${pmhub.workWx.agentid:0}")
     private void setAgentid(String agentid) {
         MessageUtils.agentid = agentid;
     }
