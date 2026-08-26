@@ -27,6 +27,11 @@ on:
         type: boolean
         required: false
         default: false
+      upload_artifacts:
+        description: "Upload CI artifacts (requires available Actions storage)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -54,7 +59,7 @@ jobs:
       - name: Run Checkstyle
         run: mvn checkstyle:check -B -Dcheckstyle.failOnViolation=false -Dcheckstyle.failsOnError=false -Dcheckstyle.violationSeverity=warning
       - name: Upload Checkstyle report
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-checkstyle
@@ -112,7 +117,7 @@ jobs:
           path: "**/target/surefire-reports/*.xml"
           reporter: java-junit
       - name: Upload unit test artifacts
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-unit-test
@@ -136,7 +141,7 @@ jobs:
       - name: Run OWASP Dependency Check
         run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
       - name: Upload dependency report
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-dependency-scan
@@ -159,7 +164,7 @@ jobs:
       - name: Run Semgrep evidence scan
         run: bash ci/scripts/preflight.sh && bash ci/scripts/run-sast.sh
       - name: Upload SAST artifacts
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-sast
@@ -213,6 +218,7 @@ jobs:
       - name: Build package
         run: mvn clean package -B -DskipTests -U
       - name: Upload application packages
+        if: ${{ inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-jars
@@ -282,8 +288,24 @@ jobs:
         run: |
           bash ci/scripts/preflight.sh
           bash ci/scripts/run-full-project-runtime.sh
-      - name: Upload full project runtime evidence
+      - name: Print runtime diagnostics to job log
         if: always()
+        run: |
+          echo '--- Compose status ---'
+          if [ -f devsecops-demo/out/05-runtime/compose-ps.txt ]; then
+            sed -n '1,160p' devsecops-demo/out/05-runtime/compose-ps.txt
+          else
+            echo 'compose-ps.txt was not generated'
+          fi
+          echo '--- Nacos diagnostics ---'
+          nacos_log=devsecops-demo/out/05-runtime/logs/pmhub-nacos.log
+          if [ -f "$nacos_log" ]; then
+            grep -nE 'Nacos 2\.2\.3|Started|Nacos failed to start|processorMetrics|CgroupV2Subsystem|ERROR' "$nacos_log" || true
+          else
+            echo 'pmhub-nacos.log was not generated'
+          fi
+      - name: Upload full project runtime evidence
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-full-project-runtime
@@ -326,7 +348,7 @@ jobs:
           mkdir -p "devsecops-demo/out/03-security/images/${{ matrix.service.name }}"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/devsecops-demo/out/03-security/images/${{ matrix.service.name }}:/evidence" aquasec/trivy:0.70.0 image --format json --output /evidence/trivy.json "pvision/${{ matrix.service.name }}:${{ github.sha }}"
       - name: Upload service image scan
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-image-scan-${{ matrix.service.name }}
@@ -338,7 +360,7 @@ jobs:
     name: Compliance as Code
     runs-on: ubuntu-latest
     needs: [scan-all-service-images, full-project-runtime]
-    if: always() && (needs.scan-all-service-images.result == 'success' || needs.scan-all-service-images.result == 'failure' || needs.scan-all-service-images.result == 'cancelled') && (needs.full-project-runtime.result == 'success' || needs.full-project-runtime.result == 'failure' || needs.full-project-runtime.result == 'cancelled')
+    if: ${{ always() && inputs.upload_artifacts == true && (needs.scan-all-service-images.result == 'success' || needs.scan-all-service-images.result == 'failure' || needs.scan-all-service-images.result == 'cancelled') && (needs.full-project-runtime.result == 'success' || needs.full-project-runtime.result == 'failure' || needs.full-project-runtime.result == 'cancelled') }}
     continue-on-error: false
     steps:
       - uses: actions/checkout@v4
@@ -355,7 +377,7 @@ jobs:
       - name: Verify required artifacts
         run: bash ci/scripts/verify-artifacts.sh
       - name: Upload compliance artifacts
-        if: always()
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-compliance
@@ -367,7 +389,7 @@ jobs:
     name: Unified CI Evidence Package
     runs-on: ubuntu-latest
     needs: [lint, unit-test, dependency-scan, sast, sonarcloud, build, build-all-service-images, scan-all-service-images, full-project-runtime, compliance]
-    if: always()
+    if: ${{ always() && inputs.upload_artifacts == true }}
     steps:
       - uses: actions/checkout@v4
         with:
