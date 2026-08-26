@@ -300,7 +300,7 @@ jobs:
           echo '--- Nacos diagnostics ---'
           nacos_log=devsecops-demo/out/05-runtime/logs/pmhub-nacos.log
           if [ -f "$nacos_log" ]; then
-            grep -nE 'Nacos 2\.2\.3|Started|Nacos failed to start|processorMetrics|CgroupV2Subsystem|ERROR' "$nacos_log" || true
+            cat "$nacos_log"
           else
             echo 'pmhub-nacos.log was not generated'
           fi

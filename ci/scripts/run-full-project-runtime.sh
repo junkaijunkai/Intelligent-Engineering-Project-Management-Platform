@@ -78,6 +78,11 @@ capture_runtime_evidence() {
   for service in pmhub-nacos pmhub-mysql pmhub-redis pmhub-seata pmhub-gateway pmhub-auth pmhub-system pmhub-project pmhub-workflow pmhub-gen pmhub-job pmhub-monitor; do
     docker logs "$service" > "$EVIDENCE_DIR/logs/$service.log" 2>&1 || true
   done
+  if [ -s "$EVIDENCE_DIR/logs/pmhub-nacos.log" ]; then
+    printf '%s\n' '--- Nacos runtime log (failure path) ---'
+    cat "$EVIDENCE_DIR/logs/pmhub-nacos.log"
+    printf '%s\n' '--- End Nacos runtime log ---'
+  fi
 }
 
 "${compose[@]}" up -d pmhub-mysql

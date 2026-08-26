@@ -1,0 +1,72 @@
+name: DevSecOps Runtime Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: devsecops-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: "true"
+  DEPLOY_ENV: ci
+  COMPLIANCE_MODE: ci
+  MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
+  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+jobs:
+  full-project-runtime:
+    name: Full Project Compose Runtime (Manual)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+
+      - name: Install runtime dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
+
+      - name: Validate CI database secret
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        run: test -n "$MYSQL_ROOT_PASSWORD"
+
+      - name: Run runtime preflight
+        run: bash ci/scripts/preflight.sh
+
+      - name: Build runtime JARs for Compose contexts
+        run: mvn clean package -B -DskipTests -U
+
+      - name: Run full backend Compose runtime
+        env:
+          RUN_DAST: "false"
+        run: bash ci/scripts/run-full-project-runtime.sh
+
+      - name: Print runtime diagnostics to job log
+        if: always()
+        run: |
+          echo '--- Compose status ---'
+          if [ -f devsecops-demo/out/05-runtime/compose-ps.txt ]; then
+            sed -n '1,160p' devsecops-demo/out/05-runtime/compose-ps.txt
+          else
+            echo 'compose-ps.txt was not generated'
+          fi
+          echo '--- Nacos runtime log ---'
+          nacos_log=devsecops-demo/out/05-runtime/logs/pmhub-nacos.log
+          if [ -f "$nacos_log" ]; then
+            cat "$nacos_log"
+          else
+            echo 'pmhub-nacos.log was not generated; runtime may have failed before Compose startup.'
+          fi
