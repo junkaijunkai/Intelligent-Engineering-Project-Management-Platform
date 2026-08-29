@@ -1,0 +1,203 @@
+name: DevSecOps Security Audit
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - pre
+  pull_request:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+    inputs:
+      run_owasp:
+        description: "Run OWASP Dependency-Check"
+        type: boolean
+        required: false
+        default: false
+      run_sonarcloud:
+        description: "Run SonarCloud analysis"
+        type: boolean
+        required: false
+        default: false
+      run_image_scan:
+        description: "Build and scan all service images"
+        type: boolean
+        required: false
+        default: true
+      upload_artifacts:
+        description: "Upload security reports"
+        type: boolean
+        required: false
+        default: false
+  workflow_call:
+    inputs:
+      run_owasp:
+        description: "Run OWASP Dependency-Check"
+        type: boolean
+        required: false
+        default: false
+      run_sonarcloud:
+        description: "Run SonarCloud analysis"
+        type: boolean
+        required: false
+        default: false
+      run_image_scan:
+        description: "Build and scan all service images"
+        type: boolean
+        required: false
+        default: true
+      upload_artifacts:
+        description: "Upload security reports"
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      NVD_API_KEY:
+        required: false
+      SONAR_TOKEN:
+        required: false
+      SONAR_ORG:
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  CI: "true"
+  DEPLOY_ENV: ci
+  COMPLIANCE_MODE: ci
+  MAVEN_OPTS: "-Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dfile.encoding=UTF-8"
+
+jobs:
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Run Semgrep evidence scan
+        run: bash ci/scripts/preflight.sh && bash ci/scripts/run-sast.sh
+      - name: Upload SAST artifacts
+        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-sast
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 7
+
+  dependency-scan:
+    name: Dependency Scan (OWASP)
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/pre')) || inputs.run_owasp == true }}
+    continue-on-error: true
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Run OWASP Dependency-Check
+        run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+      - name: Upload dependency report
+        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-dependency-scan
+          path: "**/target/dependency-check-report.*"
+          if-no-files-found: warn
+          retention-days: 7
+
+  sonarcloud:
+    name: SAST (SonarCloud)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.run_sonarcloud == true }}
+    continue-on-error: true
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Validate SonarCloud configuration
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+        run: |
+          test -n "$SONAR_TOKEN"
+          test -n "$SONAR_ORG"
+      - name: Run SonarCloud analysis
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+        run: |
+          mvn compile sonar:sonar -B \
+            -Dsonar.organization="$SONAR_ORG" \
+            -Dsonar.projectKey="${{ github.event.repository.name }}" \
+            -Dsonar.projectName="${{ github.event.repository.name }}" \
+            -Dsonar.qualitygate.wait=false
+
+  image-scan:
+    name: Build and Scan Image (${{ matrix.service.name }})
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run_image_scan == true }}
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: pmhub-gateway, module: pmhub-gateway }
+          - { name: pmhub-auth, module: pmhub-auth }
+          - { name: pmhub-system, module: pmhub-modules/pmhub-system }
+          - { name: pmhub-project, module: pmhub-modules/pmhub-project }
+          - { name: pmhub-workflow, module: pmhub-modules/pmhub-workflow }
+          - { name: pmhub-gen, module: pmhub-modules/pmhub-gen }
+          - { name: pmhub-job, module: pmhub-modules/pmhub-job }
+          - { name: pmhub-monitor, module: pmhub-monitor }
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: "8"
+          distribution: temurin
+          cache: maven
+      - name: Build image for scan
+        run: |
+          mvn clean package -pl "${{ matrix.service.module }}" -am -B -DskipTests -U
+          jar_file=$(find "${{ matrix.service.module }}/target" -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -1)
+          test -n "$jar_file"
+          cp "$jar_file" "${{ matrix.service.module }}/app.jar"
+          docker build --tag "pvision/${{ matrix.service.name }}:${{ github.sha }}" -f "${{ matrix.service.module }}/docker/Dockerfile" "${{ matrix.service.module }}"
+      - name: Run Trivy image scan
+        continue-on-error: true
+        run: |
+          mkdir -p "devsecops-demo/out/03-security/images/${{ matrix.service.name }}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/devsecops-demo/out/03-security/images/${{ matrix.service.name }}:/evidence" aquasec/trivy:0.70.0 image --format json --output /evidence/trivy.json "pvision/${{ matrix.service.name }}:${{ github.sha }}"
+      - name: Upload service image scan
+        if: ${{ always() && inputs.upload_artifacts == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-image-scan-${{ matrix.service.name }}
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 7

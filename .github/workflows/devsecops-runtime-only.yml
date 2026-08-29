@@ -1,14 +1,36 @@
-name: DevSecOps Runtime Verification
+name: Dev Runtime Verification
 
 on:
   workflow_dispatch:
+    inputs:
+      run_dast:
+        description: "Run DAST against the Compose Gateway"
+        type: boolean
+        required: false
+        default: false
+      upload_artifacts:
+        description: "Upload runtime evidence"
+        type: boolean
+        required: false
+        default: false
+  workflow_call:
+    inputs:
+      run_dast:
+        description: "Run DAST against the Compose Gateway"
+        type: boolean
+        required: false
+        default: false
+      upload_artifacts:
+        description: "Upload runtime evidence"
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      MYSQL_ROOT_PASSWORD:
+        required: true
 
 permissions:
   contents: read
-
-concurrency:
-  group: devsecops-runtime-${{ github.ref }}
-  cancel-in-progress: true
 
 env:
   CI: "true"
@@ -19,7 +41,7 @@ env:
 
 jobs:
   full-project-runtime:
-    name: Full Project Compose Runtime (Manual)
+    name: Full Project Compose Runtime
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -27,33 +49,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Set up Java 8
         uses: actions/setup-java@v4
         with:
           java-version: "8"
           distribution: temurin
           cache: maven
-
       - name: Install runtime dependencies
         run: sudo apt-get update -qq && sudo apt-get install -y -qq mysql-client
-
       - name: Validate CI database secret
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         run: test -n "$MYSQL_ROOT_PASSWORD"
-
       - name: Run runtime preflight
         run: bash ci/scripts/preflight.sh
-
       - name: Build runtime JARs for Compose contexts
         run: mvn clean package -B -DskipTests -U
-
       - name: Run full backend Compose runtime
         env:
-          RUN_DAST: "false"
+          RUN_DAST: ${{ inputs.run_dast }}
         run: bash ci/scripts/run-full-project-runtime.sh
-
       - name: Print runtime diagnostics to job log
         if: always()
         run: |
@@ -70,3 +83,11 @@ jobs:
           else
             echo 'pmhub-nacos.log was not generated; runtime may have failed before Compose startup.'
           fi
+      - name: Upload full project runtime evidence
+        if: ${{ always() && inputs.upload_artifacts == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-full-project-runtime
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 7
