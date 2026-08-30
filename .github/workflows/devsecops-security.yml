@@ -87,8 +87,16 @@ jobs:
           cache: maven
       - name: Run Semgrep evidence scan
         run: bash ci/scripts/preflight.sh && bash ci/scripts/run-sast.sh
+      - name: Print SAST results to job log
+        if: always()
+        run: |
+          if [ -f devsecops-demo/out/03-security/sast/semgrep-console.txt ]; then
+            cat devsecops-demo/out/03-security/sast/semgrep-console.txt
+          else
+            echo 'semgrep-console.txt was not generated'
+          fi
       - name: Upload SAST artifacts
-        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-sast
@@ -113,7 +121,7 @@ jobs:
       - name: Run OWASP Dependency-Check
         run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
       - name: Upload dependency report
-        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-dependency-scan
@@ -188,11 +196,29 @@ jobs:
           test -n "$jar_file"
           cp "$jar_file" "${{ matrix.service.module }}/app.jar"
           docker build --tag "pvision/${{ matrix.service.name }}:${{ github.sha }}" -f "${{ matrix.service.module }}/docker/Dockerfile" "${{ matrix.service.module }}"
-      - name: Run Trivy image scan
-        continue-on-error: true
+      - name: Run Trivy image scan (report)
         run: |
           mkdir -p "devsecops-demo/out/03-security/images/${{ matrix.service.name }}"
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/devsecops-demo/out/03-security/images/${{ matrix.service.name }}:/evidence" aquasec/trivy:0.70.0 image --format json --output /evidence/trivy.json "pvision/${{ matrix.service.name }}:${{ github.sha }}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD/devsecops-demo/out/03-security/images/${{ matrix.service.name }}:/evidence" \
+            -v "$PWD/.trivyignore.yaml:/root/.trivyignore.yaml:ro" \
+            aquasec/trivy:0.70.0 image --format json \
+            --ignorefile /root/.trivyignore.yaml \
+            --output /evidence/trivy.json \
+            "pvision/${{ matrix.service.name }}:${{ github.sha }}"
+      - name: Enforce app-dependency vulnerability gate
+        run: |
+          trivy_json="devsecops-demo/out/03-security/images/${{ matrix.service.name }}/trivy.json"
+          count=$(jq '[.Results[] | select(.Class=="lang-pkgs") | .Vulnerabilities[]?
+              | select(.Severity=="HIGH" or .Severity=="CRITICAL")] | length' "$trivy_json")
+          if [ "$count" -gt 0 ]; then
+            jq -r '.Results[] | select(.Class=="lang-pkgs") | .Vulnerabilities[]?
+                | select(.Severity=="HIGH" or .Severity=="CRITICAL")
+                | "\(.VulnerabilityID) \(.Severity) \(.PkgName)@\(.InstalledVersion) -> \(.FixedVersion // "no-fix")"' "$trivy_json"
+            echo "::error::Application-dependency gate failed: $count HIGH/CRITICAL vulnerabilities"
+            exit 1
+          fi
+          echo "Application-dependency gate passed"
       - name: Upload service image scan
         if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4

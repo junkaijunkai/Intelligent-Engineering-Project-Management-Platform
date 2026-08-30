@@ -1,15 +1,6 @@
 name: CI Quality
 
 on:
-  push:
-    branches:
-      - master
-      - dev
-      - pre
-  pull_request:
-    branches:
-      - master
-      - dev
   workflow_dispatch:
     inputs:
       upload_artifacts:
@@ -17,6 +8,11 @@ on:
         type: boolean
         required: false
         default: false
+      enforce_quality_gate:
+        description: "Fail CI when unit tests or coverage gates fail"
+        type: boolean
+        required: false
+        default: true
   workflow_call:
     inputs:
       upload_artifacts:
@@ -24,6 +20,11 @@ on:
         type: boolean
         required: false
         default: false
+      enforce_quality_gate:
+        description: "Fail CI when unit tests or coverage gates fail"
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: read
@@ -50,7 +51,7 @@ jobs:
       - name: Run Checkstyle
         run: mvn checkstyle:check -B -Dcheckstyle.failOnViolation=false -Dcheckstyle.failsOnError=false -Dcheckstyle.violationSeverity=warning
       - name: Upload Checkstyle report
-        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-checkstyle
@@ -59,12 +60,23 @@ jobs:
           retention-days: 7
 
   unit-test:
-    name: Unit Tests and Coverage
+    name: Unit Tests (${{ matrix.service.name }})
     runs-on: ubuntu-latest
     needs: lint
+    continue-on-error: ${{ inputs.enforce_quality_gate == false }}
     permissions:
       checks: write
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: pmhub-gateway, module: pmhub-gateway }
+          - { name: pmhub-auth, module: pmhub-auth }
+          - { name: pmhub-system, module: pmhub-modules/pmhub-system }
+          - { name: pmhub-project, module: pmhub-modules/pmhub-project }
+          - { name: pmhub-workflow, module: pmhub-modules/pmhub-workflow }
+          - { name: pmhub-job, module: pmhub-modules/pmhub-job }
     services:
       mysql:
         image: mysql:5.7
@@ -103,7 +115,19 @@ jobs:
             mysql -h 127.0.0.1 -u root -proot < "$sql"
           done
       - name: Run unit tests and collect CI evidence
+        env:
+          UNIT_TEST_MODULE: ${{ matrix.service.module }}
+          UNIT_TEST_SERVICE: ${{ matrix.service.name }}
+          ENFORCE_QUALITY_GATE: ${{ inputs.enforce_quality_gate }}
         run: bash ci/scripts/preflight.sh && bash ci/scripts/run-unit-tests.sh
+      - name: Print unit test summary to job log
+        if: always()
+        run: |
+          if [ -f devsecops-demo/out/01-testing/unit/${{ matrix.service.name }}/unit-test-summary.json ]; then
+            cat devsecops-demo/out/01-testing/unit/${{ matrix.service.name }}/unit-test-summary.json
+          else
+            echo 'unit-test-summary.json was not generated'
+          fi
       - name: Publish JUnit report
         if: always()
         continue-on-error: true
@@ -113,10 +137,37 @@ jobs:
           path: "**/target/surefire-reports/*.xml"
           reporter: java-junit
       - name: Upload unit test artifacts
-        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true) }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: devsecops-ci-unit-test
+          name: devsecops-ci-unit-test-${{ matrix.service.name }}
+          path: devsecops-demo/out/
+          if-no-files-found: warn
+          retention-days: 7
+
+  coverage-gate:
+    name: Coverage Gate
+    runs-on: ubuntu-latest
+    needs: unit-test
+    if: always()
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Download unit test evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: devsecops-ci-unit-test-*
+          path: devsecops-demo/out/
+          merge-multiple: true
+      - name: Evaluate coverage gate
+        env:
+          ENFORCE_QUALITY_GATE: ${{ inputs.enforce_quality_gate }}
+        run: bash ci/scripts/evaluate-coverage-gate.sh
+      - name: Upload coverage gate artifacts
+        if: ${{ always() && inputs.upload_artifacts == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: devsecops-ci-coverage-gate
           path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 7
@@ -124,7 +175,7 @@ jobs:
   build:
     name: Build Maven Packages
     runs-on: ubuntu-latest
-    needs: unit-test
+    needs: lint
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -137,7 +188,7 @@ jobs:
       - name: Build packages
         run: mvn clean package -B -DskipTests -U
       - name: Upload application packages
-        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.upload_artifacts == true }}
+        if: ${{ inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
           name: devsecops-ci-jars

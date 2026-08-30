@@ -84,9 +84,15 @@ capture_runtime_evidence() {
 }
 
 "${compose[@]}" up -d pmhub-mysql
+mysql_cli() {
+  docker run --rm -i \
+    --network "${PROJECT_NAME}_default" \
+    -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" \
+    mysql:5.7 mysql -h pmhub-mysql -P 3306 -u root "$@"
+}
 mysql_ready=false
 for i in {1..60}; do
-  if MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root -e 'SELECT 1' >/dev/null 2>&1; then
+  if mysql_cli -e 'SELECT 1' >/dev/null 2>&1; then
     mysql_ready=true
     break
   fi
@@ -101,7 +107,7 @@ fi
 
 run_sql() {
   local sql_file="$1"
-  if ! MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -h 127.0.0.1 -P 33706 -u root < "$sql_file"; then
+  if ! mysql_cli < "$sql_file"; then
     capture_runtime_evidence
     printf '{"status":"FAIL","reason":"SQL initialization failed: %s"}\n' "$(basename "$sql_file")" > "$EVIDENCE_DIR/gateway-health.json"
     record_status project-runtime FAILED "SQL initialization failed; runtime logs and status were retained."
