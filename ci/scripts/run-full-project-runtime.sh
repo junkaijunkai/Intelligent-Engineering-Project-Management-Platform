@@ -143,10 +143,9 @@ fi
 "${compose[@]}" ps > "$EVIDENCE_DIR/compose-ps.txt"
 docker network inspect "${PROJECT_NAME}_default" > "$EVIDENCE_DIR/network-inspect.json"
 
+runtime_status=0
 if ! bash "$CI_DIR/scripts/run-project-integration.sh"; then
   runtime_status=1
-else
-  runtime_status=0
 fi
 
 DEVSECOPS_NETWORK="${PROJECT_NAME}_default" DEVSECOPS_TARGET_HOST=pmhub-gateway DEVSECOPS_TARGET_PORT=6880 \

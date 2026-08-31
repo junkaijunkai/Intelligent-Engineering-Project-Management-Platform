@@ -83,6 +83,18 @@ jobs:
           else
             echo 'pmhub-nacos.log was not generated; runtime may have failed before Compose startup.'
           fi
+          echo '--- Load test summary ---'
+          if [ -f devsecops-demo/out/01-testing/load/k6-summary.json ]; then
+            cat devsecops-demo/out/01-testing/load/k6-summary.json
+          else
+            echo 'k6-summary.json was not generated.'
+          fi
+          echo '--- Load test console tail ---'
+          if [ -f devsecops-demo/out/01-testing/load/k6-console.txt ]; then
+            tail -n 160 devsecops-demo/out/01-testing/load/k6-console.txt
+          else
+            echo 'k6-console.txt was not generated.'
+          fi
           echo '--- DAST summary ---'
           if [ -f devsecops-demo/out/03-security/dast/zap-summary.json ]; then
             cat devsecops-demo/out/03-security/dast/zap-summary.json
@@ -91,10 +103,12 @@ jobs:
           fi
           echo '--- DAST console tail ---'
           if [ -f devsecops-demo/out/03-security/dast/zap-console.txt ]; then
-            tail -n 200 devsecops-demo/out/03-security/dast/zap-console.txt
+            tail -n 240 devsecops-demo/out/03-security/dast/zap-console.txt
           else
             echo 'zap-console.txt was not generated.'
           fi
+          echo '--- ZAP report files ---'
+          find devsecops-demo/out/03-security/dast -maxdepth 1 -type f -name 'zap-report-*' -print | sort || true
       - name: Upload full project runtime evidence
         if: ${{ always() && inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
