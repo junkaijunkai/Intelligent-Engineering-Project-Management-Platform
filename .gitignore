@@ -89,6 +89,8 @@ Test Plan.jmx
 docs/*
 docker/.env
 
+final-report/
+
 # Agent instructions are repo documentation and should remain trackable.
 !AGENTS.md
 !CLAUDE.md
