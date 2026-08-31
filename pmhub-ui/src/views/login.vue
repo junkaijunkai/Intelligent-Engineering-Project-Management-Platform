@@ -52,7 +52,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Engineering Project Management Demo</span>
+      <span>Beijing Dahua Blue Energy</span>
     </div>
   </div>
 </template>
@@ -174,9 +174,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/pmhub-bg2.png");
-  background-size: cover;
-  background-position: center center;
+  background-color: #dff1ff;
   .title {
     margin: 0px auto 30px auto;
     text-align: center;
