@@ -9,7 +9,7 @@ on:
         required: false
         default: false
       upload_artifacts:
-        description: "Upload runtime evidence"
+        description: "Upload externally downloadable runtime evidence artifacts"
         type: boolean
         required: false
         default: false
@@ -21,7 +21,7 @@ on:
         required: false
         default: false
       upload_artifacts:
-        description: "Upload runtime evidence"
+        description: "Upload externally downloadable runtime evidence artifacts"
         type: boolean
         required: false
         default: false
@@ -82,6 +82,18 @@ jobs:
             cat "$nacos_log"
           else
             echo 'pmhub-nacos.log was not generated; runtime may have failed before Compose startup.'
+          fi
+          echo '--- DAST summary ---'
+          if [ -f devsecops-demo/out/03-security/dast/zap-summary.json ]; then
+            cat devsecops-demo/out/03-security/dast/zap-summary.json
+          else
+            echo 'zap-summary.json was not generated; DAST may have been disabled.'
+          fi
+          echo '--- DAST console tail ---'
+          if [ -f devsecops-demo/out/03-security/dast/zap-console.txt ]; then
+            tail -n 200 devsecops-demo/out/03-security/dast/zap-console.txt
+          else
+            echo 'zap-console.txt was not generated.'
           fi
       - name: Upload full project runtime evidence
         if: ${{ always() && inputs.upload_artifacts == true }}

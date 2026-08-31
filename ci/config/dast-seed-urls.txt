@@ -1,0 +1,11 @@
+# Gateway DAST seed paths.
+# Keep this list focused on externally reachable entry points that are safe for
+# unauthenticated passive baseline scans. Authenticated business journeys should
+# be added later with explicit test credentials and scoped risk controls.
+/
+/actuator/health
+/auth/login
+/system/config/list
+/project/project/list
+/project/task/list
+/workflow/process/list

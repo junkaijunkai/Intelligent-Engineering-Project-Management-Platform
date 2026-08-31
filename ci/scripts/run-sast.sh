@@ -46,4 +46,27 @@ docker run --rm \
   >/dev/null 2>&1
 
 test -s "$EVIDENCE_DIR/semgrep.json"
-record_status sast PASS "Semgrep completed; findings were retained without failing the evidence workflow."
+
+export EVIDENCE_DIR
+error_findings=$(python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+report = Path(os.environ["EVIDENCE_DIR"]) / "semgrep.json"
+data = json.loads(report.read_text(encoding="utf-8"))
+count = sum(
+    1
+    for item in data.get("results", [])
+    if item.get("extra", {}).get("severity") == "ERROR"
+)
+print(count)
+PY
+)
+
+if [ "$error_findings" -gt 0 ]; then
+  record_status sast FAILED "Semgrep completed with $error_findings ERROR severity findings."
+  exit 1
+fi
+
+record_status sast PASS "Semgrep completed; WARNING and INFO findings were retained without failing the evidence workflow."

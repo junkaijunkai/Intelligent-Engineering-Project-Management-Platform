@@ -21,6 +21,60 @@ rules:
       - pattern: MessageDigest.getInstance("MD5")
       - pattern: MessageDigest.getInstance("SHA-1")
 
+  - id: java-weak-cipher-algorithm
+    languages: [java]
+    severity: WARNING
+    message: Review weak or ambiguous cipher algorithms; prefer authenticated encryption with an explicit safe mode.
+    pattern-either:
+      - pattern: Cipher.getInstance("DES")
+      - pattern: Cipher.getInstance("DESede")
+      - pattern: Cipher.getInstance("AES/ECB/PKCS5Padding")
+      - pattern: Cipher.getInstance("AES")
+
+  - id: java-insecure-random-security-context
+    languages: [java]
+    severity: WARNING
+    message: Review Random usage in security-sensitive code; use SecureRandom for tokens, salts, or secrets.
+    patterns:
+      - pattern: new Random(...)
+
+  - id: java-permissive-cors-origin
+    languages: [java]
+    severity: WARNING
+    message: Review wildcard CORS origins; restrict allowed origins for production deployments.
+    pattern-either:
+      - pattern: $REGISTRY.addMapping(...).allowedOrigins("*")
+      - pattern: $CONFIG.setAllowedOrigins(Arrays.asList("*"))
+      - pattern: $CONFIG.addAllowedOrigin("*")
+
+  - id: java-ssrf-http-client-user-controlled-url
+    languages: [java]
+    severity: WARNING
+    message: Review outbound HTTP calls; user-controlled URLs require allow-list validation to prevent SSRF.
+    pattern-either:
+      - pattern: $REST_TEMPLATE.getForObject($URL, ...)
+      - pattern: $REST_TEMPLATE.postForObject($URL, ...)
+      - pattern: $REST_TEMPLATE.exchange($URL, ...)
+      - pattern: new URL($URL)
+      - pattern: URI.create($URL)
+
+  - id: java-file-path-construction
+    languages: [java]
+    severity: WARNING
+    message: Review file path construction from variables; normalize paths and enforce upload/download directory boundaries.
+    pattern-either:
+      - pattern: new File($BASE, $NAME)
+      - pattern: Paths.get($BASE, $NAME, ...)
+
+  - id: mybatis-raw-sql-substitution
+    languages: [generic]
+    severity: WARNING
+    message: Review MyBatis ${} raw SQL substitution; prefer #{} parameters or strict allow-lists for identifiers.
+    paths:
+      include:
+        - "*.xml"
+    pattern-regex: "\\$\\{[^}]+\\}"
+
   - id: javascript-dynamic-html
     languages: [javascript, typescript]
     severity: INFO
@@ -28,6 +82,30 @@ rules:
     pattern-either:
       - pattern: $ELEMENT.innerHTML = $VALUE
       - pattern: $ELEMENT.outerHTML = $VALUE
+
+  - id: vue-v-html
+    languages: [generic]
+    severity: INFO
+    message: Review v-html usage; render only sanitized trusted HTML to avoid XSS.
+    paths:
+      include:
+        - "*.vue"
+    pattern-regex: "v-html\\s*="
+
+  - id: generic-hardcoded-secret
+    languages: [generic]
+    severity: WARNING
+    message: Review hardcoded credential-like values; move real secrets to CI secrets or runtime configuration.
+    paths:
+      include:
+        - "*.java"
+        - "*.js"
+        - "*.ts"
+        - "*.vue"
+        - "*.yml"
+        - "*.yaml"
+        - "*.properties"
+    pattern-regex: "(?i)(password|passwd|secret|token|access[_-]?key)\\s*[:=]\\s*['\\\"]?[A-Za-z0-9_./+@-]{8,}"
 
   - id: generic-private-key-material
     languages: [generic]
