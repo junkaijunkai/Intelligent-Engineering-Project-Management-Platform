@@ -24,7 +24,7 @@ Pvision/PmHub 是面向企业项目协作的项目管理与流程自动化平台
 - `@docs/local-startup-and-demo-guide.md` - 微服务版前后端本地启动、数据库与 Nacos 初始化、最小演示服务集、录屏验收和故障排查指南；需要搭建本地演示环境时参考。
 
 ## Important Caveats
-
+### Project-Scale Cautions
 - 忽略 `@pmhub-boot`，它是单体版本；本项目讨论和后续修改只针对微服务版本。
 - `@pmhub-monitor` 是运行时监控中心，不属于用户业务服务；`@pmhub-modules/pmhub-gen` 是开发辅助服务，不属于核心用户业务服务。
 - 服务默认端口：gateway 6880、auth 6800、system 6801、gen 6802、job 6803、project 6806、workflow 6808、monitor 6888。
@@ -35,6 +35,13 @@ Pvision/PmHub 是面向企业项目协作的项目管理与流程自动化平台
 - CI Compose runtime 会生成隔离配置并将 Nacos、MySQL、Redis 的容器内地址替换为 Compose 服务名；Nacos 数据库内嵌配置中的 `server-addr` 也必须使用 `pmhub-nacos:8848`，不能保留 `127.0.0.1`。
 - Compose 中的 Nacos 镜像固定为 `nacos/nacos-server:v2.2.3`，必须与当前 Nacos 2.x SQL schema 和 Spring Cloud Alibaba 2021.x 依赖保持兼容，避免使用漂移的 `latest` 标签。
 - Nacos 在 GitHub Actions 的 cgroup v2 + Java 8 环境下禁用 Micrometer processor/system metrics；该兼容参数只写入 `run-full-project-runtime.sh` 生成的临时配置，不改变本地或正式 Nacos 配置。
-- 关键发现需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
+### Task Completion Rules
 - 处理多任务时，灵活使用sub-agents：按任务间的依赖关系来决定sub-agents是并行执行还是线性执行
-- 每次做完写任务后都要：检查代码语法 - 运行相应的测试 - 验证需求已完成，且没有引入回归（不要自我验证、不要信任自己完成的工作，而是让独立的sub-agent来对你完成的工作进行对抗性评估）
+- 每次做完写代码的任务后都要：检查代码语法 - 运行相应的测试 - 验证需求已完成，且没有引入回归（不要自我验证、不要信任自己完成的工作，而是让独立的sub-agent来对你完成的工作进行对抗性评估）
+### Test Rules
+- 心智模型：Generate - Execute - Observe - Diagnose - Fix - Execute again
+- 单元测试：运行单元测试使用jdk8；补充单元测试的预期为“验证/预防当前生产代码不会出现运行时故障”
+### Essay Writing Rules
+- 关键发现需要继续沉淀到本文件；超过 50 行的细节写入 `@docs/xxx.md`，并在本文件保留索引。
+- 做完写文章的任务后，用 Humanizer skill 减少表达中的“AI味”。
+- 写项目报告时，只关注“项目实现了什么”，不要出现“还未实现”、“计划实现”、“...仍存在漏洞/局限”的东西；报告中不要出现“pmhub”或“pvision”，项目名称统一使用“the Engineering Management Platform”或“the platform”
