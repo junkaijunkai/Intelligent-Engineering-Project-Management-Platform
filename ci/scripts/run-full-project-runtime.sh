@@ -160,6 +160,17 @@ for service in pmhub-nacos pmhub-mysql pmhub-redis pmhub-seata pmhub-gateway pmh
   docker logs "$service" > "$EVIDENCE_DIR/logs/$service.log" 2>&1 || true
 done
 
+# Preserve the image IDs before the EXIT trap removes the Compose containers.
+# The runtime workflow uses these IDs to publish exactly the images that passed
+# the full Compose and optional DAST checks.
+: > "$EVIDENCE_DIR/runtime-image-ids.env"
+for service in pmhub-gateway pmhub-auth pmhub-system pmhub-project pmhub-workflow pmhub-gen pmhub-job pmhub-monitor; do
+  image_id=$("${compose[@]}" images -q "$service" | head -1 || true)
+  if [ -n "$image_id" ]; then
+    printf '%s=%s\n' "$service" "$image_id" >> "$EVIDENCE_DIR/runtime-image-ids.env"
+  fi
+done
+
 if [ "$runtime_status" -eq 0 ]; then
   record_status project-runtime PASS "Full backend Compose runtime checks and evidence collection completed."
 else

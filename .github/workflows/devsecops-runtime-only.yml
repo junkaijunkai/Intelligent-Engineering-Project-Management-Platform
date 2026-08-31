@@ -13,6 +13,11 @@ on:
         type: boolean
         required: false
         default: false
+      push_images:
+        description: "Push Compose-built images to ACR after runtime and DAST pass"
+        type: boolean
+        required: false
+        default: false
   workflow_call:
     inputs:
       run_dast:
@@ -25,9 +30,20 @@ on:
         type: boolean
         required: false
         default: false
+      push_images:
+        description: "Push Compose-built images to ACR after runtime and DAST pass"
+        type: boolean
+        required: false
+        default: false
     secrets:
       MYSQL_ROOT_PASSWORD:
         required: true
+      ACR_REGISTRY:
+        required: false
+      ACR_USERNAME:
+        required: false
+      ACR_PASSWORD:
+        required: false
 
 permissions:
   contents: read
@@ -67,6 +83,32 @@ jobs:
         env:
           RUN_DAST: ${{ inputs.run_dast }}
         run: bash ci/scripts/run-full-project-runtime.sh
+      - name: Push runtime-verified images to ACR
+        if: ${{ inputs.push_images == true && success() }}
+        env:
+          ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ACR_REGISTRY" -a -n "$ACR_USERNAME" -a -n "$ACR_PASSWORD"
+          printf '%s\n' "$ACR_PASSWORD" | docker login "$ACR_REGISTRY" --username "$ACR_USERNAME" --password-stdin
+          case "${GITHUB_REF_NAME}" in
+            master) env_tag=prod-latest ;;
+            pre)    env_tag=pre-latest ;;
+            *)      env_tag=test-latest ;;
+          esac
+          for service in pmhub-gateway pmhub-auth pmhub-system pmhub-project pmhub-workflow pmhub-gen pmhub-job pmhub-monitor; do
+            image_id=$(awk -F= -v service="$service" '$1 == service { print $2 }' devsecops-demo/out/05-runtime/runtime-image-ids.env)
+            test -n "$image_id"
+            image="$ACR_REGISTRY/engineering-management/$service"
+            docker tag "$image_id" "$image:${GITHUB_SHA}"
+            docker push "$image:${GITHUB_SHA}"
+            docker tag "$image_id" "$image:$env_tag"
+            docker push "$image:$env_tag"
+          done
+          docker logout "$ACR_REGISTRY" >/dev/null 2>&1 || true
       - name: Print runtime diagnostics to job log
         if: always()
         run: |

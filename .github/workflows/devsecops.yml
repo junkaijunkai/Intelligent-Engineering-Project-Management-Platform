@@ -67,9 +67,13 @@ jobs:
     uses: ./.github/workflows/devsecops-runtime-only.yml
     with:
       run_dast: ${{ inputs.run_dast }}
+      push_images: true
       upload_artifacts: ${{ inputs.upload_artifacts }}
     secrets:
       MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
 
   compliance:
     name: Compliance as Code
