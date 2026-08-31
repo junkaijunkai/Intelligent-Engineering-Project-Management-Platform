@@ -93,7 +93,20 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$ACR_REGISTRY" -a -n "$ACR_USERNAME" -a -n "$ACR_PASSWORD"
-          printf '%s\n' "$ACR_PASSWORD" | docker login "$ACR_REGISTRY" --username "$ACR_USERNAME" --password-stdin
+          ACR_REGISTRY="${ACR_REGISTRY#https://}"
+          ACR_REGISTRY="${ACR_REGISTRY#http://}"
+          ACR_REGISTRY="${ACR_REGISTRY%/}"
+          echo "ACR registry host: $ACR_REGISTRY"
+          echo "ACR username length: ${#ACR_USERNAME}"
+          echo "ACR password is set: yes"
+          login_log="$RUNNER_TEMP/acr-login.log"
+          if ! printf '%s\n' "$ACR_PASSWORD" | docker login "$ACR_REGISTRY" \
+            --username "$ACR_USERNAME" --password-stdin >"$login_log" 2>&1; then
+            cat "$login_log"
+            echo '::error::ACR login was rejected. Check the registry host, RAM username format, and ACR fixed password.'
+            echo '::error::ACR_REGISTRY must be a host only, for example crpi-xxxx.cn-wulanchabu.personal.cr.aliyuncs.com.'
+            exit 1
+          fi
           case "${GITHUB_REF_NAME}" in
             master) env_tag=prod-latest ;;
             pre)    env_tag=pre-latest ;;
