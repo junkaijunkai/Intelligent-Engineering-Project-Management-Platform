@@ -28,6 +28,11 @@ on:
         type: boolean
         required: false
         default: true
+      enforce_security_gate:
+        description: "Fail security pipeline when image vulnerability gates fail"
+        type: boolean
+        required: false
+        default: true
       publish_pages:
         description: "Publish evidence report site to GitHub Pages"
         type: boolean
@@ -64,6 +69,7 @@ jobs:
       run_owasp: ${{ inputs.run_owasp }}
       run_sonarcloud: ${{ inputs.run_sonarcloud }}
       run_image_scan: true
+      enforce_security_gate: ${{ inputs.enforce_security_gate }}
       upload_artifacts: ${{ inputs.upload_artifacts }}
     secrets:
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

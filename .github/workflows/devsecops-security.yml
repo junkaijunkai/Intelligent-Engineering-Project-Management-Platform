@@ -27,6 +27,11 @@ on:
         type: boolean
         required: false
         default: true
+      enforce_security_gate:
+        description: "Fail security pipeline when image vulnerability gates fail"
+        type: boolean
+        required: false
+        default: true
       upload_artifacts:
         description: "Upload security reports"
         type: boolean
@@ -46,6 +51,11 @@ on:
         default: false
       run_image_scan:
         description: "Build and scan all service images"
+        type: boolean
+        required: false
+        default: true
+      enforce_security_gate:
+        description: "Fail security pipeline when image vulnerability gates fail"
         type: boolean
         required: false
         default: true
@@ -207,6 +217,8 @@ jobs:
             --output /evidence/trivy.json \
             "pvision/${{ matrix.service.name }}:${{ github.sha }}"
       - name: Enforce app-dependency vulnerability gate
+        env:
+          ENFORCE_SECURITY_GATE: ${{ inputs.enforce_security_gate }}
         run: |
           trivy_json="devsecops-demo/out/03-security/images/${{ matrix.service.name }}/trivy.json"
           count=$(jq '[.Results[] | select(.Class=="lang-pkgs") | .Vulnerabilities[]?
@@ -215,8 +227,12 @@ jobs:
             jq -r '.Results[] | select(.Class=="lang-pkgs") | .Vulnerabilities[]?
                 | select(.Severity=="HIGH" or .Severity=="CRITICAL")
                 | "\(.VulnerabilityID) \(.Severity) \(.PkgName)@\(.InstalledVersion) -> \(.FixedVersion // "no-fix")"' "$trivy_json"
-            echo "::error::Application-dependency gate failed: $count HIGH/CRITICAL vulnerabilities"
-            exit 1
+            if [ "${ENFORCE_SECURITY_GATE:-true}" = "true" ]; then
+              echo "::error::Application-dependency gate failed: $count HIGH/CRITICAL vulnerabilities"
+              exit 1
+            fi
+            echo "::warning::Application-dependency gate found $count HIGH/CRITICAL vulnerabilities, but enforce_security_gate=false"
+            exit 0
           fi
           echo "Application-dependency gate passed"
       - name: Upload service image scan
