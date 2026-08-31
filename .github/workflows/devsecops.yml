@@ -3,16 +3,6 @@ name: DevSecOps CI
 on:
   workflow_dispatch:
     inputs:
-      run_owasp:
-        description: "Run OWASP Dependency-Check"
-        type: boolean
-        required: false
-        default: false
-      run_sonarcloud:
-        description: "Run SonarCloud analysis"
-        type: boolean
-        required: false
-        default: false
       run_dast:
         description: "Run DAST scan"
         type: boolean
@@ -66,15 +56,10 @@ jobs:
     needs: quality
     uses: ./.github/workflows/devsecops-security.yml
     with:
-      run_owasp: ${{ inputs.run_owasp }}
-      run_sonarcloud: ${{ inputs.run_sonarcloud }}
       run_image_scan: true
       enforce_security_gate: ${{ inputs.enforce_security_gate }}
       upload_artifacts: ${{ inputs.upload_artifacts }}
     secrets:
-      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_ORG: ${{ secrets.SONAR_ORG }}
 
   runtime:
     name: Dev Runtime Pipeline

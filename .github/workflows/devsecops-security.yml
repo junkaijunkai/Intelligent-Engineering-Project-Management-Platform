@@ -3,16 +3,6 @@ name: DevSecOps Security Audit
 on:
   workflow_dispatch:
     inputs:
-      run_owasp:
-        description: "Run OWASP Dependency-Check"
-        type: boolean
-        required: false
-        default: false
-      run_sonarcloud:
-        description: "Run SonarCloud analysis"
-        type: boolean
-        required: false
-        default: false
       run_image_scan:
         description: "Build and scan all service images"
         type: boolean
@@ -30,16 +20,6 @@ on:
         default: false
   workflow_call:
     inputs:
-      run_owasp:
-        description: "Run OWASP Dependency-Check"
-        type: boolean
-        required: false
-        default: false
-      run_sonarcloud:
-        description: "Run SonarCloud analysis"
-        type: boolean
-        required: false
-        default: false
       run_image_scan:
         description: "Build and scan all service images"
         type: boolean
@@ -56,12 +36,6 @@ on:
         required: false
         default: false
     secrets:
-      NVD_API_KEY:
-        required: false
-      SONAR_TOKEN:
-        required: false
-      SONAR_ORG:
-        required: false
 
 permissions:
   contents: read
@@ -103,66 +77,6 @@ jobs:
           path: devsecops-demo/out/
           if-no-files-found: warn
           retention-days: 7
-
-  dependency-scan:
-    name: Dependency Scan (OWASP)
-    runs-on: ubuntu-latest
-    if: ${{ inputs.run_owasp == true }}
-    continue-on-error: true
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: temurin
-          cache: maven
-      - name: Run OWASP Dependency-Check
-        run: mvn org.owasp:dependency-check-maven:check -B -DfailBuildOnCVSS=11 -DnvdApiKey=${{ secrets.NVD_API_KEY }}
-      - name: Upload dependency report
-        if: ${{ always() && inputs.upload_artifacts == true }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: devsecops-ci-dependency-scan
-          path: "**/target/dependency-check-report.*"
-          if-no-files-found: warn
-          retention-days: 7
-
-  sonarcloud:
-    name: SAST (SonarCloud)
-    runs-on: ubuntu-latest
-    if: ${{ inputs.run_sonarcloud == true }}
-    continue-on-error: true
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: temurin
-          cache: maven
-      - name: Validate SonarCloud configuration
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_ORG: ${{ secrets.SONAR_ORG }}
-        run: |
-          test -n "$SONAR_TOKEN"
-          test -n "$SONAR_ORG"
-      - name: Run SonarCloud analysis
-        env:
-          SONAR_HOST_URL: https://sonarcloud.io
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_ORG: ${{ secrets.SONAR_ORG }}
-        run: |
-          mvn compile org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar -B \
-            -Dsonar.organization="$SONAR_ORG" \
-            -Dsonar.projectKey="${{ github.event.repository.name }}" \
-            -Dsonar.projectName="${{ github.event.repository.name }}" \
-            -Dsonar.qualitygate.wait=false
 
   image-scan:
     name: Build and Scan Image (${{ matrix.service.name }})
